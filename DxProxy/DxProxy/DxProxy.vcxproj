@@ -111,6 +111,7 @@
     <ClCompile Include="D3DProxyDeviceEgo.cpp" />
     <ClCompile Include="D3DProxyDeviceFactory.cpp" />
     <ClCompile Include="D3DProxyDeviceFixed.cpp" />
+    <ClCompile Include="D3DProxyDeviceFrameDumper.cpp" />
     <ClCompile Include="D3DProxyDeviceMono.cpp" />
     <ClCompile Include="D3DProxyDeviceSource.cpp" />
     <ClCompile Include="D3DProxyDeviceTest.cpp" />
@@ -137,6 +138,7 @@
     <ClInclude Include="D3DProxyDeviceEgo.h" />
     <ClInclude Include="D3DProxyDeviceFactory.h" />
     <ClInclude Include="D3DProxyDeviceFixed.h" />
+    <ClInclude Include="D3DProxyDeviceFrameDumper.h" />
     <ClInclude Include="D3DProxyDeviceMono.h" />
     <ClInclude Include="D3DProxyDeviceSource.h" />
     <ClInclude Include="D3DProxyDeviceTest.h" />

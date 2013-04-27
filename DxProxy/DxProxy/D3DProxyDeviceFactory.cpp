@@ -24,6 +24,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "D3DProxyDeviceEgo.h"
 #include "D3DProxyDeviceFixed.h"
 #include "D3DProxyDeviceAdv.h"
+#include "D3DProxyDeviceFrameDumper.h"
 
 D3DProxyDevice* D3DProxyDeviceFactory::Get(ProxyHelper::ProxyConfig& config, IDirect3DDevice9* dev)
 {
@@ -33,6 +34,9 @@ D3DProxyDevice* D3DProxyDeviceFactory::Get(ProxyHelper::ProxyConfig& config, IDi
 	{
 	case D3DProxyDevice::MONO:
 		newDev = new D3DProxyDeviceMono(dev);
+		break;
+	case D3DProxyDevice::METHOD_DUMP:
+		newDev = new D3DProxyDeviceFrameDumper(dev);
 		break;
 	case D3DProxyDevice::FIXED:
 		newDev = new D3DProxyDeviceFixed(dev);

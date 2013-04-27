@@ -100,6 +100,7 @@ public:
 	static enum ProxyTypes
 	{
 		MONO = 0,
+		METHOD_DUMP = 1,
 		FIXED = 10,
 		SOURCE = 100,
 		SOURCE_L4D = 101,
