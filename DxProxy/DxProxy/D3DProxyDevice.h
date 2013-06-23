@@ -286,7 +286,7 @@ private:
 	clock_t startTime;
 	bool keyWait;
 
-
+	 
 	// To calculate world scale build with this value set to true in the constructor.
 	// Set the IPD in the user cfg to match the lens separation of the hmd.
 	// In-game find something that appears correctly scaled that you can measure against.
