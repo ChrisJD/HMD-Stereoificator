@@ -392,9 +392,11 @@
     <ClInclude Include="MatrixIgnoreOrtho.h">
       <Filter>Direct3D9Vireio\ShaderConstantModification</Filter>
     </ClInclude>
-    <ClInclude Include="HMDisplayInfo.h" />
     <ClInclude Include="MatrixHudSquash.h">
       <Filter>Direct3D9Vireio\ShaderConstantModification</Filter>
+    </ClInclude>
+    <ClInclude Include="HMDisplayInfo.h">
+      <Filter>Direct3D9Vireio</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

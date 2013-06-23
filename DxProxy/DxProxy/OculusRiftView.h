@@ -26,8 +26,8 @@ class OculusRiftView : public StereoView
 {
 public:
 
-	OculusRiftView(ProxyHelper::ProxyConfig& config, HMDisplayInfo hmd);
-	//virtual ~OculusRiftView();
+	OculusRiftView(ProxyHelper::ProxyConfig& config, std::shared_ptr<HMDisplayInfo> hmd);
+	virtual ~OculusRiftView();
 	virtual void InitShaderEffects();
 
 	virtual void SetViewEffectInitialValues();
@@ -40,7 +40,7 @@ private:
 	float Scale[2];
 	float ScaleIn[2];
 
-	HMDisplayInfo hmdInfo;
+	std::shared_ptr<HMDisplayInfo> hmdInfo;
 };
 
 #endif

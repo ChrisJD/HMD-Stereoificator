@@ -20,7 +20,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "ViewAdjustment.h"
 
 
-ViewAdjustment::ViewAdjustment(HMDisplayInfo &displayInfo, float metersToWorldUnits, bool enableRoll) :
+ViewAdjustment::ViewAdjustment(std::shared_ptr<HMDisplayInfo> displayInfo, float metersToWorldUnits, bool enableRoll) :
 	hmdInfo(displayInfo),
 	metersToWorldMultiplier(metersToWorldUnits),
 	rollEnabled(enableRoll)
@@ -47,13 +47,14 @@ ViewAdjustment::ViewAdjustment(HMDisplayInfo &displayInfo, float metersToWorldUn
 	D3DXMatrixIdentity(&matViewProjTransformRight);
 	D3DXMatrixIdentity(&matViewProjTransformLeft);
 
-	UpdateProjectionMatrices(displayInfo.screenAspectRatio);
+	UpdateProjectionMatrices(hmdInfo->screenAspectRatio);
 	D3DXMatrixIdentity(&rollMatrix);
 	ComputeViewTransforms();
 }
 
 ViewAdjustment::~ViewAdjustment() 
 {
+	hmdInfo.reset();
 }
 
 void ViewAdjustment::Load(ProxyHelper::ProxyConfig& cfg) 
@@ -82,20 +83,9 @@ void ViewAdjustment::UpdateProjectionMatrices(float aspectRatio)
 	D3DXMatrixPerspectiveOffCenterLH(&matProjection, l, r, b, t, n, f);
 	D3DXMatrixInverse(&matProjectionInv, 0, &matProjection);
 
-
-	// Based on Rift docs way. //TODO still need to use the 'old way' (or something similar/different) for rendering on a monitor? needs testing
-	// if (HMD)
 	// The lensXCenterOffset is in the same -1 to 1 space as the perspective so shift by that amount to move projection in line with the lenses
-	D3DXMatrixTranslation(&leftShiftProjection, hmdInfo.lensXCenterOffset * LEFT_CONSTANT, 0, 0);
-	D3DXMatrixTranslation(&rightShiftProjection, hmdInfo.lensXCenterOffset * RIGHT_CONSTANT, 0, 0);
-	// else if desktop screen {}
-
-	// old way
-	//float adjustedFrustumOffsetLeft = convergence * LEFT_CONSTANT * 0.1f * separation;
-	//float adjustedFrustumOffsetRight = convergence * RIGHT_CONSTANT * 0.1f * separation;
-
-	//D3DXMatrixPerspectiveOffCenterLH(&reProjectLeft, l+adjustedFrustumOffsetLeft, r+adjustedFrustumOffsetLeft, b, t, n, f);
-	//D3DXMatrixPerspectiveOffCenterLH(&reProjectRight, l+adjustedFrustumOffsetRight, r+adjustedFrustumOffsetRight, b, t, n, f);
+	D3DXMatrixTranslation(&leftShiftProjection, hmdInfo->lensXCenterOffset * LEFT_CONSTANT, 0, 0);
+	D3DXMatrixTranslation(&rightShiftProjection, hmdInfo->lensXCenterOffset * RIGHT_CONSTANT, 0, 0);
 	
 	projectLeft = matProjection * leftShiftProjection;
 	projectRight = matProjection * rightShiftProjection;
@@ -111,10 +101,8 @@ void ViewAdjustment::UpdateRoll(float roll)
 
 void ViewAdjustment::ComputeViewTransforms()
 {
-	// if (HMD)
 	D3DXMatrixTranslation(&transformLeft, SeparationInWorldUnits() * LEFT_CONSTANT, 0, 0);
 	D3DXMatrixTranslation(&transformRight, SeparationInWorldUnits() * RIGHT_CONSTANT, 0, 0);
-	// else if desktop screen {}
 
 	D3DXMATRIX rollTransform;
 	D3DXMatrixIdentity(&rollTransform);
@@ -206,7 +194,7 @@ bool ViewAdjustment::RollEnabled()
 	return rollEnabled; 
 }
 
-HMDisplayInfo ViewAdjustment::HMDInfo()
+std::shared_ptr<HMDisplayInfo> ViewAdjustment::HMDInfo()
 {
 	return hmdInfo;
 }

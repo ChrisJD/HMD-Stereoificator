@@ -22,10 +22,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "D3DProxyDevice.h"
 
 
-OculusRiftView::OculusRiftView(ProxyHelper::ProxyConfig& config, HMDisplayInfo hmd) : StereoView(config),
+OculusRiftView::OculusRiftView(ProxyHelper::ProxyConfig& config, std::shared_ptr<HMDisplayInfo> hmd) : StereoView(config),
 	hmdInfo(hmd)
 {
 	OutputDebugString("Created OculusRiftView\n");
+}
+
+OculusRiftView::~OculusRiftView()
+{
+	hmdInfo.reset();
 }
 
 
@@ -49,7 +54,7 @@ void OculusRiftView::SetViewEffectInitialValues()
 	viewEffect->SetFloatArray("LensCenter", LensCenter, 2);
 	viewEffect->SetFloatArray("Scale", Scale, 2);
 	viewEffect->SetFloatArray("ScaleIn", ScaleIn, 2);
-	viewEffect->SetFloatArray("HmdWarpParam", hmdInfo.distortionCoefficients, 4);
+	viewEffect->SetFloatArray("HmdWarpParam", hmdInfo->distortionCoefficients, 4);
 }
 
 
@@ -58,7 +63,7 @@ void OculusRiftView::CalculateShaderVariables()
 {
 	// Center of half screen is 0.25 in x (halfscreen x input in 0 to 0.5 range)
 	// Lens offset is in a -1 to 1 range. Using in shader with a 0 to 0.5 range so use 25% of the value.
-	LensCenter[0] = 0.25f + (hmdInfo.lensXCenterOffset * 0.25f);
+	LensCenter[0] = 0.25f + (hmdInfo->lensXCenterOffset * 0.25f);
 	// Center of halfscreen range is 0.5 in y (halfscreen y input in 0 to 1 range)
 	LensCenter[1] = 0.5f; // lens is assumed to be vertically centered with respect to the screen.
 	
@@ -75,7 +80,7 @@ void OculusRiftView::CalculateShaderVariables()
 	// y is changed from 0 to 1 to 0 to 2 and scaled to account for aspect ratio
 	ScaleIn[1] = 2.0f / (inputTextureAspectRatio * 0.5f); // 1/2 aspect ratio for differing input ranges
 	
-	float scaleFactor = 1.0f / hmdInfo.scaleToFillHorizontal;
+	float scaleFactor = 1.0f / hmdInfo->scaleToFillHorizontal;
 
 	// Scale from 0 to 2 to 0 to 1  for x and y 
 	// Then use scaleFactor to fill horizontal space in line with the lens and adjust for aspect ratio for y.

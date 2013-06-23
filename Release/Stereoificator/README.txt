@@ -1,7 +1,7 @@
 ---------------------------------
 ////    HMD-Stereoificator, a fork of VIREIO PERCEPTION    ////
 ---------------------------------
-This ALPHA quality software. Expect many bugs and problems. There are many things that are in worse shape than the current Vireio release. For example, Skyrim doesn't work at all currently with this fork.
+ALPHA quality software. Expect many bugs and problems. There are many things that are in worse shape than the current Vireio release. For example, Skyrim doesn't work at all currently with this fork.
 
 - DO NOT USE ONLINE with any game that has cheat prevention (VAC, Punkbuster, any mmo, etc) since the driver could be detected as a hack which may get you banned.
 
@@ -9,10 +9,10 @@ This ALPHA quality software. Expect many bugs and problems. There are many thing
 What's in it
 ---------------------------------
 The core change in this fork is a near total rewrite of the rendering system so that both eyes are rendered every frame, this is significantly more complicated and there are still plenty of bugs to fix. The performance hit for this varies between hardware and games, it can be worse than 50% (of non-stereo frame rate) and it can be better. For example I get 65-70% of mono performance in HL2, but experimenting with Dead Rising 2 I was getting 35-40% of mono fps.
+
 This fork is also focusing on Head Mounted Display (HMD) support and all other stereo modes except side-by-side (which remains for testing purposes only and will not function well as a 3D mode as it is missing needed adjustments) have been removed.
-A lot of the manual configuration of settings has been rendered unnecessary by updating the calculations to match the hardware optics in the same way the LibOVR SDK from Oculus works. 
-All that should be required after the games settings are configured ('correct' fov is very important) is to adjust the eye separation using the f2/f3 keys while playing to somewhere that "feels right". This is still not ideal but it's workable and simpler to use.
-The quality of the default values (which are intended for 64mm IPD) varies quite a bit depending on what can be found in-game to be used to determine the approximate world scale.
+
+A lot of the manual configuration of settings has been rendered unnecessary by updating the calculations to match the hardware optics in the same way the LibOVR SDK from Oculus works. All that should be required after the games settings are configured ('correct' fov is very important) is to adjust the eye separation using the f2/f3 keys while playing to somewhere that "feels right". This is still not ideal but it's workable and simpler to use. The quality of the default values (which are intended for 64mm IPD) varies quite a bit depending on what can be found in-game to be used to determine the approximate world scale.
 
 
 HOT-KEYS:
@@ -104,7 +104,8 @@ Launch game via Borderlands2.exe (don't launch through Steam)
 
 
 EGO Engine games:
-The FoV needs to be changed in the car configuration files. The easiest way to make the change is to go and get the fov changer utility from http://www.nogripracing.com/forum/showpost.php?p=1382564&postcount=18 (you'll need to register with the forum to be able to download it). You probably want to make a backup of the car files (easiest just to backup the entire game directory) before making any changes. I only change the cockpit fov as that's the only place I want to play from.
+I recommend using one of the opentrack builds in this post: http://www.mtbs3d.com/phpBB/viewtopic.php?f=141&t=17594 for the motion tracking. Just set HMD Stereoificator's tracking setting to "no tracking" while using opentrack. It injects the tracking data into the game via the trackir interface which is much better way to go than mouse emulation, and if you have a hydra to strap to your head you get 6DOF.
+The FoV needs to be changed in the car configuration files. The easiest way to make the change is to go and get the fov changer utility from http://www.nogripracing.com/forum/showpost.php?p=1382564&postcount=18 (you'll need to register with the forum to be able to download it). It works with all the EGO games listed here, just point it to the games directroy. You probably want to make a backup of the car files (easiest just to backup the entire game directory) before making any changes. I only change the cockpit fov as that's the only place I want to play from.
 DirectX9 mode needs to be forced if you have a 10/11 card for all EGO games (except possibly GRID?). DirectX9 is forced in the configuration file "My Documents\My Games\GAME_NAME\hardwaresettings\hardware_settings_config.xml" where GAME_NAME is DiRT2, DiRT3, FormulaOne
 Shadows need to be on the lowest setting without turning them off (all though you can turn them off if you want).
 Disable all HUD elements.

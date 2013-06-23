@@ -47,6 +47,7 @@ public:
 		float worldScaleFactor; // mm * worldScaleFactor = mm in game units
 		bool rollEnabled;
 		std::string shaderRulePath; // full path of shader rules for this game
+		float horizontalGameFov; // The horizontal FoV in degrees that the game is set to render
 
 		float ipd; // in mm
 

@@ -58,7 +58,7 @@ D3DProxyDevice::D3DProxyDevice(IDirect3DDevice9* pDevice, BaseDirect3D9* pCreate
 {
 	OutputDebugString("D3D ProxyDev Created\n");
 
-	HMDisplayInfo defaultInfo; // rift info
+	std::shared_ptr<HMDisplayInfo> defaultInfo = std::make_shared<HMDisplayInfo>(); // rift info
 	m_spShaderViewAdjustment = std::make_shared<ViewAdjustment>(defaultInfo, 1.0f, false);
 
 	m_pGameHandler = new GameHandler();
@@ -161,6 +161,8 @@ void D3DProxyDevice::Init(ProxyHelper::ProxyConfig& cfg)
 	sprintf_s(buf, "type: %d, aspect: %f\n", config.game_type, config.aspect_multiplier);
 	psz = buf;
 	OutputDebugString(psz);
+
+	m_spShaderViewAdjustment->HMDInfo()->UpdateScale(config.horizontalGameFov);
 	
 	m_spShaderViewAdjustment->Load(config);
 	m_pGameHandler->Load(config, m_spShaderViewAdjustment);
@@ -1898,8 +1900,8 @@ HRESULT WINAPI D3DProxyDevice::Present(CONST RECT* pSourceRect,CONST RECT* pDest
 		//TODO doesn't currently work with source based games
 		int width = stereoView->viewport.Width;
 		int height = stereoView->viewport.Height;
-		ClearVLine(getActual(), (int)(m_spShaderViewAdjustment->HMDInfo().LeftLensCenterAsPercentage() * width), 0, (int)(m_spShaderViewAdjustment->HMDInfo().LeftLensCenterAsPercentage() * width) + 1, height, 1, D3DCOLOR_ARGB(255,255,0,0));
-		ClearVLine(getActual(), (int)((1 - m_spShaderViewAdjustment->HMDInfo().LeftLensCenterAsPercentage()) * width), 0, (int)((1 - m_spShaderViewAdjustment->HMDInfo().LeftLensCenterAsPercentage()) * width) + 1, height, 1, D3DCOLOR_ARGB(255,255,0,0));
+		ClearVLine(getActual(), (int)(m_spShaderViewAdjustment->HMDInfo()->LeftLensCenterAsPercentage() * width), 0, (int)(m_spShaderViewAdjustment->HMDInfo()->LeftLensCenterAsPercentage() * width) + 1, height, 1, D3DCOLOR_ARGB(255,255,0,0));
+		ClearVLine(getActual(), (int)((1 - m_spShaderViewAdjustment->HMDInfo()->LeftLensCenterAsPercentage()) * width), 0, (int)((1 - m_spShaderViewAdjustment->HMDInfo()->LeftLensCenterAsPercentage()) * width) + 1, height, 1, D3DCOLOR_ARGB(255,255,0,0));
 	}
 
 	return BaseDirect3DDevice9::Present(pSourceRect, pDestRect, hDestWindowOverride, pDirtyRegion);

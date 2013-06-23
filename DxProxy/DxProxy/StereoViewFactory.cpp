@@ -19,7 +19,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "StereoViewFactory.h"
 #include "OculusRiftView.h"
 
-StereoView* StereoViewFactory::Get(ProxyHelper::ProxyConfig& config, HMDisplayInfo hmd)
+StereoView* StereoViewFactory::Get(ProxyHelper::ProxyConfig& config, std::shared_ptr<HMDisplayInfo> hmd)
 {
 	switch(config.stereo_mode)
 	{

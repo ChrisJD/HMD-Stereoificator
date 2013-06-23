@@ -25,7 +25,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 class StereoViewFactory
 {
 public:
-	static StereoView* Get(ProxyHelper::ProxyConfig& config, HMDisplayInfo hmd);
+	static StereoView* Get(ProxyHelper::ProxyConfig& config, std::shared_ptr<HMDisplayInfo> hmd);
 };
 
 #endif

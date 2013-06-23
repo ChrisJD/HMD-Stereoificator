@@ -37,7 +37,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 class ViewAdjustment
 {
 public:	
-	ViewAdjustment(HMDisplayInfo &hmdInfo, float metersToWorldUnits, bool enableRoll);
+	ViewAdjustment(std::shared_ptr<HMDisplayInfo> hmdInfo, float metersToWorldUnits, bool enableRoll);
 	virtual ~ViewAdjustment();
 
 	void Load(ProxyHelper::ProxyConfig& cfg);
@@ -82,7 +82,7 @@ public:
 
 	bool RollEnabled();
 
-	HMDisplayInfo HMDInfo();
+	std::shared_ptr<HMDisplayInfo> HMDInfo();
 	
 
 private:
@@ -122,7 +122,7 @@ private:
 	D3DXMATRIX matViewProjTransformLeft;
 	D3DXMATRIX matViewProjTransformRight;
 
-	HMDisplayInfo hmdInfo;
+	std::shared_ptr<HMDisplayInfo> hmdInfo;
 
 	bool rollEnabled;
 	float metersToWorldMultiplier;

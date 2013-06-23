@@ -23,7 +23,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "d3dx9.h"
 #include <utility>
 #include <sstream>
+#include <math.h>
 
+#define HMD_PI 3.14159265
 
 
 struct HMDisplayInfo
@@ -59,7 +61,7 @@ public:
 		// by the image. -1 is the left edge of the -1 to 1 range and it is adjusted for the lens center offset (note that this needs
 		// adjusting if the lens is also offset vertically, See: StereoConfig::updateDistortionOffsetAndScale in LibOVR for an example
 		// of how to do this)
-		scaleToFillHorizontal = Distort(-1 - lensXCenterOffset) / (-1 - lensXCenterOffset);
+		UpdateScale(-1);
 
 		std::stringstream sstm;
 		sstm << "scaleToFillHorizontal: " << scaleToFillHorizontal << std::endl;
@@ -71,6 +73,24 @@ public:
 	{
 		return ((physicalScreenSize.first / 2.0f) - (physicalLensSeparation / 2.0f)) / (physicalScreenSize.first);
 	}
+
+	// Updates the scale so that the view matches the specified fov.
+	// hFovInDegrees <= 0 will be treated as "scale to fill horizontal"
+	void UpdateScale(float hFovInDegrees)
+	{
+		float leftLimitInClipCoords = -1;
+		if (hFovInDegrees > 0) {
+			
+			float halfPhysicalScreenSize = physicalScreenSize.first / 2.0f;
+			float halfLensSeparation = physicalLensSeparation / 2.0f;
+			float lensCenterDistanceFromLeftEdge = halfPhysicalScreenSize - halfLensSeparation;
+			float physicalDistanceOfLeftviewEdgeFromLens = (float)tan((hFovInDegrees / 2.0f) * HMD_PI / 180.0f) * eyeToScreenDistance;
+			leftLimitInClipCoords = -physicalDistanceOfLeftviewEdgeFromLens / lensCenterDistanceFromLeftEdge;
+		}
+
+		scaleToFillHorizontal = Distort(leftLimitInClipCoords - lensXCenterOffset) / (leftLimitInClipCoords - lensXCenterOffset);
+	}
+
 
 #pragma warning( pop )
 
