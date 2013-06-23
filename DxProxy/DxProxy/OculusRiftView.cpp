@@ -31,8 +31,7 @@ OculusRiftView::OculusRiftView(ProxyHelper::ProxyConfig& config, HMDisplayInfo h
 
 void OculusRiftView::InitShaderEffects()
 {
-	shaderEffect[OCULUS_RIFT] = "OculusRift.fx";
-	shaderEffect[OCULUS_RIFT_CROPPED] = "OculusRiftCropped.fx";
+	shaderEffect[OCULUS_RIFT] = "HMDBarrel.fx";
 
 	char viewPath[512];
 	ProxyHelper helper = ProxyHelper();

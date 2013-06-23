@@ -96,18 +96,8 @@ void StereoView::Init(IDirect3DDevice9* pActualDevice)
 
 void StereoView::InitShaderEffects()
 {
-	shaderEffect[ANAGLYPH_RED_CYAN] = "AnaglyphRedCyan.fx";
-	shaderEffect[ANAGLYPH_RED_CYAN_GRAY] = "AnaglyphRedCyanGray.fx";
-	shaderEffect[ANAGLYPH_YELLOW_BLUE] = "AnaglyphYellowBlue.fx";
-	shaderEffect[ANAGLYPH_YELLOW_BLUE_GRAY] = "AnaglyphYellowBlueGray.fx";
-	shaderEffect[ANAGLYPH_GREEN_MAGENTA] = "AnaglyphGreenMagenta.fx";
-	shaderEffect[ANAGLYPH_GREEN_MAGENTA_GRAY] = "AnaglyphGreenMagentaGray.fx";
+	
 	shaderEffect[SIDE_BY_SIDE] = "SideBySide.fx";
-	shaderEffect[DIY_RIFT] = "SideBySideRift.fx";
-	shaderEffect[OVER_UNDER] = "OverUnder.fx";
-	shaderEffect[INTERLEAVE_HORZ] = "InterleaveHorz.fx";
-	shaderEffect[INTERLEAVE_VERT] = "InterleaveVert.fx";
-	shaderEffect[CHECKERBOARD] = "Checkerboard.fx";
 
 	char viewPath[512];
 	ProxyHelper helper = ProxyHelper();
@@ -140,19 +130,13 @@ void StereoView::InitTextureBuffers()
 	wsprintf(buf,"bb w: %d",pDesc.Width);
 	psz = buf;
 	OutputDebugString(psz);
-	OutputDebugString("\n");
+	OutputDebugString("\n");*/
 
-	m_pActualDevice->CreateOffscreenPlainSurface(pDesc.Width, pDesc.Height, pDesc.Format, D3DPOOL_SYSTEMMEM, &leftSurface, NULL);*/
 	m_pActualDevice->CreateTexture(pDesc.Width, pDesc.Height, 0, D3DUSAGE_RENDERTARGET, pDesc.Format, D3DPOOL_DEFAULT, &leftTexture, NULL);
 	leftTexture->GetSurfaceLevel(0, &leftSurface);
 
-	//m_pActualDevice->CreateOffscreenPlainSurface(pDesc.Width, pDesc.Height, pDesc.Format, D3DPOOL_SYSTEMMEM, &rightSurface, NULL);
 	m_pActualDevice->CreateTexture(pDesc.Width, pDesc.Height, 0, D3DUSAGE_RENDERTARGET, pDesc.Format, D3DPOOL_DEFAULT, &rightTexture, NULL);
 	rightTexture->GetSurfaceLevel(0, &rightSurface);
-
-	/*m_pActualDevice->CreateOffscreenPlainSurface(pDesc.Width, pDesc.Height, pDesc.Format, D3DPOOL_SYSTEMMEM, &screenSurface, NULL);
-	m_pActualDevice->CreateTexture(pDesc.Width, pDesc.Height, 0, D3DUSAGE_RENDERTARGET, pDesc.Format, D3DPOOL_DEFAULT, &screenTexture, NULL);
-	screenTexture->GetSurfaceLevel(0, &screenSurface);*/
 }
 
 void StereoView::InitVertexBuffers()
@@ -406,7 +390,7 @@ void StereoView::Draw(D3D9ProxySurface* stereoCapableSurface)
 
 	// TODO figure out HL2 problem. This is a workaround for now
 	// Problem: Using StateBlock to save and restore causes the world in HL2 to scale up and down constantly
-	// This only effects HL2 (but all source games are using the l4d profile).
+	// This only effects HL2 (but all source games are using the l4d profile and I believe it produces the reflection problem on the water in dead esther).
 	// Possbile fix: Use a more discriminant stateblock to save only what is being modified
 	if(game_type == D3DProxyDevice::SOURCE_L4D)
 	{
@@ -415,7 +399,6 @@ void StereoView::Draw(D3D9ProxySurface* stereoCapableSurface)
 	else {
 		m_pActualDevice->CreateStateBlock(D3DSBT_ALL, &sb);
 	}
-
 
 
 	SetState();

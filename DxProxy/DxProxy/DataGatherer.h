@@ -1,5 +1,5 @@
 /********************************************************************
-Vireio Perception: Open-Source Stereoscopic 3D Driver
+HMD-Stereoificator
 Copyright (C) 2013 Chris Drain
 
 This program is free software: you can redistribute it and/or modify

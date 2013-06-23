@@ -58,9 +58,6 @@
     <ClCompile Include="StereoView.cpp">
       <Filter>Stereo</Filter>
     </ClCompile>
-    <ClCompile Include="StereoViewInterleave.cpp">
-      <Filter>Stereo</Filter>
-    </ClCompile>
     <ClCompile Include="FreeSpaceTracker.cpp">
       <Filter>Tracking</Filter>
     </ClCompile>
@@ -195,32 +192,35 @@
     <None Include="Exports.def">
       <Filter>Main</Filter>
     </None>
-    <None Include="SideBySideRiftPartialCrop.fx">
+    <None Include="..\..\Release\Stereoificator\cfg\shader_rules\borderlands2.xml">
+      <Filter>cfg\shader_rules</Filter>
+    </None>
+    <None Include="..\..\Release\Stereoificator\cfg\shader_rules\ego.xml">
+      <Filter>cfg\shader_rules</Filter>
+    </None>
+    <None Include="..\..\Release\Stereoificator\cfg\shader_rules\example.xml">
+      <Filter>cfg\shader_rules</Filter>
+    </None>
+    <None Include="..\..\Release\Stereoificator\cfg\shader_rules\omd2.xml">
+      <Filter>cfg\shader_rules</Filter>
+    </None>
+    <None Include="..\..\Release\Stereoificator\cfg\shader_rules\rfactor.xml">
+      <Filter>cfg\shader_rules</Filter>
+    </None>
+    <None Include="..\..\Release\Stereoificator\cfg\shader_rules\serious3.xml">
+      <Filter>cfg\shader_rules</Filter>
+    </None>
+    <None Include="..\..\Release\Stereoificator\cfg\shader_rules\source.xml">
+      <Filter>cfg\shader_rules</Filter>
+    </None>
+    <None Include="..\..\Release\Stereoificator\cfg\shader_rules\unreal.xml">
+      <Filter>cfg\shader_rules</Filter>
+    </None>
+    <None Include="..\..\Release\Stereoificator\fx\HMDBarrel.fx">
       <Filter>fx</Filter>
     </None>
-    <None Include="..\..\Release\Perception\cfg\shader_rules\source.xml">
-      <Filter>cfg\shader_rules</Filter>
-    </None>
-    <None Include="..\..\Release\Perception\cfg\shader_rules\example.xml">
-      <Filter>cfg\shader_rules</Filter>
-    </None>
-    <None Include="..\..\Release\Perception\cfg\shader_rules\ego.xml">
-      <Filter>cfg\shader_rules</Filter>
-    </None>
-    <None Include="..\..\Release\Perception\cfg\shader_rules\unreal.xml">
-      <Filter>cfg\shader_rules</Filter>
-    </None>
-    <None Include="..\..\Release\Perception\cfg\shader_rules\rfactor.xml">
-      <Filter>cfg\shader_rules</Filter>
-    </None>
-    <None Include="..\..\Release\Perception\cfg\shader_rules\borderlands2.xml">
-      <Filter>cfg\shader_rules</Filter>
-    </None>
-    <None Include="..\..\Release\Perception\cfg\shader_rules\omd2.xml">
-      <Filter>cfg\shader_rules</Filter>
-    </None>
-    <None Include="..\..\Release\Perception\cfg\shader_rules\serious3.xml">
-      <Filter>cfg\shader_rules</Filter>
+    <None Include="..\..\Release\Stereoificator\fx\SideBySide.fx">
+      <Filter>fx</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
@@ -234,9 +234,6 @@
       <Filter>Stereo</Filter>
     </ClInclude>
     <ClInclude Include="StereoViewFactory.h">
-      <Filter>Stereo</Filter>
-    </ClInclude>
-    <ClInclude Include="StereoViewInterleave.h">
       <Filter>Stereo</Filter>
     </ClInclude>
     <ClInclude Include="FreeSpaceTracker.h">
@@ -401,55 +398,13 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <CustomBuild Include="..\..\Release\Perception\cfg\profiles.xml">
+    <CustomBuild Include="..\..\Release\Stereoificator\cfg\config.xml">
       <Filter>cfg</Filter>
     </CustomBuild>
-    <CustomBuild Include="..\..\Release\Perception\cfg\config.xml">
+    <CustomBuild Include="..\..\Release\Stereoificator\cfg\profiles.xml">
       <Filter>cfg</Filter>
     </CustomBuild>
-    <CustomBuild Include="..\..\Release\Perception\fx\SideBySide.fx">
-      <Filter>fx</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\..\Release\Perception\fx\OverUnder.fx">
-      <Filter>fx</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\..\Release\Perception\fx\InterleaveVert.fx">
-      <Filter>fx</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\..\Release\Perception\fx\InterleaveHorz.fx">
-      <Filter>fx</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\..\Release\Perception\fx\Checkerboard.fx">
-      <Filter>fx</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\..\Release\Perception\fx\AnaglyphYellowBlueGray.fx">
-      <Filter>fx</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\..\Release\Perception\fx\AnaglyphYellowBlue.fx">
-      <Filter>fx</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\..\Release\Perception\fx\AnaglyphRedCyanGray.fx">
-      <Filter>fx</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\..\Release\Perception\fx\AnaglyphRedCyan.fx">
-      <Filter>fx</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\..\Release\Perception\fx\AnaglyphGreenMagentaGray.fx">
-      <Filter>fx</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\..\Release\Perception\fx\SideBySideRift.fx">
-      <Filter>fx</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\..\Release\Perception\fx\AnaglyphGreenMagenta.fx">
-      <Filter>fx</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\..\Release\Perception\fx\OculusRift.fx">
-      <Filter>fx</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\..\Release\Perception\fx\OculusRiftCropped.fx">
-      <Filter>fx</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\..\Release\Perception\cfg\users.xml">
+    <CustomBuild Include="..\..\Release\Stereoificator\cfg\users.xml">
       <Filter>cfg</Filter>
     </CustomBuild>
   </ItemGroup>

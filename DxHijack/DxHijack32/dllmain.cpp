@@ -208,7 +208,7 @@ void ParsePaths()
 void SaveExeName(char* data)
 {
 	HKEY hKey;
-    LPCTSTR sk = TEXT("SOFTWARE\\Vireio\\Perception");
+    LPCTSTR sk = TEXT("SOFTWARE\\Stereoificator\\Stereoificator");
 
     LONG openRes = RegOpenKeyEx(HKEY_CURRENT_USER, sk, 0, KEY_ALL_ACCESS , &hKey);
 

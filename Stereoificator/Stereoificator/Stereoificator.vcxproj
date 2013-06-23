@@ -11,9 +11,9 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{4941495B-2BB1-4A79-BDC9-09635D57F93C}</ProjectGuid>
+    <ProjectGuid>{9222EFCE-9B7D-4D06-9085-90B32FEB5285}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
-    <RootNamespace>Perception</RootNamespace>
+    <RootNamespace>Stereoificator</RootNamespace>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -40,12 +40,12 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
     <PostBuildEventUseInBuild>false</PostBuildEventUseInBuild>
-    <OutDir>$(SolutionDir)$(Configuration)\Perception\bin\</OutDir>
+    <OutDir>$(SolutionDir)$(Configuration)\Stereoificator\bin\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
     <PostBuildEventUseInBuild>false</PostBuildEventUseInBuild>
-    <OutDir>$(SolutionDir)$(Configuration)\Perception\bin\</OutDir>
+    <OutDir>$(SolutionDir)$(Configuration)\Stereoificator\bin\</OutDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -63,7 +63,7 @@
       <AdditionalDependencies>hijackdll.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>copy /Y "$(TargetPath)" "C:\Program Files (x86)\Vireio\Perception\bin\$(TargetName)$(TargetExt)"</Command>
+      <Command>copy /Y "$(TargetPath)" "C:\Program Files (x86)\Stereoificator\Stereoificator\bin\$(TargetName)$(TargetExt)"</Command>
     </PostBuildEvent>
     <PreBuildEvent>
       <Command>
@@ -95,7 +95,7 @@
       <ProgramDatabaseFile>$(IntDir)$(TargetName).pdb</ProgramDatabaseFile>
     </Link>
     <PostBuildEvent>
-      <Command>copy /Y "$(TargetPath)" "C:\Program Files (x86)\Vireio\Perception\bin\$(TargetName)$(TargetExt)"</Command>
+      <Command>copy /Y "$(TargetPath)" "C:\Program Files (x86)\Stereoificator\Stereoificator\bin\$(TargetName)$(TargetExt)"</Command>
     </PostBuildEvent>
     <PreBuildEvent>
       <Command>
@@ -121,12 +121,12 @@
     <ResourceCompile Include="app.rc" />
   </ItemGroup>
   <ItemGroup>
-    <CustomBuild Include="..\..\Release\Perception\img\logo.bmp">
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">xcopy "%(fullpath)" "$(SolutionDir)$(Configuration)\Perception\img\" /Y</Command>
+    <CustomBuild Include="..\..\Release\Stereoificator\img\logo.bmp">
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">xcopy "%(fullpath)" "$(SolutionDir)$(Configuration)\Stereoificator\img\" /Y</Command>
       <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Copying image file from Release to $(Configuration)</Message>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(SolutionDir)$(Configuration)\Perception\img\%(filename).bmp</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(SolutionDir)$(Configuration)\Stereoificator\img\%(filename).bmp</Outputs>
     </CustomBuild>
-    <None Include="..\..\Release\Perception\README.txt" />
+    <None Include="..\..\Release\Stereoificator\README.txt" />
     <None Include="icons\app.ico" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

@@ -1,5 +1,5 @@
 /********************************************************************
-Vireio Perception: Open-Source Stereoscopic 3D Driver
+HMD-Stereoificator
 Copyright (C) 2013 Chris Drain
 
 This program is free software: you can redistribute it and/or modify
@@ -66,7 +66,7 @@ HRESULT WINAPI DataGatherer::CreateVertexShader(CONST DWORD* pFunction,IDirect3D
 			pActualShader->GetFunction(pData, &pSizeOfData);
 
 			uint32_t hash = 0;
-			MurmurHash3_x86_32(pData, pSizeOfData, VIREIO_SEED, &hash);
+			MurmurHash3_x86_32(pData, pSizeOfData, SEED, &hash);
 
 			D3DXGetShaderConstantTable(reinterpret_cast<DWORD*>(pData), &pConstantTable);
 			

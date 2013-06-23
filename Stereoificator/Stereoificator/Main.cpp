@@ -185,7 +185,7 @@ public:
 		RegisterClass(&window_class);   
 		window_handle = CreateWindowEx(WS_EX_WINDOWEDGE | WS_EX_CLIENTEDGE,    
 			window_class_name,    
-			"Vireio Perception", 
+			"HMD Stereoificator", 
 			WS_OVERLAPPEDWINDOW & ~(WS_THICKFRAME | WS_MAXIMIZEBOX), 
 			//WS_OVERLAPPEDWINDOW | WS_CLIPCHILDREN | WS_CLIPSIBLINGS,   
 			(screen_width-482)/2, (screen_height-180)/2, 
@@ -328,13 +328,13 @@ int WINAPI wWinMain(HINSTANCE instance_handle, HINSTANCE, LPWSTR, INT) {
 	InitModes();
 	InstallHook();
 
-    frame_window main_window("perception");
-    main_window.add_item("Disabled\t0");
-    main_window.add_item("DIY Rift\t25");
+    frame_window main_window("stereoification");
+    //main_window.add_item("Disabled\t0");
+    //main_window.add_item("DIY Rift\t25");
     main_window.add_item("Oculus Rift\t26");
-    main_window.add_item("Oculus Rift Cropped\t27");
+    //main_window.add_item("Oculus Rift Cropped\t27");
 	main_window.add_item("Side by Side\t20");
-	main_window.add_item("Over Under\t30");
+	/*main_window.add_item("Over Under\t30");
 	main_window.add_item("Horizontal Interleave\t40");
 	main_window.add_item("Vertical Interleave\t50");
 	main_window.add_item("Checkerboard\t60");
@@ -343,7 +343,7 @@ int WINAPI wWinMain(HINSTANCE instance_handle, HINSTANCE, LPWSTR, INT) {
 	main_window.add_item("Anaglyph (Yellow/Blue)\t5");
 	main_window.add_item("Anaglyph (Yellow/Blue) B+W\t6");
 	main_window.add_item("Anaglyph (Green/Magenta)\t10");
-	main_window.add_item("Anaglyph (Green/Magenta) B+W\t11");
+	main_window.add_item("Anaglyph (Green/Magenta) B+W\t11");*/
 
 	main_window.add_item2("No Tracking\t0");
 	main_window.add_item2("Hillcrest Labs\t10");
@@ -374,7 +374,7 @@ bool InitConfig(void)
 	OutputDebugString("\n");
 
 	HKEY hKey;
-	LPCTSTR sk = TEXT("SOFTWARE\\Vireio\\Perception");
+	LPCTSTR sk = TEXT("SOFTWARE\\Stereoificator\\Stereoificator");
 
 	LONG createRes = RegCreateKeyEx(HKEY_CURRENT_USER, sk, 0, NULL, 0, 0, NULL, &hKey, NULL);
 
@@ -450,7 +450,7 @@ std::string getCurrentPath(void)
 		return false;
 
 	std::string pathName = std::string(fullPath);
-	std::string exeName = "bin\\Perception.exe";
+	std::string exeName = "bin\\Stereoificator.exe";
 	std::string basePath = "";
 	size_t found = pathName.find(exeName);
 

@@ -1,6 +1,8 @@
 /********************************************************************
 Vireio Perception: Open-Source Stereoscopic 3D Driver
 Copyright (C) 2012 Andres Hernandez
+
+HMD-Stereoificator
 Modifications Copyright (C) 2013 Chris Drain
 
 This program is free software: you can redistribute it and/or modify
@@ -388,7 +390,7 @@ void D3DProxyDevice::HandleControls()
 	//float keySpeed = 0.00002f;
 	float seperationChange = 0.001f; // 1 mm
 	//float keySpeed2 = 0.0005f;
-	//float mouseSpeed = 0.25f;
+	float mouseSpeed = 0.25f;
 	float rollSpeed = 0.01f;
 
 	
@@ -401,7 +403,7 @@ void D3DProxyDevice::HandleControls()
 	saveWaitCount--;
 	static bool doSaveNext = false;
 
-		if (!keyWait) {
+	if (!keyWait) {
 		/*
 		if(KEY_DOWN(VK_NUMPAD0))		// turn on/off stereo3D
 		{
@@ -415,112 +417,8 @@ void D3DProxyDevice::HandleControls()
 			}
 
 			anyKeyPressed = true;
-		}
-
-	//////////  SHOCT non numpad
-		if(KEY_DOWN(0x4F))// VK_KEY_O
-		{
-			centerlineL  -= keySpeed/2.0f;
-			saveWaitCount = 500;
-			doSaveNext = true;
-			anyKeyPressed = true;
-		}
-		if(KEY_DOWN(0x50))// VK_KEY_P
-		{
-			centerlineL  += keySpeed/2.0f;
-			saveWaitCount = 500;
-			doSaveNext = true;
-			anyKeyPressed = true;
-		}
-
-		if(KEY_DOWN(0x4B))//VK_KEY_K
-		{
-			centerlineR  -= keySpeed/2.0f;
-			saveWaitCount = 500;
-			doSaveNext = true;
-			anyKeyPressed = true;
-		}
-		if(KEY_DOWN(0x4C))//VK_KEY_L
-		{
-			centerlineR  += keySpeed/2.0f;
-			saveWaitCount = 500;
-			doSaveNext = true;
-			anyKeyPressed = true;
-		}
-
-		if(KEY_DOWN(0x49) && KEY_DOWN(VK_CONTROL))//VK_KEY_I		// Schneider-Hicks VR Calibration Tool
-		{
-			if(keyWaitCount <= 0)
-			{
-				SHOCT_mode++;
-				SHOCT_mode %= 3;
-				if(SHOCT_mode == 0){//off
-					trackingOn = true;
-				}
-				if(SHOCT_mode == 1){// seperation
-					trackingOn = false;
-				}
-				if(SHOCT_mode == 2){// convergence
-					trackingOn = false;
-				}
-				keyWaitCount = 50;
-			}
-
-			anyKeyPressed = true;
-		}
-	//////////
-
-	//////////  SHOCT numpad
-		if(KEY_DOWN(VK_NUMPAD1))
-		{
-			centerlineL  -= keySpeed/2.0f;
-			saveWaitCount = 500;
-			doSaveNext = true;
-			anyKeyPressed = true;
-		}
-		if(KEY_DOWN(VK_NUMPAD2))
-		{
-			centerlineL  += keySpeed/2.0f;
-			saveWaitCount = 500;
-			doSaveNext = true;
-			anyKeyPressed = true;
-		}
-
-		if(KEY_DOWN(VK_NUMPAD4))
-		{
-			centerlineR  -= keySpeed/2.0f;
-			saveWaitCount = 500;
-			doSaveNext = true;
-			anyKeyPressed = true;
-		}
-		if(KEY_DOWN(VK_NUMPAD5))
-		{
-			centerlineR  += keySpeed/2.0f;
-			saveWaitCount = 500;
-			doSaveNext = true;
-			anyKeyPressed = true;
-		}
-
-		if(KEY_DOWN(VK_MULTIPLY) && KEY_DOWN(VK_SHIFT))		// Schneider-Hicks VR Calibration Tool
-		{
-			if(keyWaitCount <= 0)
-			{
-				SHOCT_mode++;
-				SHOCT_mode %= 3;
-				if(SHOCT_mode == 0){//off
-					trackingOn = true;
-				}
-				if(SHOCT_mode == 1){// seperation
-					trackingOn = false;
-				}
-				if(SHOCT_mode == 2){// convergence
-					trackingOn = false;
-				}
-				keyWaitCount = 50;
-			}
-			anyKeyPressed = true;
 		}*/
-	//////////
+
 
 		if(KEY_DOWN(VK_F1))
 		{
@@ -569,39 +467,13 @@ void D3DProxyDevice::HandleControls()
 			doSaveNext = true;
 			anyKeyPressed = true;
 		}
-		/*
+		
 		if(KEY_DOWN(VK_F6))
 		{
-			if(KEY_DOWN(VK_SHIFT))
-			{
-				separation = 0.0f;
-				convergence = 0.0f;
-				offset = 0.0f;
-				yaw_multiplier = 25.0f;
-				pitch_multiplier = 25.0f;
-				roll_multiplier = 1.0f;
-				//matrixIndex = 0;
-				saveWaitCount = 500;
-				doSaveNext = true;
-			}
-			else if(keyWaitCount <= 0)
-			{
-				stereoView->swap_eyes = !stereoView->swap_eyes;
-				keyWaitCount = 200;
-				saveWaitCount = 500;
-				doSaveNext = true;
-			}
-			anyKeyPressed = true;
-		}
-	
-		if(KEY_DOWN(VK_F7) && keyWaitCount <= 0)
-		{
-			matrixIndex++;
-			if(matrixIndex > 15) 
-			{
-				matrixIndex = 0;
-			}
-			keyWaitCount = 200;
+			stereoView->swapEyes = !stereoView->swapEyes;
+			saveWaitCount = 500;
+			doSaveNext = true;
+			
 			anyKeyPressed = true;
 		}
 
@@ -609,20 +481,20 @@ void D3DProxyDevice::HandleControls()
 		{
 			if(KEY_DOWN(VK_SHIFT))
 			{
-				pitch_multiplier -= mouseSpeed;
+				config.pitch_multiplier -= mouseSpeed;
 			}  
 			else if(KEY_DOWN(VK_CONTROL))
 			{
-				roll_multiplier -= rollSpeed;
+				config.roll_multiplier -= rollSpeed;
 			}  
 			else 
 			{
-				yaw_multiplier -= mouseSpeed;
+				config.yaw_multiplier -= mouseSpeed;
 			}
 
 			if(trackerInitialized && tracker->isAvailable())
 			{
-				tracker->setMultipliers(yaw_multiplier, pitch_multiplier, roll_multiplier);
+				tracker->setMultipliers(config.yaw_multiplier, config.pitch_multiplier, config.roll_multiplier);
 			}
 
 			saveWaitCount = 500;
@@ -633,25 +505,25 @@ void D3DProxyDevice::HandleControls()
 		{
 			if(KEY_DOWN(VK_SHIFT))
 			{
-				pitch_multiplier += mouseSpeed;
+				config.pitch_multiplier += mouseSpeed;
 			}  
 			else if(KEY_DOWN(VK_CONTROL))
 			{
-				roll_multiplier += rollSpeed;
+				config.roll_multiplier += rollSpeed;
 			}  
 			else 
 			{
-				yaw_multiplier += mouseSpeed;
+				config.yaw_multiplier += mouseSpeed;
 			}
 
 			if(trackerInitialized && tracker->isAvailable())
 			{
-				tracker->setMultipliers(yaw_multiplier, pitch_multiplier, roll_multiplier);
+				tracker->setMultipliers(config.yaw_multiplier, config.pitch_multiplier, config.roll_multiplier);
 			}
 			saveWaitCount = 500;
 			doSaveNext = true;
 			anyKeyPressed = true;
-		}*/
+		}
 		
 		if (anyKeyPressed) {
 			startTime = clock();

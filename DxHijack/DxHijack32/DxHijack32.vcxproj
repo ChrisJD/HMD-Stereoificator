@@ -64,10 +64,10 @@
       <ModuleDefinitionFile>hijackdll.def</ModuleDefinitionFile>
       <AdditionalDependencies>shlwapi.lib;d3d9.lib;libfreespace.lib;libovr.lib;Winmm.lib;DxErr.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(DXSDK_DIR)\Lib\x86;$(DX)\Lib\x86;$(FREESPACE)\lib;..\..\DxProxy\DxProxy\$(Configuration);..\..\LibOVR\Lib\Win32;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <OutputFile>$(SolutionDir)$(Configuration)\Perception\bin\$(TargetName)$(TargetExt)</OutputFile>
+      <OutputFile>$(SolutionDir)$(Configuration)\Stereoificator\bin\$(TargetName)$(TargetExt)</OutputFile>
     </Link>
     <PostBuildEvent>
-      <Command>copy /Y "$(TargetDir)hijackdll.dll" "C:\Program Files (x86)\Vireio\Perception\bin\hijackdll.dll"</Command>
+      <Command>copy /Y "$(TargetDir)hijackdll.dll" "C:\Program Files (x86)\Stereoificator\Stereoificator\bin\hijackdll.dll"</Command>
     </PostBuildEvent>
     <PreBuildEvent>
       <Command>
@@ -78,7 +78,7 @@
       </Message>
     </PreBuildEvent>
     <PreLinkEvent>
-      <Command>xcopy "$(SolutionDir)\Release\Perception\cfg\*.*" "$(SolutionDir)\$(Configuration)\Perception\cfg\" /S /Y</Command>
+      <Command>xcopy "$(SolutionDir)\Release\Stereoificator\cfg\*.*" "$(SolutionDir)\$(Configuration)\Stereoificator\cfg\" /S /Y</Command>
     </PreLinkEvent>
     <PreLinkEvent>
       <Message>Copy config xml files from Release  to $(Configuration)</Message>
@@ -103,10 +103,10 @@
       <ModuleDefinitionFile>hijackdll.def</ModuleDefinitionFile>
       <AdditionalDependencies>shlwapi.lib;d3d9.lib;libfreespace.lib;libovr.lib;Winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(DXSDK_DIR)\Lib\x86;$(DX)\Lib\x86;$(FREESPACE)\lib;..\..\DxProxy\DxProxy\$(Configuration);..\..\LibOVR\Lib\Win32;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <OutputFile>$(SolutionDir)$(Configuration)\Perception\bin\$(TargetName)$(TargetExt)</OutputFile>
+      <OutputFile>$(SolutionDir)$(Configuration)\Stereoificator\bin\$(TargetName)$(TargetExt)</OutputFile>
     </Link>
     <PostBuildEvent>
-      <Command>copy /Y "$(TargetDir)hijackdll.dll" "C:\Program Files (x86)\Vireio\Perception\bin\hijackdll.dll"</Command>
+      <Command>copy /Y "$(TargetDir)hijackdll.dll" "C:\Program Files (x86)\Stereoificator\Stereoificator\bin\hijackdll.dll"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -154,7 +154,6 @@
     <ClCompile Include="..\..\DxProxy\DxProxy\StereoBackbuffer.cpp" />
     <ClCompile Include="..\..\DxProxy\DxProxy\StereoView.cpp" />
     <ClCompile Include="..\..\DxProxy\DxProxy\StereoViewFactory.cpp" />
-    <ClCompile Include="..\..\DxProxy\DxProxy\StereoViewInterleave.cpp" />
     <ClCompile Include="..\..\DxProxy\DxProxy\ViewAdjustment.cpp" />
     <ClCompile Include="..\..\DxProxy\DxProxy\Vireio.cpp" />
     <ClCompile Include="apihijack.cpp" />
@@ -213,7 +212,6 @@
     <ClInclude Include="..\..\DxProxy\DxProxy\StereoShaderConstant.h" />
     <ClInclude Include="..\..\DxProxy\DxProxy\StereoView.h" />
     <ClInclude Include="..\..\DxProxy\DxProxy\StereoViewFactory.h" />
-    <ClInclude Include="..\..\DxProxy\DxProxy\StereoViewInterleave.h" />
     <ClInclude Include="..\..\DxProxy\DxProxy\Vec4SimpleTranslate.h" />
     <ClInclude Include="..\..\DxProxy\DxProxy\Vector4SimpleTranslate.h" />
     <ClInclude Include="..\..\DxProxy\DxProxy\ViewAdjustment.h" />

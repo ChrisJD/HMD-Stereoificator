@@ -54,7 +54,7 @@
     <None Include="..\..\Release\Perception\README.txt" />
   </ItemGroup>
   <ItemGroup>
-    <CustomBuild Include="..\..\Release\Perception\img\logo.bmp">
+    <CustomBuild Include="..\..\Release\Stereoification\img\logo.bmp">
       <Filter>img</Filter>
     </CustomBuild>
   </ItemGroup>

@@ -1,5 +1,5 @@
 /********************************************************************
-Vireio Perception: Open-Source Stereoscopic 3D Driver
+VHMD-Stereoificator
 Copyright (C) 2013 Chris Drain
 
 This program is free software: you can redistribute it and/or modify
@@ -157,7 +157,7 @@ std::map<UINT, StereoShaderConstant<float>> ShaderModificationRepository::GetMod
 	pActualVertexShader->GetFunction(pData,&pSizeOfData);
 
 	uint32_t hash;
-	MurmurHash3_x86_32(pData, pSizeOfData, VIREIO_SEED, &hash);
+	MurmurHash3_x86_32(pData, pSizeOfData, SEED, &hash);
 
 	if (m_shaderSpecificModificationRuleIDs.count(hash) == 1) {
 

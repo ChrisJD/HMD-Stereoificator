@@ -6,7 +6,7 @@
 #define _MURMURHASH3_H_
 
 // do not change
-#define VIREIO_SEED 12345
+#define SEED 12345
 
 #include <sstream>
 #include <iomanip>

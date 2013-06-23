@@ -36,7 +36,7 @@ char* ProxyHelper::GetBaseDir()
 	}
 
 	HKEY hKey;
-	LPCTSTR sk = TEXT("SOFTWARE\\Vireio\\Perception");
+	LPCTSTR sk = TEXT("SOFTWARE\\Stereoificator\\Stereoificator");
 
 	LONG openRes = RegOpenKeyEx(HKEY_CURRENT_USER, sk, 0, KEY_QUERY_VALUE , &hKey);
 
@@ -71,7 +71,7 @@ char* ProxyHelper::GetBaseDir()
 char* ProxyHelper::GetTargetExe()
 {
 	HKEY hKey;
-	LPCTSTR sk = TEXT("SOFTWARE\\Vireio\\Perception");
+	LPCTSTR sk = TEXT("SOFTWARE\\Stereoificator\\Stereoificator");
 
 	LONG openRes = RegOpenKeyEx(HKEY_CURRENT_USER, sk, 0, KEY_QUERY_VALUE , &hKey);
 
@@ -84,7 +84,7 @@ char* ProxyHelper::GetTargetExe()
 		OutputDebugString("PxHelp TE: Error opening key.\n");
 		return "";
 	}
-
+	 
 	HRESULT hr = RegGetString(hKey, TEXT("TargetExe"), &targetExe);
 	if (FAILED(hr)) 
 	{

@@ -1,5 +1,5 @@
 ---------------------------------
-////    VIREIO PERCEPTION    ////
+////    HMD-Stereoificator, a fork of VIREIO PERCEPTION    ////
 ---------------------------------
 
 BUILD INSTRUCTIONS:
@@ -23,7 +23,7 @@ Create environment variables:
 	FREESPACE : The folder for libfreespace (Hillcrest Labs SDK).
 	DXSDK_DIR : Your DirectX SDK folder (already set automatically by the June 2010 DirectX SDK)
 
-Open the VireioPerception.sln solution file. It contains all the projects with their dependencies set correctly. 
+Open the HMD-Stereoificator.sln solution file. It contains all the projects with their dependencies set correctly. 
 Choose either Debug or Release. 
 Either Run or Build the solution.
 It should just work.
@@ -41,7 +41,6 @@ It makes sense to work with the DxProxy project mainly. The DxProxy project is t
 
 The DxHijack project helps us to inject our modified dll into games, without having to place the proxy "d3d9.dll" file in the game folder (though some games don't work with this method, so we still have to copy the dll over as a last resort). 
 
-The Perception project is the GUI interface for the app. You probably will not need to touch this unless you are adding new options to the menu (ie a new tracking device).
+The Stereoificator project is the GUI interface for the app. You probably will not need to touch this unless you are adding new options to the menu (ie a new tracking device).
 
-If you need help, please post on the Official Vireio Perception Forums on MTBS3D.com.
-http://www.mtbs3d.com/phpBB/viewforum.php?f=141
+Bug reports and questions: https://github.com/ChrisJD/HMD-Stereoificator/issues
