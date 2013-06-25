@@ -51,10 +51,10 @@
     <None Include="icons\app.ico">
       <Filter>Resource Files</Filter>
     </None>
-    <None Include="..\..\Release\Perception\README.txt" />
+    <None Include="..\..\Release\Stereoificator\README.txt" />
   </ItemGroup>
   <ItemGroup>
-    <CustomBuild Include="..\..\Release\Stereoification\img\logo.bmp">
+    <CustomBuild Include="..\..\Release\Stereoificator\img\logo.bmp">
       <Filter>img</Filter>
     </CustomBuild>
   </ItemGroup>

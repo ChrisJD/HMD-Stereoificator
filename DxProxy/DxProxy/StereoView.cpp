@@ -369,7 +369,7 @@ void StereoView::RestoreState()
 
 
 
-void StereoView::SetViewEffectInitialValues() {}
+void StereoView::SetViewEffectConstants() {}
 void StereoView::CalculateShaderVariables() {}
 
 
@@ -441,7 +441,7 @@ void StereoView::Draw(D3D9ProxySurface* stereoCapableSurface)
 	}
 
 
-	SetViewEffectInitialValues();
+	SetViewEffectConstants();
 
 
 	if (FAILED(viewEffect->Begin(&cPasses, 0))) {

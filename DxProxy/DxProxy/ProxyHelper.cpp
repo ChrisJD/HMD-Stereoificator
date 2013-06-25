@@ -199,7 +199,7 @@ bool ProxyHelper::LoadConfig(ProxyConfig& config)
 		config.yaw_multiplier = gameProfile.attribute("yaw_multiplier").as_float(25.0f);
 		config.pitch_multiplier = gameProfile.attribute("pitch_multiplier").as_float(25.0f);
 		config.roll_multiplier = gameProfile.attribute("roll_multiplier").as_float(1.0f);
-		config.horizontalGameFov = gameProfile.attribute("horizontalFoV").as_float(-1.0f);
+		config.horizontalGameFov = gameProfile.attribute("horizontalFoV").as_float(90.0f);
 		config.rollEnabled = gameProfile.attribute("rollEnabled").as_bool(false);
 		config.worldScaleFactor = gameProfile.attribute("worldScaleFactor").as_float(1.0f);
 		

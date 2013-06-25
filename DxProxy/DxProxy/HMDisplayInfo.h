@@ -64,31 +64,63 @@ public:
 		UpdateScale(-1);
 
 		std::stringstream sstm;
-		sstm << "scaleToFillHorizontal: " << scaleToFillHorizontal << std::endl;
+		sstm << "scaleHorizontal: " << scaleHorizontal << std::endl;
 		OutputDebugString(sstm.str().c_str());
 	}
 
-
+	// Returns left lens center as a percentage of fullscreen width (use '1 - the result' for the right equivilant)
 	float LeftLensCenterAsPercentage()
 	{
-		return ((physicalScreenSize.first / 2.0f) - (physicalLensSeparation / 2.0f)) / (physicalScreenSize.first);
+		return ((physicalScreenSize.first / 2.0f) - (physicalLensSeparation / 2.0f)) / physicalScreenSize.first;
 	}
 
 	// Updates the scale so that the view matches the specified fov.
 	// hFovInDegrees <= 0 will be treated as "scale to fill horizontal"
 	void UpdateScale(float hFovInDegrees)
 	{
+		std::stringstream sstm;
+		sstm << "hFovInDegrees: " << hFovInDegrees << std::endl;
+
 		float leftLimitInClipCoords = -1;
+		float scaleToFillHorizontal = Distort(leftLimitInClipCoords - lensXCenterOffset) / (leftLimitInClipCoords - lensXCenterOffset);
+		sstm << "Initial scale (fill horizontal): " <<  scaleToFillHorizontal << std::endl;
+
+
 		if (hFovInDegrees > 0) {
-			
+						
 			float halfPhysicalScreenSize = physicalScreenSize.first / 2.0f;
 			float halfLensSeparation = physicalLensSeparation / 2.0f;
 			float lensCenterDistanceFromLeftEdge = halfPhysicalScreenSize - halfLensSeparation;
-			float physicalDistanceOfLeftviewEdgeFromLens = (float)tan((hFovInDegrees / 2.0f) * HMD_PI / 180.0f) * eyeToScreenDistance;
-			leftLimitInClipCoords = -physicalDistanceOfLeftviewEdgeFromLens / lensCenterDistanceFromLeftEdge;
+			float leftLensCenterAsPercentageOfHalfScreen = lensCenterDistanceFromLeftEdge / halfPhysicalScreenSize;
+			
+			// If we scale to fill just to the left edge we get this fov to the left of the lens (left half of left eye)
+			double filledFovLeftOfLens = atan ((scaleToFillHorizontal * lensCenterDistanceFromLeftEdge) / eyeToScreenDistance) * (180.0f / HMD_PI);
+			sstm << "filledFovLeftOfLens: " << filledFovLeftOfLens << std::endl;
+
+			// This is the fov of the entire left view (including fov which is clipped by the centerline where left view meets right)
+			double filledFovFull = filledFovLeftOfLens / leftLensCenterAsPercentageOfHalfScreen;
+			sstm << "filled fov full: " << filledFovFull << std::endl;
+
+			// The fov that is being set has this much fov left of the lens
+			double fovLeftOfLens = hFovInDegrees * leftLensCenterAsPercentageOfHalfScreen;
+			sstm << "fovLeftOfLens: " << fovLeftOfLens << std::endl;
+
+			double fovAsFractionOfFilledFov =  fovLeftOfLens / filledFovLeftOfLens;
+			sstm << "fovAsFractionOfFilledFov: " << fovAsFractionOfFilledFov << std::endl;
+
+			// Recalculate horizontal scale so that view is scaled to maintain visually correct fov.
+			// Note that this is pretty close but there are still some differences in perceived fov between fovs. See
+			scaleHorizontal = Distort((leftLimitInClipCoords - lensXCenterOffset) * (float)fovAsFractionOfFilledFov) / (leftLimitInClipCoords - lensXCenterOffset);
+			sstm << "scaleHorizontal: " << scaleHorizontal  << std::endl;
+		}
+		else {
+			scaleHorizontal = scaleToFillHorizontal;
 		}
 
-		scaleToFillHorizontal = Distort(leftLimitInClipCoords - lensXCenterOffset) / (leftLimitInClipCoords - lensXCenterOffset);
+		
+
+
+		OutputDebugString(sstm.str().c_str());
 	}
 
 
@@ -114,7 +146,7 @@ public:
     //   uvResult = uvInput * (K0 + K1 * uvLength^2 + K2 * uvLength^4)
     float distortionCoefficients[4];
 
-	float scaleToFillHorizontal;
+	float scaleHorizontal;
 
 	// This distortion must match that being used in the shader (the distortion, not including the scaling that is included in the shader)
 	virtual float Distort(float radius)
@@ -123,6 +155,9 @@ public:
         return radius * (distortionCoefficients[0] + distortionCoefficients[1] * radiusSqared + distortionCoefficients[2] * 
 						radiusSqared * radiusSqared + distortionCoefficients[3] * radiusSqared * radiusSqared * radiusSqared);
 	}
+
+
+
 };
 
 

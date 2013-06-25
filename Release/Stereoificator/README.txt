@@ -8,7 +8,7 @@ ALPHA quality software. Expect many bugs and problems. There are many things tha
 
 What's in it
 ---------------------------------
-The core change in this fork is a near total rewrite of the rendering system so that both eyes are rendered every frame, this is significantly more complicated and there are still plenty of bugs to fix. The performance hit for this varies between hardware and games, it can be worse than 50% (of non-stereo frame rate) and it can be better. For example I get 65-70% of mono performance in HL2, but experimenting with Dead Rising 2 I was getting 35-40% of mono fps.
+The core change in this fork is a near total rewrite of the rendering system so that both eyes are rendered every frame, this is significantly more complicated and there are still plenty of bugs to fix. The performance hit for this varies between hardware and games, it can be worse than 50% (of non-stereo frame rate) and it can be better. For example I get 65-70% of mono performance in HL2, but experimenting with Dead Rising 2 I was getting 35-40% of mono fps. Very little optimisation has been done so far and more isn't likely to happen until a lot more bugs are squashed.
 
 This fork is also focusing on Head Mounted Display (HMD) support and all other stereo modes except side-by-side (which remains for testing purposes only and will not function well as a 3D mode as it is missing needed adjustments) have been removed.
 
@@ -17,8 +17,6 @@ A lot of the manual configuration of settings has been rendered unnecessary by u
 
 HOT-KEYS:
 ---------------------------------
-F1 : Save Screenshot. Saves the original left and right images (for testing/debugging) and the final image to game folder (will overwrite images from previous sessions).
-
 F2 / F3 : Adjust Separation. Hold shift to adjust 10x faster, hold ctrl to adjust 10x slower.
 
 F6 : Swap Eyes.
@@ -80,8 +78,8 @@ GAME NOTES:
 If the notes say "Copy dlls", then copy 'd3d9.dll' and 'libfreespace.dll' from the bin directory of HMD-Stereoificator to the same folder as the games executable.
 If a Steam game won't launch via your normal method; 'run from Steam' or 'run the exe directly', then try the other.
 
-Half-Life 2: Set Shadow Detail to Medium. (optional: Enable developers console. **Use "fov_desired 92".)
-DeadEsther: **Use "fov_desired 92".
+Half-Life 2: Set Shadow Detail to Medium. Enable developers console. Use "fov_desired 110".
+DeadEsther: Enable developers console (in option->keyboard and mouse) then access the console with tilde(~) and enter "fov_desired 110" (without the "")
 Portal 2: Use "r_shadows 0", "viewmodel_offset_y 8", **"cl_fov 92"
 
 Mirror's Edge: 

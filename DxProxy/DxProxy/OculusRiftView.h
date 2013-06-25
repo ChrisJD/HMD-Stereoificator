@@ -30,9 +30,7 @@ public:
 	virtual ~OculusRiftView();
 	virtual void InitShaderEffects();
 
-	virtual void SetViewEffectInitialValues();
-
-
+	virtual void SetViewEffectConstants();
 	virtual void CalculateShaderVariables( );
 
 private:
