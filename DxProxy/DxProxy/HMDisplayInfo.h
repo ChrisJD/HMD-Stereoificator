@@ -109,8 +109,8 @@ public:
 			sstm << "fovAsFractionOfFilledFov: " << fovAsFractionOfFilledFov << std::endl;
 
 			// Recalculate horizontal scale so that view is scaled to maintain visually correct fov.
-			// Note that this is pretty close but there are still some differences in perceived fov between fovs. See
-			scaleHorizontal = Distort((leftLimitInClipCoords - lensXCenterOffset) * (float)fovAsFractionOfFilledFov) / (leftLimitInClipCoords - lensXCenterOffset);
+			// Note that this is very close (could be down to precision issues) but there is still a very small difference in perceived fov and actual fov. Previous example images have been greatly improved.
+			scaleHorizontal = Distort((leftLimitInClipCoords * (float)fovAsFractionOfFilledFov) - lensXCenterOffset)  / (leftLimitInClipCoords - lensXCenterOffset);
 			sstm << "scaleHorizontal: " << scaleHorizontal  << std::endl;
 		}
 		else {
