@@ -14,7 +14,7 @@ The core change in this fork is a near total rewrite of the rendering system so 
 
 This fork is also focusing on Head Mounted Display (HMD) support and all other stereo modes except side-by-side (which remains for testing purposes only and will not function well as a 3D mode as it is missing needed adjustments) have been removed.
 
-A lot of the manual configuration of settings has been rendered unnecessary by updating the calculations to match the hardware optics in the same way the LibOVR SDK from Oculus works. All that should be required after the games settings are configured ('correct' fov is very important) is to adjust the eye separation using the f2/f3 keys while playing to somewhere that "feels right". This is still not ideal but it's workable and simpler to use. The quality of the default values varies quite a bit depending on what can be found in-game to be used to determine the approximate world scale.
+A lot of the manual configuration of settings has been rendered unnecessary by updating the calculations to match the hardware optics in the same way the LibOVR SDK from Oculus works. All that should be required, as far as view adjustment is concerned, after the games settings are configured ('correct' fov is very important) is to adjust the eye separation using the f2/f3 keys while playing to somewhere that "feels right". This is still not ideal but it's workable and simpler to use. The quality of the default values varies quite a bit depending on what can be found in-game to be used to determine the approximate world scale.
 
 
 HOT-KEYS:
@@ -23,9 +23,9 @@ F2 / F3 : Adjust Separation. Hold shift to adjust 10x faster, hold ctrl to adjus
 
 F6 : Swap Eyes.
 
-F8 / F9 : Adjust Tracking Yaw.
-SHIFT + F8 / F9 : Adjust Tracking Pitch.
-CONTROL + F8 / F9 : Adjust Tracking Roll.
+F8 / F9 : Adjust Yaw rate.
+SHIFT + F8 / F9 : Adjust Pitch rate.
+CONTROL + F8 / F9 : Adjust Roll rate.
 
 
 NOTES:
@@ -151,4 +151,4 @@ GRID: Run via GRID.exe
 
 DiRT 3 and F1 2010:
 -Copy dlls*.
--For me they won't launch unless I start them through Steam and occasionally it takes 2 or 3 tries before they work without an error.
+-For me they won't launch unless I start them through Steam and occasionally it takes 2 or 3 tries before they start without an error.
