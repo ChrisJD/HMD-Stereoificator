@@ -1,5 +1,3 @@
-Current binary download location: 
-
 ---------------------------------
 ////    HMD Stereoificator, a fork of VIREIO PERCEPTION    ////
 ---------------------------------
@@ -34,7 +32,7 @@ NOTES:
 
 - Set the game FoV. This varies depending on the game and can be a pain in the ass. The suggested value if possible is 110 degrees horizontal FoV (84 vertical at 16:10, 78 vertical at 16:9). Whatever you set the game FoV to you should set the corresponding profiles "horizontalFov" value to match. The profiles for each game are stored in Stereoificator/cfg directory in the profiles.xml file. The default FoVs for the profiles are 110 where it is possible to set the game to that value. Instructions for setting FoV in the various games are in the game notes at the end. 
 - Enable vertical sync to avoid tearing.
-- In general dynamic shadows don't work very well at the moment, turn them down and if that doesn't fix the problem then turn them off.
+- In general dynamic shadows don't work very well at the moment, turn them down, and if that doesn't fix the problem, then turn them off.
 - Open HMD Stereoificator and leave it running in the background while playing.
 
 - It is better to adjust all game settings before playing with the driver, as changing certain settings may cause the game to crash (i.e. changing the resolution - although this is a bug if it happens and reposting of the issue would be appreciated).
@@ -48,18 +46,21 @@ Be sure to read the general notes above and game specific notes below, feedback 
 If it isn't possbile for you to get the game world looking reasonable adjusting the settings please provide as descriptive a description of the problem as possible. Especially with regards to GRID, I have a feeling the car internals are getting scaled differently to the world but I can't pin down what's wrong looking at it on a monitor.
 
 EGO Engine:
+
 F1 2010
 Dirt 2	
 Dirt 3
 GRID
 
 UT3/UDK Engine:
+
 Mirror's Edge
 The Ball
 Borderlands
 Borderlands 2
 
 Source Engine (bug fixes for these are very low priority given how good valves support of vr in source has been, flashlights in l4d are far worse than Vireio):
+
 Half-Life 2 	
 Left4Dead	
 Left4Dead 2	
@@ -68,6 +69,7 @@ Portal
 Portal 2
 
 Other:
+
 AaaaAAAAA!!!!!	
 
 
@@ -141,7 +143,7 @@ Optional:
 EGO Engine games:
 
 -I recommend using one of the opentrack builds in this post: http://www.mtbs3d.com/phpBB/viewtopic.php?f=141&t=17594 for the motion tracking. Just set HMD Stereoificator's tracking setting to "no tracking" while using opentrack. It injects the tracking data into the game via the trackir interface which is a much better way to go than mouse emulation, and if you have a hydra to strap to your head you get 6DOF.
--The FoV is _far_ to small and needs to be changed (see comparison here: http://imgur.com/a/yz68S). The easiest way to make the change is to go and get the fov changer utility from http://www.nogripracing.com/forum/showpost.php?p=1382564&postcount=18 (you'll need to register with the forum to be able to download it), (alternate download location http://forums.pcgamingwiki.com/viewtopic.php?f=23&t=229 - untested). It works with all the EGO games listed here, just point it to the games directroy. You probably want to make a backup of the car files (easiest just to backup the entire game directory) before making any changes. I only change the cockpit fov as that's the only place I want to play from. More details on fov changing in DiRT3 http://pcgamingwiki.com/wiki/DiRT_3#Field_of_view_.28FOV.29
+-The FoV is _far_ to small and needs to be changed (see comparison here: http://imgur.com/a/yz68S). The easiest way to make the change is to go and get the fov change utility from http://www.nogripracing.com/forum/showpost.php?p=1382564&postcount=18 (you'll need to register with the forum to be able to download it), (alternate download location http://forums.pcgamingwiki.com/viewtopic.php?f=23&t=229 - untested). It works with all the EGO games listed here, just point it to the games directroy. You probably want to make a backup of the car files (easiest just to backup the entire game directory) before making any changes. I only change the cockpit fov as that's the only place I want to play from. More details on fov changing in DiRT3 http://pcgamingwiki.com/wiki/DiRT_3#Field_of_view_.28FOV.29
 -DirectX9 mode needs to be forced if you have a 10/11 card for all EGO games (except possibly GRID?). DirectX9 is forced in the configuration file "My Documents\My Games\GAME_NAME\hardwaresettings\hardware_settings_config.xml" where GAME_NAME is DiRT2, DiRT3, FormulaOne
 -Shadows need to be on the lowest setting without turning them off (all though you can turn them off if you want).
 -Disable all HUD/OSD elements.
