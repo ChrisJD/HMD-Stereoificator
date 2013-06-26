@@ -481,26 +481,26 @@ void StereoView::Draw(D3D9ProxySurface* stereoCapableSurface)
 
 void StereoView::SaveScreen()
 {
-	g_color = D3DCOLOR_RGBA(255,255,255,255);
+	//g_color = D3DCOLOR_RGBA(255,255,255,255);
 
-	static int screenCount = 0;
-	++screenCount;
+	//static int screenCount = 0;
+	//++screenCount;
 
-	char fileName[32];
-	wsprintf(fileName, "%d_final.bmp", screenCount);
+	//char fileName[32];
+	//wsprintf(fileName, "%d_final.bmp", screenCount);
 
-	char fileNameLeft[32];
-	wsprintf(fileNameLeft, "%d_left.bmp", screenCount);
-	char fileNameRight[32];
-	wsprintf(fileNameRight, "%d_right.bmp", screenCount);
-	/*OutputDebugString(fileName);
-	OutputDebugString("\n");
+	//char fileNameLeft[32];
+	//wsprintf(fileNameLeft, "%d_left.bmp", screenCount);
+	//char fileNameRight[32];
+	//wsprintf(fileNameRight, "%d_right.bmp", screenCount);
+	///*OutputDebugString(fileName);
+	//OutputDebugString("\n");
 
-	D3DXSaveSurfaceToFile(fileName, D3DXIFF_BMP, backBuffer, NULL, NULL);*/
+	//D3DXSaveSurfaceToFile(fileName, D3DXIFF_BMP, backBuffer, NULL, NULL);*/
 
-	D3DXSaveSurfaceToFile(fileNameLeft, D3DXIFF_BMP, leftSurface, NULL, NULL);
-	D3DXSaveSurfaceToFile(fileNameRight, D3DXIFF_BMP, rightSurface, NULL, NULL);
-	D3DXSaveSurfaceToFile(fileName, D3DXIFF_BMP, backBuffer, NULL, NULL);
+	//D3DXSaveSurfaceToFile(fileNameLeft, D3DXIFF_BMP, leftSurface, NULL, NULL);
+	//D3DXSaveSurfaceToFile(fileNameRight, D3DXIFF_BMP, rightSurface, NULL, NULL);
+	//D3DXSaveSurfaceToFile(fileName, D3DXIFF_BMP, backBuffer, NULL, NULL);
 }
 
 
