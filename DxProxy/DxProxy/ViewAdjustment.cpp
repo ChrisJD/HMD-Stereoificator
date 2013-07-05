@@ -118,8 +118,19 @@ void ViewAdjustment::ComputeViewTransforms()
 	D3DXMATRIX tempForward;
 	D3DXMatrixTranslation(&tempForward, 0, 0, metersToWorldMultiplier * 0.1f);
 
-	orthoToPersViewProjTransformLeft = matProjectionInv * transformLeft * tempForward * projectLeft;
-	orthoToPersViewProjTransformRight = matProjectionInv * transformRight * tempForward * projectRight;
+	//orthoToPersViewProjTransformLeft = matProjectionInv /* transformLeft*/ * tempForward * projectLeft;
+	//orthoToPersViewProjTransformRight = matProjectionInv /* transformRight*/ * tempForward * projectRight;
+
+	D3DXMATRIX orthoLeft;
+	D3DXMATRIX orthoRight;
+	D3DXMatrixTranslation(&orthoLeft, hmdInfo->lensXCenterOffset * LEFT_CONSTANT, 0, 0);
+	D3DXMatrixTranslation(&orthoRight, hmdInfo->lensXCenterOffset * RIGHT_CONSTANT, 0, 0);
+
+	D3DXMATRIX squash;
+	D3DXMatrixScaling(&squash, 0.5f, 0.5f, 1);
+	orthoToPersViewProjTransformLeft = /*matProjectionInv * transformLeft * tempForward */ squash * orthoLeft;
+	orthoToPersViewProjTransformRight = /*matProjectionInv * transformRight * tempForward */ squash * orthoRight;
+
 }
 
 D3DXMATRIX ViewAdjustment::LeftViewTransform()
