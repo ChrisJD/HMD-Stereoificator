@@ -101,7 +101,7 @@ public:
 			double filledFovFull = filledFovLeftOfLens / leftLensCenterAsPercentageOfHalfScreen;
 			sstm << "filled fov full: " << filledFovFull << std::endl;
 
-			// The fov that is being set has this much fov left of the lens
+			// The fov that is being set has this much fov left of the left lens
 			double fovLeftOfLens = hFovInDegrees * leftLensCenterAsPercentageOfHalfScreen;
 			sstm << "fovLeftOfLens: " << fovLeftOfLens << std::endl;
 

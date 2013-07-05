@@ -114,6 +114,12 @@ void ViewAdjustment::ComputeViewTransforms()
 
 	matViewProjTransformLeft = matProjectionInv * transformLeft * projectLeft;
 	matViewProjTransformRight = matProjectionInv * transformRight * projectRight;
+
+	D3DXMATRIX tempForward;
+	D3DXMatrixTranslation(&tempForward, 0, 0, metersToWorldMultiplier * 0.1f);
+
+	orthoToPersViewProjTransformLeft = matProjectionInv * transformLeft * tempForward * projectLeft;
+	orthoToPersViewProjTransformRight = matProjectionInv * transformRight * tempForward * projectRight;
 }
 
 D3DXMATRIX ViewAdjustment::LeftViewTransform()

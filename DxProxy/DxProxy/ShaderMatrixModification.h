@@ -46,14 +46,21 @@ public:
 		}
 		else {
 
-			if (m_bTranspose) {
-				D3DXMatrixTranspose(&tempMatrix, &tempMatrix);
-			}
-			
 			D3DXMATRIX tempLeft;
 			D3DXMATRIX tempRight;
 
-			DoMatrixModification(tempMatrix, tempLeft, tempRight);
+			if (m_bTranspose) {
+				D3DXMatrixTranspose(&tempMatrix, &tempMatrix);
+			}
+
+			if (vireio::AlmostSame(inData[15], 1.0f, 0.00001f)) {
+
+				tempLeft = tempMatrix * m_spAdjustmentMatricies->orthoToPersViewProjTransformLeft;
+				tempRight = tempMatrix * m_spAdjustmentMatricies->orthoToPersViewProjTransformRight;
+			}
+			else {
+				DoMatrixModification(tempMatrix, tempLeft, tempRight);
+			}
 
 			if (m_bTranspose) {
 				D3DXMatrixTranspose(&tempLeft, &tempLeft);
