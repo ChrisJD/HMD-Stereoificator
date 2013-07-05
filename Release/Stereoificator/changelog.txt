@@ -1,0 +1,6 @@
+Stereoificator Change Log.
+
+
+v0.01.0001a
+-Dishonored profile from: http://www.reddit.com/r/oculus/comments/1h3jcm/hmd_stereoificator_a_fork_of_vireio/cauq2e4
+-Changed deafult yaw and pitch multipliers for Dear Esther based on the same post.

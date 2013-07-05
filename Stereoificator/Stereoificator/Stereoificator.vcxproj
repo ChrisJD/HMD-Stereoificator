@@ -126,6 +126,7 @@
       <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Copying image file from Release to $(Configuration)</Message>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(SolutionDir)$(Configuration)\Stereoificator\img\%(filename).bmp</Outputs>
     </CustomBuild>
+    <None Include="..\..\Release\Stereoificator\changelog.txt" />
     <None Include="..\..\Release\Stereoificator\README.txt" />
     <None Include="icons\app.ico" />
   </ItemGroup>

@@ -52,6 +52,7 @@
       <Filter>Resource Files</Filter>
     </None>
     <None Include="..\..\Release\Stereoificator\README.txt" />
+    <None Include="..\..\Release\Stereoificator\changelog.txt" />
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="..\..\Release\Stereoificator\img\logo.bmp">

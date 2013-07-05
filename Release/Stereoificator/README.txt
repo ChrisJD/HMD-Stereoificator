@@ -5,6 +5,8 @@ ALPHA quality software. Expect many bugs and problems. There are many things tha
 
 *** DO NOT USE ONLINE with any game that has cheat prevention (VAC, Punkbuster, any mmo, etc) since the driver could be detected as a hack which may get you banned. ***
 
+See: https://github.com/ChrisJD/HMD-Stereoificator/wiki for the most up-to-date documentation.
+
 
 What's in it
 ---------------------------------
