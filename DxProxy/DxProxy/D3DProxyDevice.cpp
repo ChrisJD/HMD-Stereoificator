@@ -406,20 +406,16 @@ void D3DProxyDevice::HandleControls()
 	static bool doSaveNext = false;
 
 	if (!keyWait) {
-		/*
+		
 		if(KEY_DOWN(VK_NUMPAD0))		// turn on/off stereo3D
 		{
-			if(keyWaitCount <= 0)
-			{
-				if(stereoView->stereoEnabled)
-					stereoView->stereoEnabled = false;
-				else
-					stereoView->stereoEnabled = true;
-				keyWaitCount = 50;
-			}
+			std::stringstream sstm;
+			sstm << "HUD Scale: " << m_spShaderViewAdjustment->tempHUDScale << std::endl;
+			sstm << "HUD Distance: " << m_spShaderViewAdjustment->tempHUDDistance << std::endl;
+			OutputDebugString(sstm.str().c_str());
 
 			anyKeyPressed = true;
-		}*/
+		}
 
 
 		if(KEY_DOWN(VK_F1))
@@ -469,6 +465,51 @@ void D3DProxyDevice::HandleControls()
 			doSaveNext = true;
 			anyKeyPressed = true;
 		}
+
+
+
+		if(KEY_DOWN(VK_F4))
+		{
+			float change = 0.1f;
+
+			if(KEY_DOWN(VK_CONTROL)) {
+				m_spShaderViewAdjustment->tempHUDScale -= change * m_spShaderViewAdjustment->tempHUDDistance;
+				vireio::clamp(&m_spShaderViewAdjustment->tempHUDScale, 0.1f, 10000.0f);
+			}
+			else {
+				m_spShaderViewAdjustment->tempHUDDistance -= change;
+				vireio::clamp(&m_spShaderViewAdjustment->tempHUDDistance, 0.1f, 10000.0f);
+			}
+
+			m_spShaderViewAdjustment->RecalculateAll();
+			
+			//saveWaitCount = 500;
+			//doSaveNext = true;
+			anyKeyPressed = true;
+		}
+
+		if(KEY_DOWN(VK_F5))
+		{
+			float change = 0.1f;
+
+			if(KEY_DOWN(VK_CONTROL)) {
+				m_spShaderViewAdjustment->tempHUDScale += change * m_spShaderViewAdjustment->tempHUDDistance;
+				vireio::clamp(&m_spShaderViewAdjustment->tempHUDScale, 0.1f, 10000.0f);
+			}
+			else {
+				m_spShaderViewAdjustment->tempHUDDistance += change;
+				vireio::clamp(&m_spShaderViewAdjustment->tempHUDDistance, 0.1f, 10000.0f);
+			}
+			
+			
+			
+			//saveWaitCount = 500;
+			//doSaveNext = true;
+			anyKeyPressed = true;
+		}
+
+
+
 		
 		if(KEY_DOWN(VK_F6))
 		{

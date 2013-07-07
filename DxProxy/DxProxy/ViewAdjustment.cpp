@@ -26,30 +26,18 @@ ViewAdjustment::ViewAdjustment(std::shared_ptr<HMDisplayInfo> displayInfo, float
 	rollEnabled(enableRoll)
 {
 	separationAdjustment = 0.0f;
-	minSeparationAdjusment = -(IPD_DEFAULT / 2.0f);
-	maxSeparationAdjusment = 4 * (IPD_DEFAULT / 2.0f);
 
 	ipd = IPD_DEFAULT;
 
 	n = 0.1f;					
-	f = 10.0f;
+	f = 100.0f;
 	l = -0.5f;
 	r = 0.5f;
 
-	D3DXMatrixIdentity(&matProjection);
-	D3DXMatrixIdentity(&matProjectionInv);
-	D3DXMatrixIdentity(&leftShiftProjection);
-	D3DXMatrixIdentity(&rightShiftProjection);
-	D3DXMatrixIdentity(&projectLeft);
-	D3DXMatrixIdentity(&projectRight);
-	D3DXMatrixIdentity(&transformLeft);
-	D3DXMatrixIdentity(&transformRight);
-	D3DXMatrixIdentity(&matViewProjTransformRight);
-	D3DXMatrixIdentity(&matViewProjTransformLeft);
+	tempHUDDistance = 0.1f;
+	tempHUDScale = 1.0f;
 
-	UpdateProjectionMatrices(hmdInfo->screenAspectRatio);
-	D3DXMatrixIdentity(&rollMatrix);
-	ComputeViewTransforms();
+	RecalculateAll();
 }
 
 ViewAdjustment::~ViewAdjustment() 
@@ -63,6 +51,30 @@ void ViewAdjustment::Load(ProxyHelper::ProxyConfig& cfg)
 	metersToWorldMultiplier  = cfg.worldScaleFactor;
 	separationAdjustment = cfg.separationAdjustment;
 	ipd = cfg.ipd;
+
+	RecalculateAll();
+}
+
+void ViewAdjustment::RecalculateAll()
+{
+	minSeparationAdjusment = -(ipd / 2.0f); // Max minimum 0 separation
+	maxSeparationAdjusment = 4 * (IPD_DEFAULT / 2.0f); // Max is arbitrarily 4 * default ipd.
+
+	D3DXMatrixIdentity(&matProjection);
+	D3DXMatrixIdentity(&matProjectionInv);
+	D3DXMatrixIdentity(&matOrthoProjectionInv);
+	D3DXMatrixIdentity(&leftShiftProjection);
+	D3DXMatrixIdentity(&rightShiftProjection);
+	D3DXMatrixIdentity(&projectLeft);
+	D3DXMatrixIdentity(&projectRight);
+	D3DXMatrixIdentity(&transformLeft);
+	D3DXMatrixIdentity(&transformRight);
+	D3DXMatrixIdentity(&matViewProjTransformRight);
+	D3DXMatrixIdentity(&matViewProjTransformLeft);
+	D3DXMatrixIdentity(&rollMatrix);
+
+	UpdateProjectionMatrices(hmdInfo->screenAspectRatio);
+	ComputeViewTransforms();
 }
 
 void ViewAdjustment::Save(ProxyHelper::ProxyConfig& cfg) 
@@ -82,6 +94,11 @@ void ViewAdjustment::UpdateProjectionMatrices(float aspectRatio)
 
 	D3DXMatrixPerspectiveOffCenterLH(&matProjection, l, r, b, t, n, f);
 	D3DXMatrixInverse(&matProjectionInv, 0, &matProjection);
+
+	D3DXMATRIX tempOrtho;
+	D3DXMatrixOrthoLH(&tempOrtho, 1680.0f, 1050.0f, 0.1f, 100.0f);
+	D3DXMatrixInverse(&matOrthoProjectionInv, 0, &tempOrtho);
+
 
 	// The lensXCenterOffset is in the same -1 to 1 space as the perspective so shift by that amount to move projection in line with the lenses
 	D3DXMatrixTranslation(&leftShiftProjection, hmdInfo->lensXCenterOffset * LEFT_CONSTANT, 0, 0);
@@ -116,7 +133,7 @@ void ViewAdjustment::ComputeViewTransforms()
 	matViewProjTransformRight = matProjectionInv * transformRight * projectRight;
 
 	D3DXMATRIX tempForward;
-	D3DXMatrixTranslation(&tempForward, 0, 0, metersToWorldMultiplier * 0.1f);
+	D3DXMatrixTranslation(&tempForward, 0, 0, metersToWorldMultiplier * tempHUDDistance);
 
 	//orthoToPersViewProjTransformLeft = matProjectionInv /* transformLeft*/ * tempForward * projectLeft;
 	//orthoToPersViewProjTransformRight = matProjectionInv /* transformRight*/ * tempForward * projectRight;
@@ -126,10 +143,14 @@ void ViewAdjustment::ComputeViewTransforms()
 	D3DXMatrixTranslation(&orthoLeft, hmdInfo->lensXCenterOffset * LEFT_CONSTANT, 0, 0);
 	D3DXMatrixTranslation(&orthoRight, hmdInfo->lensXCenterOffset * RIGHT_CONSTANT, 0, 0);
 
-	D3DXMATRIX squash;
-	D3DXMatrixScaling(&squash, 0.5f, 0.5f, 1);
-	orthoToPersViewProjTransformLeft = /*matProjectionInv * transformLeft * tempForward */ squash * orthoLeft;
-	orthoToPersViewProjTransformRight = /*matProjectionInv * transformRight * tempForward */ squash * orthoRight;
+	D3DXMATRIX scale;
+	D3DXMatrixScaling(&scale, tempHUDScale, tempHUDScale, 1);
+	//orthoToPersViewProjTransformLeft = /*matProjectionInv * transformLeft * tempForward */ squash * orthoLeft;
+	//orthoToPersViewProjTransformRight = /*matProjectionInv * transformRight * tempForward */ squash * orthoRight;
+
+	
+	orthoToPersViewProjTransformLeft = matProjectionInv * scale * transformLeft  *  tempForward * projectLeft;
+	orthoToPersViewProjTransformRight = matProjectionInv * scale * transformRight * tempForward *  projectRight;
 
 }
 

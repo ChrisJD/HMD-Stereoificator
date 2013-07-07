@@ -88,9 +88,14 @@ public:
 	D3DXMATRIX orthoToPersViewProjTransformLeft;
 	D3DXMATRIX orthoToPersViewProjTransformRight;
 
+
+	float tempHUDScale;
+	float tempHUDDistance;
+
+	void RecalculateAll();
 private:
 
-	void SetIPD(float ipdInMeters);
+	
 
 	float minSeparationAdjusment;
 	float maxSeparationAdjusment;
@@ -108,6 +113,7 @@ private:
 
 	D3DXMATRIX matProjection;
 	D3DXMATRIX matProjectionInv;
+	D3DXMATRIX matOrthoProjectionInv;
 
 	// The translation applied to projection to shift it left/right to get project(Left/Right)
 	D3DXMATRIX leftShiftProjection;
