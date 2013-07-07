@@ -473,7 +473,7 @@ void D3DProxyDevice::HandleControls()
 			float change = 0.1f;
 
 			if(KEY_DOWN(VK_CONTROL)) {
-				m_spShaderViewAdjustment->tempHUDScale -= change * m_spShaderViewAdjustment->tempHUDDistance;
+				m_spShaderViewAdjustment->tempHUDScale -= change;
 				vireio::clamp(&m_spShaderViewAdjustment->tempHUDScale, 0.1f, 10000.0f);
 			}
 			else {
@@ -493,7 +493,7 @@ void D3DProxyDevice::HandleControls()
 			float change = 0.1f;
 
 			if(KEY_DOWN(VK_CONTROL)) {
-				m_spShaderViewAdjustment->tempHUDScale += change * m_spShaderViewAdjustment->tempHUDDistance;
+				m_spShaderViewAdjustment->tempHUDScale += change;
 				vireio::clamp(&m_spShaderViewAdjustment->tempHUDScale, 0.1f, 10000.0f);
 			}
 			else {

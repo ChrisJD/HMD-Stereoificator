@@ -91,6 +91,7 @@ public:
 
 	float tempHUDScale;
 	float tempHUDDistance;
+	float tempHUDBaseDistance;
 
 	void RecalculateAll();
 private:

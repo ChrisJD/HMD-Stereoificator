@@ -34,8 +34,9 @@ ViewAdjustment::ViewAdjustment(std::shared_ptr<HMDisplayInfo> displayInfo, float
 	l = -0.5f;
 	r = 0.5f;
 
-	tempHUDDistance = 0.1f;
-	tempHUDScale = 1.0f;
+	tempHUDBaseDistance = 0.2f;
+	tempHUDDistance = 1.3f;
+	tempHUDScale = 1.9f;
 
 	RecalculateAll();
 }
@@ -133,7 +134,7 @@ void ViewAdjustment::ComputeViewTransforms()
 	matViewProjTransformRight = matProjectionInv * transformRight * projectRight;
 
 	D3DXMATRIX tempForward;
-	D3DXMatrixTranslation(&tempForward, 0, 0, metersToWorldMultiplier * tempHUDDistance);
+	D3DXMatrixTranslation(&tempForward, 0, 0, /*metersToWorldMultiplier */ tempHUDDistance + tempHUDBaseDistance);
 
 	//orthoToPersViewProjTransformLeft = matProjectionInv /* transformLeft*/ * tempForward * projectLeft;
 	//orthoToPersViewProjTransformRight = matProjectionInv /* transformRight*/ * tempForward * projectRight;
@@ -144,13 +145,14 @@ void ViewAdjustment::ComputeViewTransforms()
 	D3DXMatrixTranslation(&orthoRight, hmdInfo->lensXCenterOffset * RIGHT_CONSTANT, 0, 0);
 
 	D3DXMATRIX scale;
-	D3DXMatrixScaling(&scale, tempHUDScale, tempHUDScale, 1);
+	float tempScale = tempHUDScale * (tempHUDDistance + tempHUDBaseDistance / tempHUDBaseDistance);
+	D3DXMatrixScaling(&scale, tempScale, tempScale, 1);
 	//orthoToPersViewProjTransformLeft = /*matProjectionInv * transformLeft * tempForward */ squash * orthoLeft;
 	//orthoToPersViewProjTransformRight = /*matProjectionInv * transformRight * tempForward */ squash * orthoRight;
 
 	
-	orthoToPersViewProjTransformLeft = matProjectionInv * scale * transformLeft  *  tempForward * projectLeft;
-	orthoToPersViewProjTransformRight = matProjectionInv * scale * transformRight * tempForward *  projectRight;
+	orthoToPersViewProjTransformLeft  = /*matProjectionInv */ scale * transformLeft  * tempForward * projectLeft;
+	orthoToPersViewProjTransformRight = /*matProjectionInv */ scale * transformRight * tempForward * projectRight;
 
 }
 

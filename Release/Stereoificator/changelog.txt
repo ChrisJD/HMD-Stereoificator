@@ -1,6 +1,9 @@
 Stereoificator Change Log.
 
-
-v0.01.0001a
+v0.01.0001a (unstable)
+-Experimenting with HUD reprojection in Source (making the HUD float in 3D space). 
+F5 moves HUD away from player position, F4 moves it towards the player. 
+ctrl+F5 scales the HUD up, ctrl-F4 scales it down 
+It would be much better if individual HUD elements were being scaled up, but that's a lot more work to implement. Not sure if anything will actually be readable in the Rift as it is here.
 -Dishonored profile from: http://www.reddit.com/r/oculus/comments/1h3jcm/hmd_stereoificator_a_fork_of_vireio/cauq2e4
 -Changed deafult yaw and pitch multipliers for Dear Esther based on the same post.
