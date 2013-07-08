@@ -28,7 +28,7 @@
     <!-- Bad --> <ruleID id="5" /> <!-- Bad, no rule with the id 5-->
   </defaultRuleIDs>
 
-  <!-- Rules to apply to shader with hash matching shaderHash (requiered) instead of default rules (default rules will not be applied to the shader) 
+  <!-- Rules to apply to shader with hash matching shaderHash (required) instead of default rules (default rules will not be applied to the shader) 
       (shader specific rules are optional, as many sets as needed can be provided) If both default and shader specific are left out then no rules will ever be applied. 
       shaderHash is an unsigned 32bit integer that matches the hash (32bit murmur x86 hash) of the shader this set of rules applies to-->
   <shaderSpecificRuleIDs shaderHash="12345">

@@ -37,7 +37,7 @@ public:
 	
 
 private:
-	std::unordered_set<IDirect3DVertexShader9*> m_recordedShaders;
+	std::unordered_set<uint32_t> m_recordedShaders;
 	std::ofstream m_shaderDumpFile;
 };
 

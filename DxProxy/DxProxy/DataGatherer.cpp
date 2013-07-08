@@ -35,6 +35,7 @@ void DataGatherer::Init(ProxyHelper::ProxyConfig& cfg)
 {
 	OutputDebugString("Special Proxy: Shader data gatherer created.\n");
 
+	
 	D3DProxyDevice::Init(cfg);
 }
 
@@ -49,41 +50,42 @@ HRESULT WINAPI DataGatherer::CreateVertexShader(CONST DWORD* pFunction,IDirect3D
 		BaseDirect3DVertexShader9* pWrappedShader = static_cast<BaseDirect3DVertexShader9*>(*ppShader);
 		IDirect3DVertexShader9* pActualShader = pWrappedShader->getActual();
 
-		// No idea what happens if the same vertex shader is created twice. Pointer to the same shader or two separate instances? guessing separate in which 
-		// case m_recordedShader as is is pointless. 
-		// TODO Replace pointer check with check on hash of shader data.
-		// (and print hash with data)
-		if (m_recordedShaders.insert(pActualShader).second && m_shaderDumpFile.is_open()) {
-			// insertion succeeded - record shader details.
+		
+		
+		
 	
-			LPD3DXCONSTANTTABLE pConstantTable = NULL;
+		LPD3DXCONSTANTTABLE pConstantTable = NULL;
 
-			BYTE* pData = NULL;
-			UINT pSizeOfData;
-			pActualShader->GetFunction(NULL, &pSizeOfData);
+		BYTE* pData = NULL;
+		UINT pSizeOfData;
+		pActualShader->GetFunction(NULL, &pSizeOfData);
 			
-			pData = new BYTE[pSizeOfData];
-			pActualShader->GetFunction(pData, &pSizeOfData);
+		pData = new BYTE[pSizeOfData];
+		pActualShader->GetFunction(pData, &pSizeOfData);
 
-			uint32_t hash = 0;
-			MurmurHash3_x86_32(pData, pSizeOfData, SEED, &hash);
+		uint32_t hash = 0;
+		MurmurHash3_x86_32(pData, pSizeOfData, SEED, &hash);
 
-			D3DXGetShaderConstantTable(reinterpret_cast<DWORD*>(pData), &pConstantTable);
+		D3DXGetShaderConstantTable(reinterpret_cast<DWORD*>(pData), &pConstantTable);
 			
-			if(pConstantTable == NULL) 
-				return creationResult;
+		if(pConstantTable == NULL) 
+			return creationResult;
 
 
 
-			D3DXCONSTANTTABLE_DESC pDesc;
-			pConstantTable->GetDesc(&pDesc);
+		D3DXCONSTANTTABLE_DESC pDesc;
+		pConstantTable->GetDesc(&pDesc);
 
-			D3DXCONSTANT_DESC pConstantDesc[512];
-			UINT pConstantNum = 512;
+		D3DXCONSTANT_DESC pConstantDesc[512];
+		UINT pConstantNum = 512;
 
 			//m_shaderDumpFile << std::endl << std::endl;
 			//m_shaderDumpFile << "Shader Creator: " << pDesc.Creator << std::endl;
 			//m_shaderDumpFile << "Shader Version: " << pDesc.Version << std::endl;
+
+		
+		if ((hash != 0) && m_recordedShaders.insert(hash).second && m_shaderDumpFile.is_open()) {
+			// insertion succeeded, shader not recorded yet, record shader details.
 
 			for(UINT i = 0; i < pDesc.Constants; i++)
 			{
@@ -124,12 +126,11 @@ HRESULT WINAPI DataGatherer::CreateVertexShader(CONST DWORD* pFunction,IDirect3D
 						
 				}
 			}
-	
-
-			_SAFE_RELEASE(pConstantTable);
-			if (pData) delete[] pData;
 		}
 		// else shader already recorded
+
+		_SAFE_RELEASE(pConstantTable);
+		if (pData) delete[] pData;
 	}
 
 	return creationResult;

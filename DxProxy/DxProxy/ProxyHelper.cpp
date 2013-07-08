@@ -195,7 +195,7 @@ bool ProxyHelper::LoadConfig(ProxyConfig& config)
 		OutputDebugString("\n");
 
 		config.separationAdjustment = gameProfile.attribute("separationAdjustment").as_float(0.0f);
-		config.swap_eyes = gameProfile.attribute("swap_eyes").as_bool();
+		config.swap_eyes = gameProfile.attribute("swap_eyes").as_bool(true);
 		config.yaw_multiplier = gameProfile.attribute("yaw_multiplier").as_float(25.0f);
 		config.pitch_multiplier = gameProfile.attribute("pitch_multiplier").as_float(25.0f);
 		config.roll_multiplier = gameProfile.attribute("roll_multiplier").as_float(1.0f);
