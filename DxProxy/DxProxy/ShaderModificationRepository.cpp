@@ -131,7 +131,7 @@ bool ShaderModificationRepository::LoadRules(std::string rulesPath)
 }
 
 
-std::map<UINT, StereoShaderConstant<float>> ShaderModificationRepository::GetModifiedConstantsF(IDirect3DVertexShader9* pActualVertexShader)
+std::map<UINT, StereoShaderConstant<float>> ShaderModificationRepository::GetModifiedConstantsF(D3D9ProxyVertexShader* pWrappedVertexShader)
 {
 	// hash shader
 	// If rules for this specific shader use those
@@ -152,18 +152,19 @@ std::map<UINT, StereoShaderConstant<float>> ShaderModificationRepository::GetMod
 	BYTE *pData = NULL;
 	UINT pSizeOfData;
 
-	pActualVertexShader->GetFunction(NULL, &pSizeOfData);
+	
+
+	pWrappedVertexShader->getActual()->GetFunction(NULL, &pSizeOfData);
 	pData = new BYTE[pSizeOfData];
-	pActualVertexShader->GetFunction(pData,&pSizeOfData);
+	pWrappedVertexShader->getActual()->GetFunction(pData,&pSizeOfData);
 
-	uint32_t hash;
-	MurmurHash3_x86_32(pData, pSizeOfData, SEED, &hash);
 
-	if (m_shaderSpecificModificationRuleIDs.count(hash) == 1) {
+	uint32_t shaderHash = pWrappedVertexShader->GetHash();
+	if (m_shaderSpecificModificationRuleIDs.count(shaderHash) == 1) {
 
 		// There are specific modification rules to use with this shader
-		auto itRules = m_shaderSpecificModificationRuleIDs[hash].begin();
-		while (itRules != m_shaderSpecificModificationRuleIDs[hash].end()) {
+		auto itRules = m_shaderSpecificModificationRuleIDs[shaderHash].begin();
+		while (itRules != m_shaderSpecificModificationRuleIDs[shaderHash].end()) {
 			rulesToApply.push_back(&(m_AllModificationRules[*itRules]));
 			++itRules;
 		}

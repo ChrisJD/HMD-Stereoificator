@@ -34,6 +34,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "ShaderConstantModificationFactory.h"
 #include "ViewAdjustment.h"
 #include "pugixml.hpp"
+#include "D3D9ProxyVertexShader.h"
 
 class ViewAdjustment;
 
@@ -49,7 +50,7 @@ public:
 
 	// Returns a collection of modified constants for the specified shader. (may be an empty collection if no modifications apply)
 	// <StrartRegister, StereoShaderConstant<float>>
-	std::map<UINT, StereoShaderConstant<float>> GetModifiedConstantsF(IDirect3DVertexShader9* pActualVertexShader);
+	std::map<UINT, StereoShaderConstant<float>> GetModifiedConstantsF(D3D9ProxyVertexShader* pWrappedVertexShader);
 	
 
 

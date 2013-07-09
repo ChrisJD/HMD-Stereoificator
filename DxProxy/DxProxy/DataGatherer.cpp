@@ -47,24 +47,16 @@ HRESULT WINAPI DataGatherer::CreateVertexShader(CONST DWORD* pFunction,IDirect3D
 	HRESULT creationResult = D3DProxyDevice::CreateVertexShader(pFunction, ppShader);
 	
 	if (SUCCEEDED(creationResult)) {
-		BaseDirect3DVertexShader9* pWrappedShader = static_cast<BaseDirect3DVertexShader9*>(*ppShader);
-		IDirect3DVertexShader9* pActualShader = pWrappedShader->getActual();
-
-		
-		
-		
+		D3D9ProxyVertexShader* pWrappedShader = static_cast<D3D9ProxyVertexShader*>(*ppShader);		
 	
 		LPD3DXCONSTANTTABLE pConstantTable = NULL;
 
 		BYTE* pData = NULL;
 		UINT pSizeOfData;
-		pActualShader->GetFunction(NULL, &pSizeOfData);
+		pWrappedShader->getActual()->GetFunction(NULL, &pSizeOfData);
 			
 		pData = new BYTE[pSizeOfData];
-		pActualShader->GetFunction(pData, &pSizeOfData);
-
-		uint32_t hash = 0;
-		MurmurHash3_x86_32(pData, pSizeOfData, SEED, &hash);
+		pWrappedShader->getActual()->GetFunction(pData, &pSizeOfData);
 
 		D3DXGetShaderConstantTable(reinterpret_cast<DWORD*>(pData), &pConstantTable);
 			
@@ -84,6 +76,8 @@ HRESULT WINAPI DataGatherer::CreateVertexShader(CONST DWORD* pFunction,IDirect3D
 			//m_shaderDumpFile << "Shader Version: " << pDesc.Version << std::endl;
 
 		
+		uint32_t hash = pWrappedShader->GetHash();
+
 		if ((hash != 0) && m_recordedShaders.insert(hash).second && m_shaderDumpFile.is_open()) {
 			// insertion succeeded, shader not recorded yet, record shader details.
 

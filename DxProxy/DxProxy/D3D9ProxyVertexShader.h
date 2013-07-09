@@ -29,6 +29,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "ShaderRegisters.h"
 #include "D3DProxyDevice.h"
 #include "ShaderModificationRepository.h"
+#include "MurmurHash3.h"
 
 
 class D3DProxyDevice;
@@ -44,6 +45,7 @@ public:
 
 	std::map<UINT, StereoShaderConstant<>>* ModifiedConstants();
 
+	uint32_t GetHash();
 
 protected:
 
@@ -51,6 +53,7 @@ protected:
 
 	//<StartRegister, StereoShaderConstant<>>
 	std::map<UINT, StereoShaderConstant<>> m_modifiedConstants;
+	uint32_t m_hash;
 };
 
 #endif
