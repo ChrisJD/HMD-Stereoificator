@@ -26,22 +26,21 @@ ViewAdjustment::ViewAdjustment(std::shared_ptr<HMDisplayInfo> displayInfo, float
 	m_basicAdustments()
 {
 	ipd = IPD_DEFAULT;
-	float maxSeparationAdjusment = 4 * (IPD_DEFAULT / 2.0f); // Max is arbitrarily 4 * default ipd.
+	float maxSeparationAdjusment = 4 * (IPD_DEFAULT / 2.0f); // Max is arbitrarily 4 * default ipd separation.
 	float minSeparationAdjusment = -(IPD_DEFAULT / 2.0f); // adjustment at minimum value will result in 0 separation
 	
-	m_basicAdustments.insert(std::pair<BasicAdjustments, LimitedRangeValue>(SEPARATION_ADJUSTMENT, LimitedRangeValue(0.0f, minSeparationAdjusment, maxSeparationAdjusment)));
-	m_basicAdustments.insert(std::pair<BasicAdjustments, LimitedRangeValue>(WORLD_SCALE, LimitedRangeValue(metersToWorldUnits, 0.0001f, 1000000.0f)));
-	m_basicAdustments.insert(std::pair<BasicAdjustments, LimitedRangeValue>(HUD_DISTANCE, LimitedRangeValue(1.0f, 0.1f, 100.0f))); 
-	m_basicAdustments.insert(std::pair<BasicAdjustments, LimitedRangeValue>(HUD_SCALE, LimitedRangeValue(1.0f, 0.1f, 100000.0f)));
+	m_basicAdustments.insert(std::pair<BasicAdjustments, LimitedRangeValue>(SEPARATION_ADJUSTMENT, LimitedRangeValue(0.0f, minSeparationAdjusment, maxSeparationAdjusment))); // meters
+	m_basicAdustments.insert(std::pair<BasicAdjustments, LimitedRangeValue>(WORLD_SCALE, LimitedRangeValue(metersToWorldUnits, 0.0001f, 1000000.0f))); // multiply a value in meters by this to get world units
+	m_basicAdustments.insert(std::pair<BasicAdjustments, LimitedRangeValue>(HUD_DISTANCE, LimitedRangeValue(1.0f, 0.1f, 100.0f))); // "meters" not actually meters, needs a scaling factor, probably per game, different from world factor (for hl2 the scale factor would seem to need to be be about 2 - not implemented at the moment though)
+	m_basicAdustments.insert(std::pair<BasicAdjustments, LimitedRangeValue>(HUD_SCALE, LimitedRangeValue(3.1f, 0.1f, 100000.0f))); 
 
 
-	n = 0.1f;					
+	n = 0.1f;
 	f = 100.0f;
 	l = -0.5f;
 	r = 0.5f;
 
 	
-
 	RecalculateAll();
 }
 
@@ -65,7 +64,7 @@ void ViewAdjustment::RecalculateAll()
 	float maxSeparationAdjusment = 4 * (IPD_DEFAULT / 2.0f); // Max is arbitrarily 4 * default ipd.
 	float minSeparationAdjusment = -(ipd / 2.0f); // adjustment at minimum value will result in 0 separation
 	
-	m_basicAdustments.insert(std::pair<BasicAdjustments, LimitedRangeValue>(SEPARATION_ADJUSTMENT, LimitedRangeValue(0.0f, minSeparationAdjusment, maxSeparationAdjusment)));
+	m_basicAdustments[SEPARATION_ADJUSTMENT].SetNewLimits(0.0f, minSeparationAdjusment, maxSeparationAdjusment);
 	
 	D3DXMatrixIdentity(&matProjection);
 	D3DXMatrixIdentity(&matProjectionInv);
@@ -133,23 +132,15 @@ void ViewAdjustment::ComputeViewTransforms()
 	matViewProjTransformLeft = matProjectionInv * transformLeft * projectLeft;
 	matViewProjTransformRight = matProjectionInv * transformRight * projectRight;
 
-	D3DXMATRIX tempForward;
-	D3DXMatrixTranslation(&tempForward, 0, 0, m_basicAdustments[WORLD_SCALE].Value() * m_basicAdustments[HUD_DISTANCE].Value());
+	D3DXMATRIX hudDistance;
+	D3DXMatrixTranslation(&hudDistance, 0, 0, m_basicAdustments[HUD_DISTANCE].Value());
 
-	D3DXMATRIX orthoLeft;
-	D3DXMATRIX orthoRight;
-	D3DXMatrixTranslation(&orthoLeft, hmdInfo->lensXCenterOffset * LEFT_CONSTANT, 0, 0);
-	D3DXMatrixTranslation(&orthoRight, hmdInfo->lensXCenterOffset * RIGHT_CONSTANT, 0, 0);
+	D3DXMATRIX hudScale;
+	float scalarHUDScale = m_basicAdustments[HUD_SCALE].Value();
+	D3DXMatrixScaling(&hudScale, scalarHUDScale, scalarHUDScale, 1);
 
-	D3DXMATRIX scale;
-	//float tempScale = tempHUDScale * (tempHUDDistance + tempHUDBaseDistance / tempHUDBaseDistance);
-	float tempHUDScale = m_basicAdustments[HUD_SCALE].Value();
-	D3DXMatrixScaling(&scale, tempHUDScale, tempHUDScale, 1);
-
-	// Multiplication by matProjectionInv is done in the MatrixAdjustment, because after that the z coordinate needs to be 0'd before the HUD is moved.
-	// Then this adjustment is applied.
-	orthoToPersViewProjTransformLeft  = /*matProjectionInv */ scale * transformLeft  * tempForward * projectLeft;
-	orthoToPersViewProjTransformRight = /*matProjectionInv */ scale * transformRight * tempForward * projectRight;
+	orthoToPersViewProjTransformLeft  = matProjectionInv * hudScale * transformLeft  * hudDistance * projectLeft;
+	orthoToPersViewProjTransformRight = matProjectionInv * hudScale * transformRight * hudDistance * projectRight;
 
 }
 
@@ -181,6 +172,16 @@ D3DXMATRIX ViewAdjustment::LeftShiftProjection()
 D3DXMATRIX ViewAdjustment::RightShiftProjection()
 {
 	return rightShiftProjection;
+}
+
+D3DXMATRIX ViewAdjustment::LeftOrthoReproject()
+{
+	return orthoToPersViewProjTransformLeft;
+}
+
+D3DXMATRIX ViewAdjustment::RightOrthoReproject()
+{
+	return orthoToPersViewProjTransformRight;
 }
 
 D3DXMATRIX ViewAdjustment::Projection()

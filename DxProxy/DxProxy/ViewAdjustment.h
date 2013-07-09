@@ -71,6 +71,9 @@ public:
 	D3DXMATRIX LeftShiftProjection();
 	D3DXMATRIX RightShiftProjection();
 
+	D3DXMATRIX LeftOrthoReproject();
+	D3DXMATRIX RightOrthoReproject();
+
 	D3DXMATRIX Projection();
 	D3DXMATRIX ProjectionInverse();
 
@@ -88,9 +91,7 @@ public:
 
 	std::shared_ptr<HMDisplayInfo> HMDInfo();
 	
-	//Testing
-	D3DXMATRIX orthoToPersViewProjTransformLeft;
-	D3DXMATRIX orthoToPersViewProjTransformRight;
+	
 
 
 
@@ -121,8 +122,6 @@ private:
 	D3DXMATRIX projectLeft;
 	D3DXMATRIX projectRight;
 
-	
-
 	D3DXMATRIX rollMatrix;
 
 	D3DXMATRIX transformLeft;
@@ -130,6 +129,10 @@ private:
 
 	D3DXMATRIX matViewProjTransformLeft;
 	D3DXMATRIX matViewProjTransformRight;
+
+	//Use to reproject orthographicly projected elements into 3d space.
+	D3DXMATRIX orthoToPersViewProjTransformLeft;
+	D3DXMATRIX orthoToPersViewProjTransformRight;
 
 	
 

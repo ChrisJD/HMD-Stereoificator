@@ -53,23 +53,7 @@ public:
 				D3DXMatrixTranspose(&tempMatrix, &tempMatrix);
 			}
 
-			if (vireio::AlmostSame(inData[15], 1.0f, 0.00001f)) {
-
-				tempLeft = tempMatrix * m_spAdjustmentMatricies->ProjectionInverse(); // orthoToPersViewProjTransformLeft;
-				tempLeft[11] = 0.0f;
-				tempLeft = tempLeft * m_spAdjustmentMatricies->orthoToPersViewProjTransformLeft;
-
-				tempRight = tempMatrix * m_spAdjustmentMatricies->ProjectionInverse(); // orthoToPersViewProjTransformRight;
-				tempRight[11] = 0.0f;
-				tempRight = tempRight * m_spAdjustmentMatricies->orthoToPersViewProjTransformRight;
-
-
-
-				//tempRight = tempMatrix * m_spAdjustmentMatricies->orthoToPersViewProjTransformRight;
-			}
-			else {
-				DoMatrixModification(tempMatrix, tempLeft, tempRight);
-			}
+			DoMatrixModification(tempMatrix, tempLeft, tempRight);
 
 			if (m_bTranspose) {
 				D3DXMatrixTranspose(&tempLeft, &tempLeft);

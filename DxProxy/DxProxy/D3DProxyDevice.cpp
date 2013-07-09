@@ -473,7 +473,7 @@ void D3DProxyDevice::HandleControls()
 			float change = 0.1f;
 
 			if(KEY_DOWN(VK_CONTROL)) {
-				m_spShaderViewAdjustment->ChangeBasicAdjustment(ViewAdjustment::HUD_SCALE, -change);
+				m_spShaderViewAdjustment->ChangeBasicAdjustment(ViewAdjustment::HUD_SCALE, -change * m_spShaderViewAdjustment->BasicAdjustmentValue(ViewAdjustment::HUD_DISTANCE));
 			}
 			else {
 				m_spShaderViewAdjustment->ChangeBasicAdjustment(ViewAdjustment::HUD_DISTANCE, -change);
@@ -491,7 +491,7 @@ void D3DProxyDevice::HandleControls()
 			float change = 0.1f;
 
 			if(KEY_DOWN(VK_CONTROL)) {
-				m_spShaderViewAdjustment->ChangeBasicAdjustment(ViewAdjustment::HUD_SCALE, change);
+				m_spShaderViewAdjustment->ChangeBasicAdjustment(ViewAdjustment::HUD_SCALE, change * m_spShaderViewAdjustment->BasicAdjustmentValue(ViewAdjustment::HUD_DISTANCE));
 			}
 			else {
 				m_spShaderViewAdjustment->ChangeBasicAdjustment(ViewAdjustment::HUD_DISTANCE, change);
