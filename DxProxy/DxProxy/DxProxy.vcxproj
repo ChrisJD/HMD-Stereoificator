@@ -165,6 +165,7 @@
     <ClInclude Include="DataGatherer.h" />
     <ClInclude Include="GameHandler.h" />
     <ClInclude Include="HMDisplayInfo.h" />
+    <ClInclude Include="LimitedRangeValue.h" />
     <ClInclude Include="MatrixDoNothing.h" />
     <ClInclude Include="MatrixHudSquash.h" />
     <ClInclude Include="ShaderMatrixModification.h" />

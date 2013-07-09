@@ -21,11 +21,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <string>
 #include <memory>
+#include <unordered_map>
 #include "d3d9.h"
 #include "d3dx9.h"
 #include "HMDisplayInfo.h"
 #include "Vireio.h"
 #include "ProxyHelper.h"
+#include "LimitedRangeValue.h"
 
 
 #define LEFT_CONSTANT -1
@@ -39,6 +41,16 @@ class ViewAdjustment
 public:	
 	ViewAdjustment(std::shared_ptr<HMDisplayInfo> hmdInfo, float metersToWorldUnits, bool enableRoll);
 	virtual ~ViewAdjustment();
+
+
+	// m_basicAdustments should contain an entry for each enum value here
+	enum BasicAdjustments
+	{
+		SEPARATION_ADJUSTMENT,
+		WORLD_SCALE,
+		HUD_DISTANCE,
+		HUD_SCALE
+	};
 
 	void Load(ProxyHelper::ProxyConfig& cfg);
 	void Save(ProxyHelper::ProxyConfig& cfg);
@@ -63,19 +75,11 @@ public:
 	D3DXMATRIX ProjectionInverse();
 
 	
-	// returns the new separation adjustment in m. (toAdd is the amount to adjust the separation by in m)
-	// new adjustment mgiht be the same as old adjustment if adjustment limit is reached
-	float ChangeSeparationAdjustment(float toAdd);
+	float ChangeBasicAdjustment(BasicAdjustments adjustment, float toAdd);
+	void  ResetBasicAdjustment(BasicAdjustments adjustment);
+	float BasicAdjustmentValue(BasicAdjustments adjustment);
 
-	void ResetSeparationAdjustment();
-
-	// Modifies the world scale with its limits 0.01f and 1,000,000 (arbitrary limit)
-	// NOTE: This should not be changed during normal usage, this is here to facilitate finding a reasonable scale
-	float ChangeWorldScale(float toAdd);
-
-	// returns the current separation adjustment being used in m (this is game and user specific and should be saved appropriately)
-	//TODO remove this and set on gamehandler which has a 'current user'?
-	float SeparationAdjustment();
+	
 
 	// returns the separation being used for view adjustments in game units
 	float SeparationInWorldUnits();
@@ -89,19 +93,13 @@ public:
 	D3DXMATRIX orthoToPersViewProjTransformRight;
 
 
-	float tempHUDScale;
-	float tempHUDDistance;
-	float tempHUDBaseDistance;
 
 	void RecalculateAll();
 private:
 
+	std::unordered_map<BasicAdjustments, LimitedRangeValue> m_basicAdustments;
+
 	
-
-	float minSeparationAdjusment;
-	float maxSeparationAdjusment;
-
-	float separationAdjustment;
 	
 	
 	// Projection Matrix variables
@@ -114,7 +112,6 @@ private:
 
 	D3DXMATRIX matProjection;
 	D3DXMATRIX matProjectionInv;
-	D3DXMATRIX matOrthoProjectionInv;
 
 	// The translation applied to projection to shift it left/right to get project(Left/Right)
 	D3DXMATRIX leftShiftProjection;
@@ -139,7 +136,6 @@ private:
 	std::shared_ptr<HMDisplayInfo> hmdInfo;
 
 	bool rollEnabled;
-	float metersToWorldMultiplier;
 	float ipd;
 };
 

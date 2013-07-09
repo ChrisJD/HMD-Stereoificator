@@ -331,5 +331,8 @@
     <ClInclude Include="..\..\DxProxy\DxProxy\ViewAdjustment.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\DxProxy\DxProxy\LimitedRangeValue.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
