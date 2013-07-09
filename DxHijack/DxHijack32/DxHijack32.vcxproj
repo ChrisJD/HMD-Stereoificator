@@ -190,6 +190,7 @@
     <ClInclude Include="..\..\DxProxy\DxProxy\Direct3DVolumeTexture9.h" />
     <ClInclude Include="..\..\DxProxy\DxProxy\FreeSpaceTracker.h" />
     <ClInclude Include="..\..\DxProxy\DxProxy\GameHandler.h" />
+    <ClInclude Include="..\..\DxProxy\DxProxy\LimitedRangeValue.h" />
     <ClInclude Include="..\..\DxProxy\DxProxy\MatrixSimpleTranslate.h" />
     <ClInclude Include="..\..\DxProxy\DxProxy\MatrixSimpleTranslateColMajor.h" />
     <ClInclude Include="..\..\DxProxy\DxProxy\MatrixSimpleTranslateColMajorIgnoreOrtho.h" />

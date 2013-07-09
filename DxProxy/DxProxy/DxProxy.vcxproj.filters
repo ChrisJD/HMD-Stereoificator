@@ -392,6 +392,12 @@
     <ClInclude Include="HMDisplayInfo.h">
       <Filter>Direct3D9Vireio</Filter>
     </ClInclude>
+    <ClInclude Include="LimitedRangeValue.h">
+      <Filter>Direct3D9Vireio</Filter>
+    </ClInclude>
+    <ClInclude Include="MatrixSimplePlusOrthoReproject.h">
+      <Filter>Direct3D9Vireio\ShaderConstantModification</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="..\..\Release\Stereoificator\cfg\config.xml">

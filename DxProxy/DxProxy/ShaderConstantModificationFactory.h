@@ -22,12 +22,18 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <memory>
 #include "d3d9.h"
 #include "d3dx9.h"
-#include "Vector4SimpleTranslate.h"
+
 #include "ShaderConstantModification.h"
+
+#include "Vector4SimpleTranslate.h"
+
 #include "ShaderMatrixModification.h"
 #include "MatrixIgnoreOrtho.h"
 #include "MatrixDoNothing.h"
 #include "MatrixHudSquash.h"
+#include "MatrixSimplePlusOrthoReproject.h"
+
+
 
 class ShaderConstantModificationFactory
 {
@@ -44,7 +50,8 @@ public:
 		MatDoNothing = 0,
 		MatSimpleTranslate = 1, 
 		MatSimpleTranslateIgnoreOrtho = 3,
-		MatHudSquash = 4
+		MatHudSquash = 4,
+		MatSimpleTranslateOrthoReproject = 5
 	};
 
 
@@ -87,6 +94,9 @@ public:
 
 		case MatHudSquash:
 			return std::make_shared<MatrixHudSquash>(mod, adjustmentMatricies, transpose);
+
+		case MatSimpleTranslateOrthoReproject:
+			return std::make_shared<MatrixSimplePlusOrthoReproject>(mod, adjustmentMatricies, transpose);
 
 		default:
 			OutputDebugString("Nonexistant matrix modification\n");

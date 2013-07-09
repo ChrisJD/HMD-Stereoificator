@@ -22,22 +22,25 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 ViewAdjustment::ViewAdjustment(std::shared_ptr<HMDisplayInfo> displayInfo, float metersToWorldUnits, bool enableRoll) :
 	hmdInfo(displayInfo),
-	metersToWorldMultiplier(metersToWorldUnits),
-	rollEnabled(enableRoll)
+	rollEnabled(enableRoll),
+	m_basicAdustments()
 {
-	separationAdjustment = 0.0f;
-
 	ipd = IPD_DEFAULT;
+	float maxSeparationAdjusment = 4 * (IPD_DEFAULT / 2.0f); // Max is arbitrarily 4 * default ipd separation.
+	float minSeparationAdjusment = -(IPD_DEFAULT / 2.0f); // adjustment at minimum value will result in 0 separation
+	
+	m_basicAdustments.insert(std::pair<BasicAdjustments, LimitedRangeValue>(SEPARATION_ADJUSTMENT, LimitedRangeValue(0.0f, minSeparationAdjusment, maxSeparationAdjusment))); // meters
+	m_basicAdustments.insert(std::pair<BasicAdjustments, LimitedRangeValue>(WORLD_SCALE, LimitedRangeValue(metersToWorldUnits, 0.0001f, 1000000.0f))); // multiply a value in meters by this to get world units
+	m_basicAdustments.insert(std::pair<BasicAdjustments, LimitedRangeValue>(HUD_DISTANCE, LimitedRangeValue(1.0f, 0.1f, 100.0f))); // "meters" not actually meters, needs a scaling factor, probably per game, different from world factor (for hl2 the scale factor would seem to need to be be about 2 - not implemented at the moment though)
+	m_basicAdustments.insert(std::pair<BasicAdjustments, LimitedRangeValue>(HUD_SCALE, LimitedRangeValue(3.1f, 0.1f, 100000.0f))); 
 
-	n = 0.1f;					
+
+	n = 0.1f;
 	f = 100.0f;
 	l = -0.5f;
 	r = 0.5f;
 
-	tempHUDBaseDistance = 0.2f;
-	tempHUDDistance = 1.3f;
-	tempHUDScale = 1.9f;
-
+	
 	RecalculateAll();
 }
 
@@ -49,8 +52,8 @@ ViewAdjustment::~ViewAdjustment()
 void ViewAdjustment::Load(ProxyHelper::ProxyConfig& cfg) 
 {
 	rollEnabled = cfg.rollEnabled;
-	metersToWorldMultiplier  = cfg.worldScaleFactor;
-	separationAdjustment = cfg.separationAdjustment;
+	m_basicAdustments[WORLD_SCALE].SetValue(cfg.worldScaleFactor);
+	m_basicAdustments[SEPARATION_ADJUSTMENT].SetValue(cfg.separationAdjustment);
 	ipd = cfg.ipd;
 
 	RecalculateAll();
@@ -58,12 +61,13 @@ void ViewAdjustment::Load(ProxyHelper::ProxyConfig& cfg)
 
 void ViewAdjustment::RecalculateAll()
 {
-	minSeparationAdjusment = -(ipd / 2.0f); // Max minimum 0 separation
-	maxSeparationAdjusment = 4 * (IPD_DEFAULT / 2.0f); // Max is arbitrarily 4 * default ipd.
-
+	float maxSeparationAdjusment = 4 * (IPD_DEFAULT / 2.0f); // Max is arbitrarily 4 * default ipd.
+	float minSeparationAdjusment = -(ipd / 2.0f); // adjustment at minimum value will result in 0 separation
+	
+	m_basicAdustments[SEPARATION_ADJUSTMENT].SetNewLimits(0.0f, minSeparationAdjusment, maxSeparationAdjusment);
+	
 	D3DXMatrixIdentity(&matProjection);
 	D3DXMatrixIdentity(&matProjectionInv);
-	D3DXMatrixIdentity(&matOrthoProjectionInv);
 	D3DXMatrixIdentity(&leftShiftProjection);
 	D3DXMatrixIdentity(&rightShiftProjection);
 	D3DXMatrixIdentity(&projectLeft);
@@ -81,10 +85,10 @@ void ViewAdjustment::RecalculateAll()
 void ViewAdjustment::Save(ProxyHelper::ProxyConfig& cfg) 
 {
 	cfg.rollEnabled = rollEnabled;
-	cfg.separationAdjustment = separationAdjustment;
+	cfg.separationAdjustment = m_basicAdustments[SEPARATION_ADJUSTMENT].Value();
 	
-	//worldscale and ipd are not normally edited;
-	cfg.worldScaleFactor = metersToWorldMultiplier;
+	//worldscale and ipd are not normally changed on the fly during normal operation;
+	cfg.worldScaleFactor = m_basicAdustments[WORLD_SCALE].Value();
 	cfg.ipd = ipd;
 }
 
@@ -95,12 +99,7 @@ void ViewAdjustment::UpdateProjectionMatrices(float aspectRatio)
 
 	D3DXMatrixPerspectiveOffCenterLH(&matProjection, l, r, b, t, n, f);
 	D3DXMatrixInverse(&matProjectionInv, 0, &matProjection);
-
-	D3DXMATRIX tempOrtho;
-	D3DXMatrixOrthoLH(&tempOrtho, 1680.0f, 1050.0f, 0.1f, 100.0f);
-	D3DXMatrixInverse(&matOrthoProjectionInv, 0, &tempOrtho);
-
-
+	
 	// The lensXCenterOffset is in the same -1 to 1 space as the perspective so shift by that amount to move projection in line with the lenses
 	D3DXMatrixTranslation(&leftShiftProjection, hmdInfo->lensXCenterOffset * LEFT_CONSTANT, 0, 0);
 	D3DXMatrixTranslation(&rightShiftProjection, hmdInfo->lensXCenterOffset * RIGHT_CONSTANT, 0, 0);
@@ -133,26 +132,15 @@ void ViewAdjustment::ComputeViewTransforms()
 	matViewProjTransformLeft = matProjectionInv * transformLeft * projectLeft;
 	matViewProjTransformRight = matProjectionInv * transformRight * projectRight;
 
-	D3DXMATRIX tempForward;
-	D3DXMatrixTranslation(&tempForward, 0, 0, /*metersToWorldMultiplier */ tempHUDDistance + tempHUDBaseDistance);
+	D3DXMATRIX hudDistance;
+	D3DXMatrixTranslation(&hudDistance, 0, 0, m_basicAdustments[HUD_DISTANCE].Value());
 
-	//orthoToPersViewProjTransformLeft = matProjectionInv /* transformLeft*/ * tempForward * projectLeft;
-	//orthoToPersViewProjTransformRight = matProjectionInv /* transformRight*/ * tempForward * projectRight;
+	D3DXMATRIX hudScale;
+	float scalarHUDScale = m_basicAdustments[HUD_SCALE].Value();
+	D3DXMatrixScaling(&hudScale, scalarHUDScale, scalarHUDScale, 1);
 
-	D3DXMATRIX orthoLeft;
-	D3DXMATRIX orthoRight;
-	D3DXMatrixTranslation(&orthoLeft, hmdInfo->lensXCenterOffset * LEFT_CONSTANT, 0, 0);
-	D3DXMatrixTranslation(&orthoRight, hmdInfo->lensXCenterOffset * RIGHT_CONSTANT, 0, 0);
-
-	D3DXMATRIX scale;
-	float tempScale = tempHUDScale * (tempHUDDistance + tempHUDBaseDistance / tempHUDBaseDistance);
-	D3DXMatrixScaling(&scale, tempScale, tempScale, 1);
-	//orthoToPersViewProjTransformLeft = /*matProjectionInv * transformLeft * tempForward */ squash * orthoLeft;
-	//orthoToPersViewProjTransformRight = /*matProjectionInv * transformRight * tempForward */ squash * orthoRight;
-
-	
-	orthoToPersViewProjTransformLeft  = /*matProjectionInv */ scale * transformLeft  * tempForward * projectLeft;
-	orthoToPersViewProjTransformRight = /*matProjectionInv */ scale * transformRight * tempForward * projectRight;
+	orthoToPersViewProjTransformLeft  = matProjectionInv * hudScale * transformLeft  * hudDistance * projectLeft;
+	orthoToPersViewProjTransformRight = matProjectionInv * hudScale * transformRight * hudDistance * projectRight;
 
 }
 
@@ -186,6 +174,16 @@ D3DXMATRIX ViewAdjustment::RightShiftProjection()
 	return rightShiftProjection;
 }
 
+D3DXMATRIX ViewAdjustment::LeftOrthoReproject()
+{
+	return orthoToPersViewProjTransformLeft;
+}
+
+D3DXMATRIX ViewAdjustment::RightOrthoReproject()
+{
+	return orthoToPersViewProjTransformRight;
+}
+
 D3DXMATRIX ViewAdjustment::Projection()
 {
 	return matProjection;
@@ -196,37 +194,28 @@ D3DXMATRIX ViewAdjustment::ProjectionInverse()
 	return matProjectionInv;
 }
 
-float ViewAdjustment::ChangeSeparationAdjustment(float toAdd)
-{
-	separationAdjustment += toAdd;
-	
-	vireio::clamp(&separationAdjustment, minSeparationAdjusment, maxSeparationAdjusment);
 
-	return separationAdjustment;
+
+float ViewAdjustment::ChangeBasicAdjustment(BasicAdjustments adjustment, float toAdd)
+{
+	return m_basicAdustments[adjustment].AddToValue(toAdd);
 }
 
-void ViewAdjustment::ResetSeparationAdjustment()
+void ViewAdjustment::ResetBasicAdjustment(BasicAdjustments adjustment)
 {
-	separationAdjustment = 0.0f;
+	m_basicAdustments[adjustment].ResetToDefault();
 }
 
-float ViewAdjustment::ChangeWorldScale(float toAdd)
+float ViewAdjustment::BasicAdjustmentValue(BasicAdjustments adjustment)
 {
-	metersToWorldMultiplier+= toAdd;
-
-	vireio::clamp(&metersToWorldMultiplier, 0.01f, 1000000.0f);
-
-	return metersToWorldMultiplier;
+	return m_basicAdustments[adjustment].Value();
 }
+
+
 
 float ViewAdjustment::SeparationInWorldUnits() 
-{ 
-	return (separationAdjustment + (IPD_DEFAULT / 2.0f)) * metersToWorldMultiplier; 
-}
-
-float ViewAdjustment::SeparationAdjustment() 
-{ 
-	return separationAdjustment; 
+{	
+	return (m_basicAdustments[SEPARATION_ADJUSTMENT].Value() + (ipd / 2.0f)) * m_basicAdustments[WORLD_SCALE].Value(); 
 }
 
 bool ViewAdjustment::RollEnabled() 

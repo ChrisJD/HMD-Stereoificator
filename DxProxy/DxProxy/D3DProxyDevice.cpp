@@ -417,8 +417,8 @@ void D3DProxyDevice::HandleControls()
 		if(KEY_DOWN(VK_NUMPAD0))		// turn on/off stereo3D
 		{
 			std::stringstream sstm;
-			sstm << "HUD Scale: " << m_spShaderViewAdjustment->tempHUDScale << std::endl;
-			sstm << "HUD Distance: " << m_spShaderViewAdjustment->tempHUDDistance << std::endl;
+			sstm << "HUD Scale: " << m_spShaderViewAdjustment->BasicAdjustmentValue(ViewAdjustment::HUD_SCALE) << std::endl;
+			sstm << "HUD Distance: " << m_spShaderViewAdjustment->BasicAdjustmentValue(ViewAdjustment::HUD_DISTANCE) << std::endl;
 			OutputDebugString(sstm.str().c_str());
 
 			anyKeyPressed = true;
@@ -444,9 +444,9 @@ void D3DProxyDevice::HandleControls()
 			} 
 
 			if (worldScaleCalculationMode)
-				m_spShaderViewAdjustment->ChangeWorldScale(-seperationChange);
+				m_spShaderViewAdjustment->ChangeBasicAdjustment(ViewAdjustment::WORLD_SCALE, -seperationChange);
 			else
-				m_spShaderViewAdjustment->ChangeSeparationAdjustment(-seperationChange);
+				m_spShaderViewAdjustment->ChangeBasicAdjustment(ViewAdjustment::SEPARATION_ADJUSTMENT, -seperationChange);
 			
 			saveWaitCount = 500;
 			doSaveNext = true;
@@ -464,9 +464,9 @@ void D3DProxyDevice::HandleControls()
 			} 
 			
 			if (worldScaleCalculationMode)
-				m_spShaderViewAdjustment->ChangeWorldScale(seperationChange);
+				m_spShaderViewAdjustment->ChangeBasicAdjustment(ViewAdjustment::WORLD_SCALE, seperationChange);
 			else
-				m_spShaderViewAdjustment->ChangeSeparationAdjustment(seperationChange);
+				m_spShaderViewAdjustment->ChangeBasicAdjustment(ViewAdjustment::SEPARATION_ADJUSTMENT, seperationChange);
 			
 			saveWaitCount = 500;
 			doSaveNext = true;
@@ -480,12 +480,10 @@ void D3DProxyDevice::HandleControls()
 			float change = 0.1f;
 
 			if(KEY_DOWN(VK_CONTROL)) {
-				m_spShaderViewAdjustment->tempHUDScale -= change;
-				vireio::clamp(&m_spShaderViewAdjustment->tempHUDScale, 0.1f, 10000.0f);
+				m_spShaderViewAdjustment->ChangeBasicAdjustment(ViewAdjustment::HUD_SCALE, -change * m_spShaderViewAdjustment->BasicAdjustmentValue(ViewAdjustment::HUD_DISTANCE));
 			}
 			else {
-				m_spShaderViewAdjustment->tempHUDDistance -= change;
-				vireio::clamp(&m_spShaderViewAdjustment->tempHUDDistance, 0.1f, 10000.0f);
+				m_spShaderViewAdjustment->ChangeBasicAdjustment(ViewAdjustment::HUD_DISTANCE, -change);
 			}
 
 			m_spShaderViewAdjustment->RecalculateAll();
@@ -500,12 +498,10 @@ void D3DProxyDevice::HandleControls()
 			float change = 0.1f;
 
 			if(KEY_DOWN(VK_CONTROL)) {
-				m_spShaderViewAdjustment->tempHUDScale += change;
-				vireio::clamp(&m_spShaderViewAdjustment->tempHUDScale, 0.1f, 10000.0f);
+				m_spShaderViewAdjustment->ChangeBasicAdjustment(ViewAdjustment::HUD_SCALE, change * m_spShaderViewAdjustment->BasicAdjustmentValue(ViewAdjustment::HUD_DISTANCE));
 			}
 			else {
-				m_spShaderViewAdjustment->tempHUDDistance += change;
-				vireio::clamp(&m_spShaderViewAdjustment->tempHUDDistance, 0.1f, 10000.0f);
+				m_spShaderViewAdjustment->ChangeBasicAdjustment(ViewAdjustment::HUD_DISTANCE, change);
 			}
 			
 			
