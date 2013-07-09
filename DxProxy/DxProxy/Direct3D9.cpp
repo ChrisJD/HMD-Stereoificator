@@ -19,7 +19,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "Direct3D9.h"
 #include "Direct3DDevice9.h"
 #include "Main.h"
-#include "D3DProxyDeviceFactory.h"
+#include "D3DProxyDevice.h"
 
 BaseDirect3D9::BaseDirect3D9(IDirect3D9* pD3D) :
 	m_pD3D(pD3D),
@@ -171,7 +171,9 @@ HRESULT WINAPI BaseDirect3D9::CreateDevice(UINT Adapter, D3DDEVTYPE DeviceType, 
 	OutputDebugString("\n");
 
 	// Create and return proxy
-	*ppReturnedDeviceInterface = D3DProxyDeviceFactory::Get(cfg, *ppReturnedDeviceInterface, this);
+	D3DProxyDevice* newDev = new D3DProxyDevice(*ppReturnedDeviceInterface, this);
+	newDev->Init(cfg);
+	*ppReturnedDeviceInterface = newDev;
 
 	OutputDebugString("[OK] Stereoificator D3D device created.\n");
 

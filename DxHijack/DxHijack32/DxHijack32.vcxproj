@@ -121,7 +121,6 @@
     <ClCompile Include="..\..\DxProxy\DxProxy\D3DProxyDevice.cpp" />
     <ClCompile Include="..\..\DxProxy\DxProxy\D3DProxyDeviceAdv.cpp" />
     <ClCompile Include="..\..\DxProxy\DxProxy\D3DProxyDeviceEgo.cpp" />
-    <ClCompile Include="..\..\DxProxy\DxProxy\D3DProxyDeviceFactory.cpp" />
     <ClCompile Include="..\..\DxProxy\DxProxy\DataGatherer.cpp" />
     <ClCompile Include="..\..\DxProxy\DxProxy\Direct3D9.cpp" />
     <ClCompile Include="..\..\DxProxy\DxProxy\Direct3DCubeTexture9.cpp" />
@@ -174,7 +173,6 @@
     <ClInclude Include="..\..\DxProxy\DxProxy\D3DProxyDevice.h" />
     <ClInclude Include="..\..\DxProxy\DxProxy\D3DProxyDeviceAdv.h" />
     <ClInclude Include="..\..\DxProxy\DxProxy\D3DProxyDeviceEgo.h" />
-    <ClInclude Include="..\..\DxProxy\DxProxy\D3DProxyDeviceFactory.h" />
     <ClInclude Include="..\..\DxProxy\DxProxy\DataGatherer.h" />
     <ClInclude Include="..\..\DxProxy\DxProxy\Direct3D9.h" />
     <ClInclude Include="..\..\DxProxy\DxProxy\Direct3DCubeTexture9.h" />
