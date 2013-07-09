@@ -1,5 +1,7 @@
 Stereoificator Change Log.
 
+-HUD reprojection in Source (making the HUD float in 3D space). Adjust distance with F4/F5 and size with ctrl-F4/ctrl-F5
+
 v0.01.0001a (unstable)
 -Experimenting with HUD reprojection in Source (making the HUD float in 3D space). 
 F5 moves HUD away from player position, F4 moves it towards the player. 
