@@ -19,21 +19,21 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef DATAGATHERER_H_INCLUDED
 #define DATAGATHERER_H_INCLUDED
 
-#include "Direct3DDevice9.h"
-#include "D3DProxyDevice.h"
-#include "ProxyHelper.h"
 #include "MurmurHash3.h"
-#include "Direct3DVertexShader9.h"
+#include "D3D9ProxyVertexShader.h"
 
-class DataGatherer : public D3DProxyDevice
+#include <d3dx9.h>
+#include <unordered_set>
+#include <fstream>
+
+
+class DataGatherer
 {
 public:
-	DataGatherer(IDirect3DDevice9* pDevice, BaseDirect3D9* pCreatedBy);
+	DataGatherer();
 	virtual ~DataGatherer();
 	
-	virtual HRESULT WINAPI CreateVertexShader(CONST DWORD* pFunction,IDirect3DVertexShader9** ppShader);
-
-	virtual void Init(ProxyHelper::ProxyConfig& cfg);
+	virtual void OnCreateVertexShader(D3D9ProxyVertexShader* pShader);
 	
 
 private:

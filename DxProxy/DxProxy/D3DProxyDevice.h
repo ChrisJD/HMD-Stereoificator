@@ -22,6 +22,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef D3DPROXYDEVICE_H_INCLUDED
 #define D3DPROXYDEVICE_H_INCLUDED
 
+
 #include "Direct3DDevice9.h"
 
 #include "D3D9ProxySurface.h"
@@ -39,9 +40,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "Direct3DVertexDeclaration9.h"
 #include "Direct3DQuery9.h"
 
-#include "ProxyHelper.h"
-#include "StereoView.h"
-#include "MotionTracker.h"
 #include <d3dx9.h>
 #include <stdio.h>
 #include <iostream>
@@ -50,6 +48,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <vector>
 #include <memory>
 #include <ctime>
+
+#include "DataGatherer.h"
+#include "ProxyHelper.h"
+#include "StereoView.h"
+#include "MotionTracker.h"
 #include "Vireio.h"
 #include "StereoShaderConstant.h"
 #include "StereoBackBuffer.h"
@@ -66,6 +69,7 @@ class StereoView;
 class D3D9ProxySwapChain;
 class ShaderRegisters;
 class GameHandler;
+class DataGatherer;
 
 class D3DProxyDevice : public BaseDirect3DDevice9
 {
@@ -291,6 +295,8 @@ private:
 	bool keyWait;
 
 	 
+	DataGatherer* m_pDataGatherer;
+
 	// To calculate world scale build with this value set to true in the constructor.
 	// Set the IPD in the user cfg to match the lens separation of the hmd.
 	// In-game find something that appears correctly scaled that you can measure against.
@@ -305,6 +311,8 @@ private:
 	bool worldScaleCalculationMode;
 	// Note: Make sure the game fov is set correctly before doing the above. When view is scaled to just fill the horizontal (normal behaviour)
 	// 92.568 (use 92 if only whole numbers can be used) if horizontal, 66 if vertical (16:10 resolution), 61 if vertical (16:9 resolution)
+
+
 };
 
 #endif

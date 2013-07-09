@@ -18,7 +18,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "DataGatherer.h"
 
-DataGatherer::DataGatherer(IDirect3DDevice9* pDevice, BaseDirect3D9* pCreatedBy):D3DProxyDevice(pDevice, pCreatedBy),
+DataGatherer::DataGatherer() :
 	m_recordedShaders()
 {
 	m_shaderDumpFile.open("vertexShaderDump.csv", std::ios::out);
@@ -31,55 +31,35 @@ DataGatherer::~DataGatherer()
 	m_shaderDumpFile.close();
 }
 
-void DataGatherer::Init(ProxyHelper::ProxyConfig& cfg)
+
+
+
+
+void DataGatherer::OnCreateVertexShader(D3D9ProxyVertexShader* pWrappedShader)
 {
-	OutputDebugString("Special Proxy: Shader data gatherer created.\n");
+	LPD3DXCONSTANTTABLE pConstantTable = NULL;
 
-	
-	D3DProxyDevice::Init(cfg);
-}
-
-
-
-
-HRESULT WINAPI DataGatherer::CreateVertexShader(CONST DWORD* pFunction,IDirect3DVertexShader9** ppShader)
-{
-	HRESULT creationResult = D3DProxyDevice::CreateVertexShader(pFunction, ppShader);
-	
-	if (SUCCEEDED(creationResult)) {
-		D3D9ProxyVertexShader* pWrappedShader = static_cast<D3D9ProxyVertexShader*>(*ppShader);		
-	
-		LPD3DXCONSTANTTABLE pConstantTable = NULL;
-
-		BYTE* pData = NULL;
-		UINT pSizeOfData;
-		pWrappedShader->getActual()->GetFunction(NULL, &pSizeOfData);
+	BYTE* pData = NULL;
+	UINT pSizeOfData;
+	pWrappedShader->getActual()->GetFunction(NULL, &pSizeOfData);
 			
-		pData = new BYTE[pSizeOfData];
-		pWrappedShader->getActual()->GetFunction(pData, &pSizeOfData);
+	pData = new BYTE[pSizeOfData];
+	pWrappedShader->getActual()->GetFunction(pData, &pSizeOfData);
 
-		D3DXGetShaderConstantTable(reinterpret_cast<DWORD*>(pData), &pConstantTable);
+	D3DXGetShaderConstantTable(reinterpret_cast<DWORD*>(pData), &pConstantTable);
 			
-		if(pConstantTable == NULL) 
-			return creationResult;
-
-
+	if(pConstantTable != NULL) {
 
 		D3DXCONSTANTTABLE_DESC pDesc;
 		pConstantTable->GetDesc(&pDesc);
 
 		D3DXCONSTANT_DESC pConstantDesc[512];
 		UINT pConstantNum = 512;
-
-			//m_shaderDumpFile << std::endl << std::endl;
-			//m_shaderDumpFile << "Shader Creator: " << pDesc.Creator << std::endl;
-			//m_shaderDumpFile << "Shader Version: " << pDesc.Version << std::endl;
-
 		
 		uint32_t hash = pWrappedShader->GetHash();
 
 		if ((hash != 0) && m_recordedShaders.insert(hash).second && m_shaderDumpFile.is_open()) {
-			// insertion succeeded, shader not recorded yet, record shader details.
+			// insertion succeeded therefore shader not recorded yet so record shader details.
 
 			for(UINT i = 0; i < pDesc.Constants; i++)
 			{
@@ -122,10 +102,8 @@ HRESULT WINAPI DataGatherer::CreateVertexShader(CONST DWORD* pFunction,IDirect3D
 			}
 		}
 		// else shader already recorded
-
-		_SAFE_RELEASE(pConstantTable);
-		if (pData) delete[] pData;
 	}
 
-	return creationResult;
+	_SAFE_RELEASE(pConstantTable);
+	if (pData) delete[] pData;
 }

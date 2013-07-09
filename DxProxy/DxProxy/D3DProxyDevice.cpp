@@ -54,7 +54,8 @@ D3DProxyDevice::D3DProxyDevice(IDirect3DDevice9* pDevice, BaseDirect3D9* pCreate
 	m_activeTextureStages(),
 	m_activeVertexBuffers(),
 	m_activeSwapChains(),
-	m_keyRepeatRate(0.1f) // 100ms
+	m_keyRepeatRate(0.1f), // 100ms
+	m_pDataGatherer(nullptr)
 {
 	OutputDebugString("D3D ProxyDev Created\n");
 
@@ -118,6 +119,9 @@ D3DProxyDevice::~D3DProxyDevice()
 {
 	ReleaseEverything();
 
+	if (m_pDataGatherer)
+		delete m_pDataGatherer;
+
 	m_spShaderViewAdjustment.reset();
 
 	delete m_pGameHandler;
@@ -167,6 +171,9 @@ void D3DProxyDevice::Init(ProxyHelper::ProxyConfig& cfg)
 	m_spShaderViewAdjustment->Load(config);
 	m_pGameHandler->Load(config, m_spShaderViewAdjustment);
 	stereoView = StereoViewFactory::Get(config, m_spShaderViewAdjustment->HMDInfo());
+
+	if (cfg.game_type == 11)
+		m_pDataGatherer = new DataGatherer();
 
 	OnCreateOrRestore();
 }
@@ -1011,7 +1018,12 @@ HRESULT WINAPI D3DProxyDevice::CreateVertexShader(CONST DWORD* pFunction,IDirect
 	HRESULT creationResult = BaseDirect3DDevice9::CreateVertexShader(pFunction, &pActualVShader);
 
 	if (SUCCEEDED(creationResult)) {
-		*ppShader = new D3D9ProxyVertexShader(pActualVShader, this, m_pGameHandler->GetShaderModificationRepository());
+		D3D9ProxyVertexShader* pWrappedVertexShader = new D3D9ProxyVertexShader(pActualVShader, this, m_pGameHandler->GetShaderModificationRepository());
+		*ppShader = pWrappedVertexShader;
+
+		if (m_pDataGatherer) {
+			m_pDataGatherer->OnCreateVertexShader(pWrappedVertexShader);
+		}
 	}
 
 	return creationResult;
