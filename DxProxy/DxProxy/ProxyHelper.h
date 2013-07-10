@@ -49,7 +49,7 @@ public:
 			rollEnabled(false),
 			shaderRulePath(""),
 			horizontalGameFov(110.0f),
-			ipd(0.064f),
+			ipd(IPD_DEFAULT),
 			hudScale(1.0f),
 			hudDistance(1.0f)
 		{}
@@ -96,11 +96,16 @@ public:
 	// Checks if users.xml exists. If it doesn't the file is created and populated. Returns true if file exists or was created, false if there was a problem
 	bool CheckUsersXml();
 	
+
+	
+
+
 private:
+	void UserConfigFromNode(ProxyConfig& cfg, pugi::xml_node& userSettingsNode);
+
 	bool SaveUserConfig(ProxyConfig& cfg);
 	bool LoadUserConfig(ProxyConfig& config);
 
-	
 };
 
 #endif

@@ -374,11 +374,10 @@ bool ProxyHelper::SaveConfig2(int mode)
 }
 
 
-
+// currently only one user supported. More is realtively low priority just because of the work involved in updating the gui
 bool ProxyHelper::LoadUserConfig(ProxyConfig& config)
 {
 	// get the user_profile
-	bool userFound = false;
 	bool settingsFound = false;
 	char usersPath[512];
 
@@ -402,12 +401,11 @@ bool ProxyHelper::LoadUserConfig(ProxyConfig& config)
 		xml_node user_profile = docUsers.child("users").child("user");
 
 		config.ipd = user_profile.attribute("ipd").as_float(IPD_DEFAULT);
-		vireio::clamp(&config.ipd, 1.0f, 100.0f);
+		vireio::clamp(&config.ipd, 0.01f, 0.1f); // 10mm to 100mm
 
 
 		
 		xml_node gameSettings = user_profile.child("gamesettings");
-		
 
 		for (xml_node settingsEntry = gameSettings.child("game"); settingsEntry; settingsEntry = settingsEntry.next_sibling("game"))
 		{
@@ -415,33 +413,75 @@ bool ProxyHelper::LoadUserConfig(ProxyConfig& config)
 			{
 				OutputDebugString("User specific profile settings found.\n");
 				
-				config.separationAdjustment = settingsEntry.attribute("separationAdjustment").as_float(0.0f);
-				config.swap_eyes = settingsEntry.attribute("swap_eyes").as_bool(true);
-				config.yaw_multiplier = settingsEntry.attribute("yaw_multiplier").as_float(25.0f);
-				config.pitch_multiplier = settingsEntry.attribute("pitch_multiplier").as_float(25.0f);
-				config.roll_multiplier = settingsEntry.attribute("roll_multiplier").as_float(1.0f);
-				config.horizontalGameFov = settingsEntry.attribute("horizontalFoV").as_float(110.0f);
+				UserConfigFromNode(config, settingsEntry);
 
-				config.hudScale = settingsEntry.attribute("hudScale").as_float(1.0f);
-				config.hudDistance= settingsEntry.attribute("hudDistance").as_float(1.0f);
-		
-				if(config.yaw_multiplier <= 0.0f) config.yaw_multiplier = 25.0f;
-				if(config.pitch_multiplier <= 0.0f) config.pitch_multiplier = 25.0f;
-				if(config.roll_multiplier <= 0.0f) config.roll_multiplier = 1.0f;
-
+				settingsFound = true;
 				break;
+			}
+		}
+
+
+		if (!settingsFound) {
+			
+			char defaultUsersPath[512];
+
+			OutputDebugString("No entry for game found in users.xml, attempting to load from defaults.\n");
+			GetPath(defaultUsersPath, "cfg\\defaults.users.xml");
+			OutputDebugString(defaultUsersPath);
+			OutputDebugString("\n");
+
+			xml_document docDefaultUsers;
+			xml_parse_result resultDefaultUsers = docDefaultUsers.load_file(defaultUsersPath);	
+
+			if(resultDefaultUsers.status == status_ok)
+			{
+				xml_node defaultUserProfile = docDefaultUsers.child("users").child("user");
+				xml_node defaultGameSettings = defaultUserProfile.child("gamesettings");
+
+				for (xml_node settingsEntry = defaultGameSettings.child("game"); settingsEntry; settingsEntry = settingsEntry.next_sibling("game"))
+				{
+					if( config.gameName.compare(settingsEntry.attribute("game_name").as_string()) == 0)
+					{
+						OutputDebugString("Default user settings found.\n");
+						
+						UserConfigFromNode(config, settingsEntry);
+						settingsFound = true;
+
+						// As this entry doesn't exist in the existing users.xml, Copy the settings to users.xml and save it
+						gameSettings.append_copy(settingsEntry);
+						docUsers.save_file(usersPath);
+					}
+				}
 			}
 		}
 		
 		
 	}
 
-	if (!(userFound && settingsFound)) {
-		OutputDebugString("Error loading user settings for game.");
+	if (!settingsFound) {
+		OutputDebugString("Error loading user settings for game.\n");
 	}
 
-	return userFound && settingsFound;
+	return settingsFound;
 }
+
+void ProxyHelper::UserConfigFromNode(ProxyConfig& config, pugi::xml_node& userSettingsNode)
+{
+	config.separationAdjustment = userSettingsNode.attribute("separationAdjustment").as_float(0.0f);
+	config.swap_eyes = userSettingsNode.attribute("swap_eyes").as_bool(true);
+	config.yaw_multiplier = userSettingsNode.attribute("yaw_multiplier").as_float(25.0f);
+	config.pitch_multiplier = userSettingsNode.attribute("pitch_multiplier").as_float(25.0f);
+	config.roll_multiplier = userSettingsNode.attribute("roll_multiplier").as_float(1.0f);
+	config.horizontalGameFov = userSettingsNode.attribute("horizontalFoV").as_float(110.0f);
+
+	config.hudScale = userSettingsNode.attribute("hudScale").as_float(1.0f);
+	config.hudDistance= userSettingsNode.attribute("hudDistance").as_float(1.0f);
+		
+	if(config.yaw_multiplier <= 0.0f) config.yaw_multiplier = 25.0f;
+	if(config.pitch_multiplier <= 0.0f) config.pitch_multiplier = 25.0f;
+	if(config.roll_multiplier <= 0.0f) config.roll_multiplier = 1.0f;
+}
+
 
 bool ProxyHelper::SaveUserConfig(ProxyConfig& cfg)
 {
