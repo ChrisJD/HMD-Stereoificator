@@ -411,6 +411,10 @@ bool InitConfig(void)
 		OutputDebugString("Error closing key.\n");
 	}
 
+	// Make sure users.xml is created if it doesn't exist.
+	ProxyHelper helper;
+	helper.CheckUsersXml();
+
 	return true;
 }
 

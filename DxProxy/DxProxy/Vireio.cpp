@@ -21,60 +21,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
 
-#include "D3D9ProxyTexture.h"
-#include "D3D9ProxyVolumeTexture.h"
-#include "D3D9ProxyCubeTexture.h"
 #include "Vireio.h"
 
 
 namespace vireio {
-    
-	// Get actual textures from the various wrapper texture types
-	void UnWrapTexture(IDirect3DBaseTexture9* pWrappedTexture, IDirect3DBaseTexture9** ppActualLeftTexture, IDirect3DBaseTexture9** ppActualRightTexture)
-	{
-		if (!pWrappedTexture)
-			assert (false);
-
-		D3DRESOURCETYPE type = pWrappedTexture->GetType();
-
-		*ppActualLeftTexture = NULL;
-		*ppActualRightTexture = NULL;
-	
-		switch (type)
-		{
-			case D3DRTYPE_TEXTURE:
-			{
-				D3D9ProxyTexture* pDerivedTexture = static_cast<D3D9ProxyTexture*> (pWrappedTexture);
-				*ppActualLeftTexture = pDerivedTexture->getActualLeft();
-				*ppActualRightTexture = pDerivedTexture->getActualRight();
-
-				break;
-			}
-			case D3DRTYPE_VOLUMETEXTURE:
-			{
-				D3D9ProxyVolumeTexture* pDerivedTexture = static_cast<D3D9ProxyVolumeTexture*> (pWrappedTexture);
-				*ppActualLeftTexture = pDerivedTexture->getActual();
-				break;
-			}
-			case D3DRTYPE_CUBETEXTURE:
-			{
-				D3D9ProxyCubeTexture* pDerivedTexture = static_cast<D3D9ProxyCubeTexture*> (pWrappedTexture);
-				*ppActualLeftTexture = pDerivedTexture->getActualLeft();
-				*ppActualRightTexture = pDerivedTexture->getActualRight();
-				break;
-			}
-
-			default:
-				OutputDebugString("Unhandled texture type in SetTexture\n");
-				break;
-		}
-
-		if ((*ppActualLeftTexture) == NULL) {
-			OutputDebugString("No left texture? Unpossible!\n");
-			assert (false);
-		}
-	}
-
 
 	bool AlmostSame(float a, float b, float epsilon)
 	{

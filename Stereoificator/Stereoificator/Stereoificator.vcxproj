@@ -109,12 +109,14 @@
   <ItemGroup>
     <ClCompile Include="..\..\DxProxy\DxProxy\ProxyHelper.cpp" />
     <ClCompile Include="..\..\DxProxy\DxProxy\pugixml.cpp" />
+    <ClCompile Include="..\..\DxProxy\DxProxy\Vireio.cpp" />
     <ClCompile Include="Main.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\DxProxy\DxProxy\ProxyHelper.h" />
     <ClInclude Include="..\..\DxProxy\DxProxy\pugiconfig.hpp" />
     <ClInclude Include="..\..\DxProxy\DxProxy\pugixml.hpp" />
+    <ClInclude Include="..\..\DxProxy\DxProxy\Vireio.h" />
     <ClInclude Include="Resource.h" />
   </ItemGroup>
   <ItemGroup>

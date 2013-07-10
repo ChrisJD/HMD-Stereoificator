@@ -107,10 +107,19 @@ void ProxyHelper::GetPath(char* newFolder, char* path)
 	strcat_s(newFolder, 512, path);
 }
 
+bool FileExists(char* path)
+{
+  DWORD attrib = GetFileAttributes(path);
+
+  return ((attrib != INVALID_FILE_ATTRIBUTES) && !(attrib & FILE_ATTRIBUTE_DIRECTORY));
+}
+
 
 bool ProxyHelper::LoadConfig(ProxyConfig& config)
 {
 	bool fileFound = false;
+	bool profileFound = false;
+	bool userCfgFound = false;
 
 	// set defaults
 	config.game_type = 0;
@@ -154,7 +163,6 @@ bool ProxyHelper::LoadConfig(ProxyConfig& config)
 	OutputDebugString("\n");
 
 	// get the profile
-	bool profileFound = false;
 	char profilePath[512];
 	GetPath(profilePath, "cfg\\profiles.xml");
 	OutputDebugString(profilePath);
@@ -184,28 +192,21 @@ bool ProxyHelper::LoadConfig(ProxyConfig& config)
 	if(resultProfiles.status == status_ok && profileFound && gameProfile)
 	{
 		OutputDebugString("Set the config to profile!!!\n");
-		config.game_type = gameProfile.attribute("game_type").as_int();
+		config.game_type = gameProfile.attribute("game_type").as_int(10);
+		config.gameName = gameProfile.attribute("game_name").as_string();
+
+		OutputDebugString(config.gameName.c_str());
+		OutputDebugString("\n");
 
 		char buf[32];
 		LPCSTR psz = NULL;
-
-		wsprintf(buf,"gameType: %d", gameProfile.attribute("game_type").as_int());
+		wsprintf(buf,"gameType: %d", config.game_type);
 		psz = buf;
 		OutputDebugString(psz);
 		OutputDebugString("\n");
 
-		config.separationAdjustment = gameProfile.attribute("separationAdjustment").as_float(0.0f);
-		config.swap_eyes = gameProfile.attribute("swap_eyes").as_bool(true);
-		config.yaw_multiplier = gameProfile.attribute("yaw_multiplier").as_float(25.0f);
-		config.pitch_multiplier = gameProfile.attribute("pitch_multiplier").as_float(25.0f);
-		config.roll_multiplier = gameProfile.attribute("roll_multiplier").as_float(1.0f);
-		config.horizontalGameFov = gameProfile.attribute("horizontalFoV").as_float(90.0f);
 		config.rollEnabled = gameProfile.attribute("rollEnabled").as_bool(false);
 		config.worldScaleFactor = gameProfile.attribute("worldScaleFactor").as_float(1.0f);
-		
-		if(config.yaw_multiplier == 0.0f) config.yaw_multiplier = 25.0f;
-		if(config.pitch_multiplier == 0.0f) config.pitch_multiplier = 25.0f;
-		if(config.roll_multiplier == 0.0f) config.roll_multiplier = 1.0f;
 		
 		// get file name
 		std::string shaderRulesFileName = gameProfile.attribute("shaderModRules").as_string("");
@@ -219,12 +220,16 @@ bool ProxyHelper::LoadConfig(ProxyConfig& config)
 			config.shaderRulePath = "";
 		}
 
-		
+
+		userCfgFound = LoadUserConfig(config);
 	}
 
-	LoadUserConfig(config);
+	if (!(fileFound && profileFound && userCfgFound)) {
+		OutputDebugString("[ERROR] Could not load part/all of proxy config");
+	}
 
-	return fileFound && profileFound;
+	
+	return fileFound && profileFound && userCfgFound;
 }
 
 bool ProxyHelper::HasProfile(char* name)
@@ -256,35 +261,6 @@ bool ProxyHelper::HasProfile(char* name)
 	return profileFound;
 }
 
-bool ProxyHelper::GetProfile(char* name, ProxyConfig& config)
-{
-	// get the profile
-	bool profileFound = false;
-	char profilePath[512];
-	GetPath(profilePath, "cfg\\profiles.xml");
-
-	xml_document docProfiles;
-	xml_parse_result resultProfiles = docProfiles.load_file(profilePath);
-	xml_node profile;
-
-	if(resultProfiles.status == status_ok)
-	{
-		xml_node xml_profiles = docProfiles.child("profiles");
-
-		for (xml_node profile = xml_profiles.child("profile"); profile; profile = profile.next_sibling("profile"))
-		{
-			if(strcmp(name, profile.attribute("game_exe").value()) == 0)
-			{
-				OutputDebugString("Found a profile!!!\n");
-				profileFound = true;
-
-				break;
-			}
-		}
-	}
-
-	return profileFound;
-}
 
 HRESULT RegGetString(HKEY hKey, LPCTSTR szValueName, LPTSTR * lpszResult) {
  
@@ -332,8 +308,7 @@ HRESULT RegGetString(HKEY hKey, LPCTSTR szValueName, LPTSTR * lpszResult) {
 
 bool ProxyHelper::SaveConfig(ProxyConfig& cfg)
 {
-	SaveProfile(cfg.separationAdjustment, cfg.swap_eyes, cfg.yaw_multiplier, cfg.pitch_multiplier, cfg.roll_multiplier, cfg.worldScaleFactor);
-	return SaveUserConfig(cfg.ipd);
+	return SaveUserConfig(cfg);
 }
 
 
@@ -404,77 +379,118 @@ bool ProxyHelper::LoadUserConfig(ProxyConfig& config)
 {
 	// get the user_profile
 	bool userFound = false;
+	bool settingsFound = false;
 	char usersPath[512];
-	GetPath(usersPath, "cfg\\users.xml");
-	OutputDebugString(usersPath);
-	OutputDebugString("\n");
+
+	if (CheckUsersXml()) {
+
+		GetPath(usersPath, "cfg\\users.xml");
+		OutputDebugString(usersPath);
+		OutputDebugString("\n");
+	}
+	else {
+		GetPath(usersPath, "cfg\\defaults.users.xml");
+		OutputDebugString(usersPath);
+		OutputDebugString("\n");
+	}
 
 	xml_document docUsers;
-	xml_parse_result resultUsers = docUsers.load_file(usersPath);
-	xml_node users;
-	xml_node userProfile;
-	
-	config.ipd = IPD_DEFAULT;
+	xml_parse_result resultUsers = docUsers.load_file(usersPath);	
 
 	if(resultUsers.status == status_ok)
 	{
-		xml_node xml_user_profiles = docUsers.child("users");
+		xml_node user_profile = docUsers.child("users").child("user");
 
-		for (xml_node user_profile = xml_user_profiles.child("user"); user_profile; user_profile = user_profile.next_sibling("user"))
+		config.ipd = user_profile.attribute("ipd").as_float(IPD_DEFAULT);
+		vireio::clamp(&config.ipd, 1.0f, 100.0f);
+
+
+		
+		xml_node gameSettings = user_profile.child("gamesettings");
+		
+
+		for (xml_node settingsEntry = gameSettings.child("game"); settingsEntry; settingsEntry = settingsEntry.next_sibling("game"))
 		{
-			if(strcmp("default", user_profile.attribute("user_name").value()) == 0)
+			if( config.gameName.compare(settingsEntry.attribute("game_name").as_string()) == 0)
 			{
-				OutputDebugString("Load the specific user!!!\n");
-				userProfile = user_profile;
-				userFound = true;
-				config.ipd = userProfile.attribute("ipd").as_float(IPD_DEFAULT);
+				OutputDebugString("User specific profile settings found.\n");
+				
+				config.separationAdjustment = settingsEntry.attribute("separationAdjustment").as_float(0.0f);
+				config.swap_eyes = settingsEntry.attribute("swap_eyes").as_bool(true);
+				config.yaw_multiplier = settingsEntry.attribute("yaw_multiplier").as_float(25.0f);
+				config.pitch_multiplier = settingsEntry.attribute("pitch_multiplier").as_float(25.0f);
+				config.roll_multiplier = settingsEntry.attribute("roll_multiplier").as_float(1.0f);
+				config.horizontalGameFov = settingsEntry.attribute("horizontalFoV").as_float(110.0f);
+
+				config.hudScale = settingsEntry.attribute("hudScale").as_float(1.0f);
+				config.hudDistance= settingsEntry.attribute("hudDistance").as_float(1.0f);
+		
+				if(config.yaw_multiplier <= 0.0f) config.yaw_multiplier = 25.0f;
+				if(config.pitch_multiplier <= 0.0f) config.pitch_multiplier = 25.0f;
+				if(config.roll_multiplier <= 0.0f) config.roll_multiplier = 1.0f;
+
 				break;
 			}
 		}
+		
+		
 	}
-	return userFound;
+
+	if (!(userFound && settingsFound)) {
+		OutputDebugString("Error loading user settings for game.");
+	}
+
+	return userFound && settingsFound;
 }
 
-bool ProxyHelper::SaveUserConfig(float ipd)
+bool ProxyHelper::SaveUserConfig(ProxyConfig& cfg)
 {
 	// get the profile
-	bool profileFound = false;
 	bool profileSaved = false;
 	char profilePath[512];
 	GetPath(profilePath, "cfg\\users.xml");
 	OutputDebugString(profilePath);
 	OutputDebugString("\n");
 
-	xml_document docProfiles;
-	xml_parse_result resultProfiles = docProfiles.load_file(profilePath);
-	xml_node profile;
-	xml_node gameProfile;
+	xml_document userProfiles;
+	xml_parse_result userProfilesResult = userProfiles.load_file(profilePath);
 
-	if(resultProfiles.status == status_ok)
+	if(userProfilesResult.status == status_ok)
 	{
-		xml_node xml_profiles = docProfiles.child("users");
+		xml_node user_profile = userProfiles.child("users").child("user");
 
-		for (xml_node profile = xml_profiles.child("user"); profile; profile = profile.next_sibling("user"))
-		{
-			if(strcmp("default", profile.attribute("user_name").value()) == 0)
+		if (user_profile.type() != node_null) {
+
+			user_profile.attribute("ipd") = cfg.ipd;
+
+			xml_node gameSettings = user_profile.child("gamesettings");
+			for (xml_node settingsEntry = gameSettings.child("game"); settingsEntry; settingsEntry = settingsEntry.next_sibling("game"))
 			{
-				OutputDebugString("Load the specific profile!!!\n");
-				gameProfile = profile;
-				profileFound = true;
-				break;
+				if( cfg.gameName.compare(settingsEntry.attribute("game_name").as_string()) == 0)
+				{
+
+					settingsEntry.attribute("separationAdjustment") = cfg.separationAdjustment;
+					settingsEntry.attribute("swap_eyes") = cfg.swap_eyes;
+					settingsEntry.attribute("yaw_multiplier") = cfg.yaw_multiplier;
+					settingsEntry.attribute("pitch_multiplier") = cfg.pitch_multiplier;
+					settingsEntry.attribute("roll_multiplier") = cfg.roll_multiplier;
+					settingsEntry.attribute("horizontalFoV") = cfg.horizontalGameFov;
+
+					settingsEntry.attribute("hudScale") = cfg.hudScale;
+					settingsEntry.attribute("hudDistance")= cfg.hudDistance;
+
+					OutputDebugString("Saving the user settings to users.xml!!!\n");
+					userProfiles.save_file(profilePath);
+					profileSaved = true;
+
+					break;
+				}
 			}
 		}
 	}
 
-	if(resultProfiles.status == status_ok && profileFound && gameProfile)
-	{
-		OutputDebugString("Save the settings to profile!!!\n");
-
-		gameProfile.attribute("ipd") = ipd;
-
-		docProfiles.save_file(profilePath);
-
-		profileSaved = true;
+	if (!profileSaved) {
+		OutputDebugString("[ERROR] Setting NOT saved to users.xml");
 	}
 
 	return profileSaved;
@@ -508,57 +524,33 @@ bool ProxyHelper::GetConfig(int& mode, int& mode2)
 	return false;
 }
 
-bool ProxyHelper::SaveProfile(float sepAdjustmet, bool swap, float yaw, float pitch, float roll, float worldScale)
+
+bool ProxyHelper::CheckUsersXml()
 {
-	// get the target exe
-	GetTargetExe();
-	OutputDebugString("Got target exe as: ");
-	OutputDebugString(targetExe);
-	OutputDebugString("\n");
+	char usersPath[512];
+	GetPath(usersPath, "cfg\\users.xml");
+	bool usersXMLExists = FileExists(usersPath);
 
-	// get the profile
-	bool profileFound = false;
-	bool profileSaved = false;
-	char profilePath[512];
-	GetPath(profilePath, "cfg\\profiles.xml");
-	OutputDebugString(profilePath);
-	OutputDebugString("\n");
+	if (usersXMLExists)
+		return true;
 
-	xml_document docProfiles;
-	xml_parse_result resultProfiles = docProfiles.load_file(profilePath);
-	xml_node profile;
-	xml_node gameProfile;
+	char defaultUsersPath[512];
+	GetPath(defaultUsersPath, "cfg\\defaults.users.xml");
+	if (!FileExists(defaultUsersPath)) {
+		OutputDebugString("[ERROR] default.users.xml could not be found.");
+		return false;
+	}
 
+	xml_document docDefaultUsers;
+	xml_parse_result resultProfiles = docDefaultUsers.load_file(defaultUsersPath);
+
+	// save the file as users.xml
 	if(resultProfiles.status == status_ok)
 	{
-		xml_node xml_profiles = docProfiles.child("profiles");
+		docDefaultUsers.save_file(usersPath);
 
-		for (xml_node profile = xml_profiles.child("profile"); profile; profile = profile.next_sibling("profile"))
-		{
-			if(strcmp(targetExe, profile.attribute("game_exe").value()) == 0)
-			{
-				OutputDebugString("Load the specific profile!!!\n");
-				gameProfile = profile;
-				profileFound = true;
-				break;
-			}
-		}
+		return true;
 	}
 
-	if(resultProfiles.status == status_ok && profileFound && gameProfile)
-	{
-		OutputDebugString("Save the settings to profile!!!\n");
-
-		gameProfile.attribute("separationAdjustment") = sepAdjustmet;
-		gameProfile.attribute("swap_eyes") = swap;
-		gameProfile.attribute("yaw_multiplier") = yaw;
-		gameProfile.attribute("pitch_multiplier") = pitch;
-		gameProfile.attribute("roll_multiplier") = roll;
-		gameProfile.attribute("worldScaleFactor") = worldScale;
-		docProfiles.save_file(profilePath);
-
-		profileSaved = true;
-	}
-
-	return profileSaved;
+	return false;
 }

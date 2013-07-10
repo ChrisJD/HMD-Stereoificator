@@ -406,7 +406,7 @@
     <CustomBuild Include="..\..\Release\Stereoificator\cfg\profiles.xml">
       <Filter>cfg</Filter>
     </CustomBuild>
-    <CustomBuild Include="..\..\Release\Stereoificator\cfg\users.xml">
+    <CustomBuild Include="..\..\Release\Stereoificator\cfg\defaults.users.xml">
       <Filter>cfg</Filter>
     </CustomBuild>
   </ItemGroup>

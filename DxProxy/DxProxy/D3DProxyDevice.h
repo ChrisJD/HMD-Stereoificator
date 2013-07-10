@@ -238,6 +238,12 @@ protected:
 
 private:
 
+	/*
+		Returns actual textures from wrapped texture.
+		pWrappedTexture - Input, wrapped texture
+		ppActualLeftTexture, ppActualRightTexture - Output. Will be set to the actual texztures from pWrappedTexture. Left should never be NULL. Right maybe NULL if texture isn't stereo
+	 */
+    void UnWrapTexture(IDirect3DBaseTexture9* pWrappedTexture, IDirect3DBaseTexture9** ppActualLeftTexture, IDirect3DBaseTexture9** ppActualRightTexture);
 
 	void ReleaseEverything();
 	bool isViewportDefaultForMainRT(CONST D3DVIEWPORT9* pViewport);

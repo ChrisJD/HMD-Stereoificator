@@ -1433,7 +1433,7 @@ HRESULT WINAPI D3DProxyDevice::SetTexture(DWORD Stage,IDirect3DBaseTexture9* pTe
 		IDirect3DBaseTexture9* pActualLeftTexture = NULL;
 		IDirect3DBaseTexture9* pActualRightTexture = NULL;
 
-		vireio::UnWrapTexture(pTexture, &pActualLeftTexture, &pActualRightTexture);
+		UnWrapTexture(pTexture, &pActualLeftTexture, &pActualRightTexture);
 		
 		// Try and Update the actual devices textures
 		if ((pActualRightTexture == NULL) || (m_currentRenderingSide == vireio::Left)) // use left (mono) if not stereo or one left side
@@ -1786,7 +1786,7 @@ bool D3DProxyDevice::setDrawingSide(vireio::RenderPosition side)
 		if (it->second) {
 			pActualLeftTexture = NULL;
 			pActualRightTexture = NULL;
-			vireio::UnWrapTexture(it->second, &pActualLeftTexture, &pActualRightTexture);
+			UnWrapTexture(it->second, &pActualLeftTexture, &pActualRightTexture);
 
 			// if stereo texture
 			if (pActualRightTexture != NULL) { 
@@ -2076,8 +2076,8 @@ HRESULT WINAPI D3DProxyDevice::UpdateTexture(IDirect3DBaseTexture9* pSourceTextu
 	IDirect3DBaseTexture9* pDestTextureLeft = NULL;
 	IDirect3DBaseTexture9* pDestTextureRight = NULL;
 
-	vireio::UnWrapTexture(pSourceTexture, &pSourceTextureLeft, &pSourceTextureRight);
-	vireio::UnWrapTexture(pDestinationTexture, &pDestTextureLeft, &pDestTextureRight);
+	UnWrapTexture(pSourceTexture, &pSourceTextureLeft, &pSourceTextureRight);
+	UnWrapTexture(pDestinationTexture, &pDestTextureLeft, &pDestTextureRight);
 
 
 	HRESULT result = BaseDirect3DDevice9::UpdateTexture(pSourceTextureLeft, pDestTextureLeft);
@@ -2331,4 +2331,51 @@ bool D3DProxyDevice::isViewportDefaultForMainRT(CONST D3DVIEWPORT9* pViewport)
 
 	return  ((pViewport->Height == pRTDesc.Height) && (pViewport->Width == pRTDesc.Width) &&
 			(pViewport->MinZ <= SMALL_FLOAT) && (pViewport->MaxZ >= SLIGHTLY_LESS_THAN_ONE));
+}
+
+
+// Get actual textures from the various wrapper texture types
+void D3DProxyDevice::UnWrapTexture(IDirect3DBaseTexture9* pWrappedTexture, IDirect3DBaseTexture9** ppActualLeftTexture, IDirect3DBaseTexture9** ppActualRightTexture)
+{
+	if (!pWrappedTexture)
+		assert (false);
+
+	D3DRESOURCETYPE type = pWrappedTexture->GetType();
+
+	*ppActualLeftTexture = NULL;
+	*ppActualRightTexture = NULL;
+	
+	switch (type)
+	{
+		case D3DRTYPE_TEXTURE:
+		{
+			D3D9ProxyTexture* pDerivedTexture = static_cast<D3D9ProxyTexture*> (pWrappedTexture);
+			*ppActualLeftTexture = pDerivedTexture->getActualLeft();
+			*ppActualRightTexture = pDerivedTexture->getActualRight();
+
+			break;
+		}
+		case D3DRTYPE_VOLUMETEXTURE:
+		{
+			D3D9ProxyVolumeTexture* pDerivedTexture = static_cast<D3D9ProxyVolumeTexture*> (pWrappedTexture);
+			*ppActualLeftTexture = pDerivedTexture->getActual();
+			break;
+		}
+		case D3DRTYPE_CUBETEXTURE:
+		{
+			D3D9ProxyCubeTexture* pDerivedTexture = static_cast<D3D9ProxyCubeTexture*> (pWrappedTexture);
+			*ppActualLeftTexture = pDerivedTexture->getActualLeft();
+			*ppActualRightTexture = pDerivedTexture->getActualRight();
+			break;
+		}
+
+		default:
+			OutputDebugString("Unhandled texture type in SetTexture\n");
+			break;
+	}
+
+	if ((*ppActualLeftTexture) == NULL) {
+		OutputDebugString("No left texture? Unpossible!\n");
+		assert (false);
+	}
 }

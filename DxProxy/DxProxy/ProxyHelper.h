@@ -34,6 +34,28 @@ public:
 
 	struct ProxyConfig
 	{
+		ProxyConfig() :
+			gameName("Invalid game name"),
+			game_type(10),
+			stereo_mode(26),
+			tracker_mode(0),
+			separationAdjustment(0.0f),
+			aspect_multiplier(1.0f),
+			swap_eyes(true),
+			yaw_multiplier(25.0f),
+			pitch_multiplier(25.0f),
+			roll_multiplier(1.0f),
+			worldScaleFactor(1.0f),
+			rollEnabled(false),
+			shaderRulePath(""),
+			horizontalGameFov(110.0f),
+			ipd(0.064f),
+			hudScale(1.0f),
+			hudDistance(1.0f)
+		{}
+
+
+		std::string gameName;
 		int game_type;
 		int stereo_mode;
 		int tracker_mode;
@@ -51,10 +73,10 @@ public:
 
 		float ipd; // in mm
 
-		// separation and convergence should be here as per game config (separation becoming an adjustment that is added to ipd)
-		
-		////////////////////
+		float hudScale;
+		float hudDistance;
 	};
+
 
 	bool LoadConfig(ProxyConfig& config);
 	char* GetBaseDir();
@@ -67,11 +89,18 @@ public:
 	bool SaveConfig(ProxyConfig& config);
 	bool SaveConfig(int mode = -1, float aspect = -1.0f);
 	bool SaveConfig2(int mode = -1);
-	bool SaveUserConfig(float ipd = IPD_DEFAULT);
-	bool LoadUserConfig(ProxyConfig& config);
+	
 	bool GetConfig(int& mode, int& mode2);
-	bool GetProfile(char* name, ProxyConfig& config);
-	bool SaveProfile(float sepAdjustment = 0.0f, bool swap_eyes = false, float yaw = 25.0f, float pitch = 25.0f, float roll = 1.0f, float worldScale = 1.0f);
+	//bool SaveProfile(float sepAdjustment = 0.0f, bool swap_eyes = false, float yaw = 25.0f, float pitch = 25.0f, float roll = 1.0f, float worldScale = 1.0f);
+
+	// Checks if users.xml exists. If it doesn't the file is created and populated. Returns true if file exists or was created, false if there was a problem
+	bool CheckUsersXml();
+	
+private:
+	bool SaveUserConfig(ProxyConfig& cfg);
+	bool LoadUserConfig(ProxyConfig& config);
+
+	
 };
 
 #endif

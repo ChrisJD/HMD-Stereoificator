@@ -24,6 +24,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <d3d9.h>
 #include <assert.h>
+#include <cmath>
 
 // 64mm in meters
 #define IPD_DEFAULT 0.064f
@@ -38,12 +39,7 @@ namespace vireio {
 		
 	};
 
-	/*
-		Returns actualy textures from wrapped texture.
-		pWrappedTexture - Input, wrapped texture
-		ppActualLeftTexture, ppActualRightTexture - Output. Will be set to the actual texztures from pWrappedTexture. Left should never be NULL. Right maybe NULL if texture isn't stereo
-	 */
-    void UnWrapTexture(IDirect3DBaseTexture9* pWrappedTexture, IDirect3DBaseTexture9** ppActualLeftTexture, IDirect3DBaseTexture9** ppActualRightTexture);
+	
 
 	
 	bool AlmostSame(float a, float b, float epsilon);
