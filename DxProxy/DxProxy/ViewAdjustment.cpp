@@ -86,6 +86,8 @@ void ViewAdjustment::Save(ProxyHelper::ProxyConfig& cfg)
 {
 	cfg.rollEnabled = rollEnabled;
 	cfg.separationAdjustment = m_basicAdustments[SEPARATION_ADJUSTMENT].Value();
+	cfg.hudDistance = m_basicAdustments[HUD_DISTANCE].Value();
+	cfg.hudScale = m_basicAdustments[HUD_SCALE].Value();
 	
 	//worldscale and ipd are not normally changed on the fly during normal operation;
 	cfg.worldScaleFactor = m_basicAdustments[WORLD_SCALE].Value();

@@ -488,8 +488,8 @@ void D3DProxyDevice::HandleControls()
 
 			m_spShaderViewAdjustment->RecalculateAll();
 			
-			//saveWaitCount = 500;
-			//doSaveNext = true;
+			saveWaitCount = 500;
+			doSaveNext = true;
 			anyKeyPressed = true;
 		}
 
@@ -506,8 +506,8 @@ void D3DProxyDevice::HandleControls()
 			
 			
 			
-			//saveWaitCount = 500;
-			//doSaveNext = true;
+			saveWaitCount = 500;
+			doSaveNext = true;
 			anyKeyPressed = true;
 		}
 
