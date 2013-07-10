@@ -1,8 +1,10 @@
 Stereoificator Change Log.
 
 -Clean install needed, don't install over existing without overwriting all files and deleting existing users.xml as xml layout has changed significantly.
--HUD reprojection in Source (making the HUD float in 3D space). Adjust distance with F4/F5 and size with ctrl-F4/ctrl-F5
 -Moved a lot of the cfg options from profiles.xml into users.xml. (users.xml will be generated the first time Stereoificator is run now, it also shouldn't need to be overwritten in the future so settings shouldn't get lost with each new version (no promises))
+-Shift-F6 resets all user.xml settings to defaults.
+-HUD reprojection in Source (making the HUD float in 3D space). Adjust distance with F4/F5 and size with ctrl-F4/ctrl-F5
+
 
 v0.01.0001a (unstable)
 -Experimenting with HUD reprojection in Source (making the HUD float in 3D space). 
