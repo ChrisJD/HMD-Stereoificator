@@ -54,6 +54,8 @@ void ViewAdjustment::Load(ProxyHelper::ProxyConfig& cfg)
 	rollEnabled = cfg.rollEnabled;
 	m_basicAdustments[WORLD_SCALE].SetValue(cfg.worldScaleFactor);
 	m_basicAdustments[SEPARATION_ADJUSTMENT].SetValue(cfg.separationAdjustment);
+	m_basicAdustments[HUD_DISTANCE].SetValue(cfg.hudDistance);
+	m_basicAdustments[HUD_SCALE].SetValue(cfg.hudScale);
 	ipd = cfg.ipd;
 
 	RecalculateAll();

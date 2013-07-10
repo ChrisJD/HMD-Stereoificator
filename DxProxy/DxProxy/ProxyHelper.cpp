@@ -306,6 +306,12 @@ HRESULT RegGetString(HKEY hKey, LPCTSTR szValueName, LPTSTR * lpszResult) {
 }
 
 
+void ProxyHelper::ResetConfigToDeafult(ProxyConfig& config)
+{
+
+}
+
+
 bool ProxyHelper::SaveConfig(ProxyConfig& cfg)
 {
 	return SaveUserConfig(cfg);
@@ -375,23 +381,24 @@ bool ProxyHelper::SaveConfig2(int mode)
 
 
 // currently only one user supported. More is realtively low priority just because of the work involved in updating the gui
-bool ProxyHelper::LoadUserConfig(ProxyConfig& config)
+bool ProxyHelper::LoadUserConfig(ProxyConfig& config, bool forceDefault)
 {
 	// get the user_profile
 	bool settingsFound = false;
 	char usersPath[512];
 
-	if (CheckUsersXml()) {
+	if (forceDefault || !CheckUsersXml()) {
+		GetPath(usersPath, "cfg\\defaults.users.xml");
+		OutputDebugString(usersPath);
+		OutputDebugString("\n");
+	}
+	else {
 
 		GetPath(usersPath, "cfg\\users.xml");
 		OutputDebugString(usersPath);
 		OutputDebugString("\n");
 	}
-	else {
-		GetPath(usersPath, "cfg\\defaults.users.xml");
-		OutputDebugString(usersPath);
-		OutputDebugString("\n");
-	}
+
 
 	xml_document docUsers;
 	xml_parse_result resultUsers = docUsers.load_file(usersPath);	

@@ -516,10 +516,19 @@ void D3DProxyDevice::HandleControls()
 		
 		if(KEY_DOWN(VK_F6))
 		{
-			stereoView->swapEyes = !stereoView->swapEyes;
+			if(KEY_DOWN(VK_SHIFT)) {
+				ProxyHelper helper;
+				helper.LoadUserConfig(config, true);
+				m_spShaderViewAdjustment->Load(config);
+				OutputDebugString("reset defaults pressed\n");
+			}
+			else {
+				stereoView->swapEyes = !stereoView->swapEyes;
+			}
+			
+			
 			saveWaitCount = 500;
 			doSaveNext = true;
-			
 			anyKeyPressed = true;
 		}
 
