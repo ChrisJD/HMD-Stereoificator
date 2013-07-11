@@ -55,7 +55,8 @@ D3DProxyDevice::D3DProxyDevice(IDirect3DDevice9* pDevice, BaseDirect3D9* pCreate
 	m_activeVertexBuffers(),
 	m_activeSwapChains(),
 	m_keyRepeatRate(0.1f), // 100ms
-	m_pDataGatherer(nullptr)
+	m_pDataGatherer(nullptr),
+	m_stereoCursor(nullptr)
 {
 	OutputDebugString("D3D ProxyDev Created\n");
 
@@ -98,6 +99,8 @@ D3DProxyDevice::D3DProxyDevice(IDirect3DDevice9* pDevice, BaseDirect3D9* pCreate
 	m_pCapturingStateTo = NULL;
 
 	m_isFirstBeginSceneOfFrame = true;
+
+	m_showCursor = false;
 
 	yaw_mode = 0;
 	pitch_mode = 0;
@@ -261,6 +264,13 @@ void D3DProxyDevice::ReleaseEverything()
 		hudFont->Release();
 		hudFont = NULL;
 	}
+
+	
+	if (m_stereoCursor) {
+		delete m_stereoCursor;
+		m_showCursor = NULL;
+	}
+	
 
 	
 	m_spManagedShaderRegisters->ReleaseResources();
@@ -1863,6 +1873,10 @@ bool D3DProxyDevice::setDrawingSide(vireio::RenderPosition side)
 
 HRESULT WINAPI D3DProxyDevice::Present(CONST RECT* pSourceRect,CONST RECT* pDestRect,HWND hDestWindowOverride,CONST RGNDATA* pDirtyRegion)
 {
+	if (m_stereoCursor) {
+		m_stereoCursor->DrawCursor();
+	}
+
 	IDirect3DSurface9* pWrappedBackBuffer;
 
 	try {
@@ -1995,10 +2009,44 @@ HRESULT WINAPI D3DProxyDevice::GetRenderTargetData(IDirect3DSurface9* pRenderTar
 
 HRESULT WINAPI D3DProxyDevice::SetCursorProperties(UINT XHotSpot, UINT YHotSpot, IDirect3DSurface9* pCursorBitmap)
 {
+	if (!m_stereoCursor) {
+		m_stereoCursor = new StereoCursor(this);
+	}
+
+	OutputDebugString("Attempt to change cursor bitmap\n");
+
 	if (!pCursorBitmap)
 		return BaseDirect3DDevice9::SetCursorProperties(XHotSpot, YHotSpot, NULL);
 
-	return BaseDirect3DDevice9::SetCursorProperties(XHotSpot, YHotSpot, static_cast<D3D9ProxySurface*>(pCursorBitmap)->getActualLeft());
+	OutputDebugString("Attempt failed, TODO, implement. Default cursor will be used.\n");
+	return D3D_OK;
+}
+
+BOOL WINAPI D3DProxyDevice::ShowCursor(BOOL bShow)
+{
+	// Save last state to return as this is what the Direct3D device would normally return
+	bool lastShowCursorState = m_showCursor;
+
+	m_showCursor = bShow != 0;
+	
+	// Hide hardware cursor
+	BaseDirect3DDevice9::ShowCursor(false);
+
+	if (m_showCursor && !m_stereoCursor) {
+		m_stereoCursor = new StereoCursor(this);
+	}
+
+	return lastShowCursorState; 
+}
+
+void WINAPI D3DProxyDevice::SetCursorPosition(int X,int Y,DWORD Flags)
+{
+	if (!m_stereoCursor) {
+		m_stereoCursor = new StereoCursor(this);
+	}
+
+	// ignore flag, set position to draw cursor
+	m_stereoCursor->SetPosition(X, Y);
 }
 
 

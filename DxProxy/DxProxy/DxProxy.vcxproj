@@ -148,6 +148,7 @@
     <ClCompile Include="ShaderRegisters.cpp" />
     <ClCompile Include="SharedMemoryTracker.cpp" />
     <ClCompile Include="StereoBackbuffer.cpp" />
+    <ClCompile Include="StereoCursor.cpp" />
     <ClCompile Include="StereoView.cpp" />
     <ClCompile Include="StereoViewFactory.cpp" />
     <ClCompile Include="ViewAdjustment.cpp" />
@@ -170,6 +171,7 @@
     <ClInclude Include="MatrixSimplePlusOrthoReproject.h" />
     <ClInclude Include="ShaderMatrixModification.h" />
     <ClInclude Include="MatrixIgnoreOrtho.h" />
+    <ClInclude Include="StereoCursor.h" />
     <ClInclude Include="ViewAdjustment.h" />
     <ClInclude Include="Vireio.h" />
     <ClInclude Include="MurmurHash3.h" />

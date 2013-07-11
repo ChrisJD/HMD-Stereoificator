@@ -52,6 +52,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "DataGatherer.h"
 #include "ProxyHelper.h"
 #include "StereoView.h"
+#include "StereoCursor.h"
 #include "MotionTracker.h"
 #include "Vireio.h"
 #include "StereoShaderConstant.h"
@@ -66,6 +67,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define _SAFE_RELEASE(x) if(x) { x->Release(); x = NULL; } 
 
 class StereoView;
+class StereoCursor;
 class D3D9ProxySwapChain;
 class ShaderRegisters;
 class GameHandler;
@@ -142,6 +144,8 @@ public:
 	virtual HRESULT WINAPI GetFrontBufferData(UINT iSwapChain,IDirect3DSurface9* pDestSurface);
 	virtual HRESULT WINAPI GetRenderTargetData(IDirect3DSurface9* pRenderTarget,IDirect3DSurface9* pDestSurface);
 	virtual HRESULT WINAPI SetCursorProperties(UINT XHotSpot,UINT YHotSpot,IDirect3DSurface9* pCursorBitmap);
+	virtual BOOL	WINAPI ShowCursor(BOOL bShow);
+	virtual void	WINAPI SetCursorPosition(int X,int Y,DWORD Flags);
 	virtual HRESULT WINAPI StretchRect(IDirect3DSurface9* pSourceSurface,CONST RECT* pSourceRect,IDirect3DSurface9* pDestSurface,CONST RECT* pDestRect,D3DTEXTUREFILTERTYPE Filter);
 	virtual HRESULT WINAPI UpdateSurface(IDirect3DSurface9* pSourceSurface,CONST RECT* pSourceRect,IDirect3DSurface9* pDestinationSurface,CONST POINT* pDestPoint);
 	virtual HRESULT WINAPI UpdateTexture(IDirect3DBaseTexture9* pSourceTexture,IDirect3DBaseTexture9* pDestinationTexture);
@@ -315,9 +319,11 @@ private:
 	// You can use other objects if they are to scale and you can make a reasonable guess (example - the steering wheel in F1 2010 is to scale and makes
 	// for a good measuring stick as it's stright infront of the camera)
 	bool worldScaleCalculationMode;
-	// Note: Make sure the game fov is set correctly before doing the above. When view is scaled to just fill the horizontal (normal behaviour)
-	// 92.568 (use 92 if only whole numbers can be used) if horizontal, 66 if vertical (16:10 resolution), 61 if vertical (16:9 resolution)
+	// Note: Make sure the fovs are set correctly (match game fov and horizontalFov) before doing the above.
 
+
+	StereoCursor* m_stereoCursor;
+	bool m_showCursor;
 
 };
 
