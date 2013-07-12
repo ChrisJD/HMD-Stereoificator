@@ -43,6 +43,10 @@ public:
 
 	uint32_t CurrentHashCode();
 	UINT VertexShaderCount();
+
+	//TODO capture a list of shaders to cycle through based on shaders used between start and end (should give much more reasonable list to cycle through)
+	void StartInUseShaderCapture();
+	void EndInUseShaderCapture();
 	
 
 private:
