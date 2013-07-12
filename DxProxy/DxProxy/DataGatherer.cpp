@@ -61,9 +61,10 @@ void DataGatherer::OnCreateVertexShader(D3D9ProxyVertexShader* pWrappedShader)
 		
 		uint32_t hash = pWrappedShader->GetHash();
 
-		if ((hash != 0) && m_recordedShaders.insert(hash).second && m_shaderDumpFile.is_open()) {
-			// insertion succeeded therefore shader not recorded yet so record shader details.
+		if ((hash != 0) && (std::find(m_recordedShaders.begin(), m_recordedShaders.end(), hash) == m_recordedShaders.end()) && m_shaderDumpFile.is_open()) {
 
+			// shader not yet recorded so record shader details.
+			m_recordedShaders.push_back(hash);
 			m_recordedShaderUpdateHandled = false;
 
 			for(UINT i = 0; i < pDesc.Constants; i++)
@@ -114,14 +115,8 @@ void DataGatherer::OnCreateVertexShader(D3D9ProxyVertexShader* pWrappedShader)
 }
 
 
-uint32_t DataGatherer::NextShaderHash()
+void DataGatherer::CheckForListChange()
 {
-	if (m_recordedShaders.size() == 0) {
-		m_currentHash = 0;
-		return;
-	}
-
-
 	// iterator has been invalidated by changes to set
 	if (!m_recordedShaderUpdateHandled) {
 		OutputDebugString("Handling shader list change\n");
@@ -149,6 +144,18 @@ uint32_t DataGatherer::NextShaderHash()
 			}
 		}
 	}
+}
+
+
+uint32_t DataGatherer::NextShaderHash()
+{
+	if (m_recordedShaders.size() == 0) {
+		m_currentHash = 0;
+		return m_currentHash;
+	}
+
+	CheckForListChange();
+	
 
 	// Move to next hash. If that puts us at the end go back to the beginning
 	++m_recordedShaderIterator;
@@ -161,6 +168,29 @@ uint32_t DataGatherer::NextShaderHash()
 
 	return m_currentHash;
 }
+
+uint32_t DataGatherer::PreviousShaderHash()
+{
+	if (m_recordedShaders.size() == 0) {
+		m_currentHash = 0;
+		return m_currentHash;
+	}
+
+	CheckForListChange();
+	
+
+	// Move to previous hash. If that puts us at the start go to the end
+	--m_recordedShaderIterator;
+	if (m_recordedShaderIterator == m_recordedShaders.begin()) {
+		m_recordedShaderIterator = m_recordedShaders.end();
+		OutputDebugString("Wrap around\n");
+	}
+
+	m_currentHash = *m_recordedShaderIterator;
+
+	return m_currentHash;
+}
+
 
 
 bool DataGatherer::ShaderMatchesCurrentHash(D3D9ProxyVertexShader* pShader)
@@ -175,4 +205,9 @@ bool DataGatherer::ShaderMatchesCurrentHash(D3D9ProxyVertexShader* pShader)
 uint32_t DataGatherer::CurrentHashCode()
 {
 	return m_currentHash;
+}
+
+UINT DataGatherer::VertexShaderCount()
+{
+	return m_recordedShaders.size();
 }

@@ -54,7 +54,7 @@ D3DProxyDevice::D3DProxyDevice(IDirect3DDevice9* pDevice, BaseDirect3D9* pCreate
 	m_activeTextureStages(),
 	m_activeVertexBuffers(),
 	m_activeSwapChains(),
-	m_keyRepeatRate(0.1f), // 100ms
+	m_keyRepeatRate(0.15f), // 150ms
 	m_pDataGatherer(nullptr),
 	m_redShaderIsActive(false)
 {
@@ -435,6 +435,7 @@ void D3DProxyDevice::HandleControls()
 			sstm << "HUD Distance: " << m_spShaderViewAdjustment->BasicAdjustmentValue(ViewAdjustment::HUD_DISTANCE) << std::endl;
 			if (m_pDataGatherer) {
 				sstm << "Selected Shader Hash: " << m_pDataGatherer->CurrentHashCode() << std::endl;
+				sstm << "Vertex Shader Count: " << m_pDataGatherer->VertexShaderCount() << std::endl;
 			}
 			OutputDebugString(sstm.str().c_str());
 
@@ -444,9 +445,18 @@ void D3DProxyDevice::HandleControls()
 		if (m_pDataGatherer) {
 			if(KEY_DOWN(VK_NUMPAD1))
 			{
-				OutputDebugString("Next Shader Hash\n");
+				std::stringstream sstm;
+				sstm << "Current Shader Hash: " << m_pDataGatherer->NextShaderHash() << std::endl;
+				OutputDebugString(sstm.str().c_str());
 
-				m_pDataGatherer->NextShaderHash();
+				anyKeyPressed = true;
+			}
+
+			if(KEY_DOWN(VK_NUMPAD2))
+			{
+				std::stringstream sstm;
+				sstm << "Current Shader Hash: " << m_pDataGatherer->PreviousShaderHash() << std::endl;
+				OutputDebugString(sstm.str().c_str());
 
 				anyKeyPressed = true;
 			}
