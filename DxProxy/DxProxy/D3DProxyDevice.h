@@ -248,6 +248,8 @@ private:
 	void ReleaseEverything();
 	bool isViewportDefaultForMainRT(CONST D3DVIEWPORT9* pViewport);
 
+	void BeforeDrawing();
+
 	HRESULT SetStereoViewTransform(D3DXMATRIX pLeftMatrix, D3DXMATRIX pRightMatrix, bool apply);
 	HRESULT SetStereoProjectionTransform(D3DXMATRIX pLeftMatrix, D3DXMATRIX pRightMatrix, bool apply);
 
@@ -319,6 +321,9 @@ private:
 	// 92.568 (use 92 if only whole numbers can be used) if horizontal, 66 if vertical (16:10 resolution), 61 if vertical (16:9 resolution)
 
 
+
+	BaseDirect3DPixelShader9* m_pRedPixelShader;
+	bool m_redShaderIsActive;
 };
 
 #endif

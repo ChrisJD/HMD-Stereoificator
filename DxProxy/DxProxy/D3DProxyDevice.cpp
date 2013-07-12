@@ -55,7 +55,8 @@ D3DProxyDevice::D3DProxyDevice(IDirect3DDevice9* pDevice, BaseDirect3D9* pCreate
 	m_activeVertexBuffers(),
 	m_activeSwapChains(),
 	m_keyRepeatRate(0.1f), // 100ms
-	m_pDataGatherer(nullptr)
+	m_pDataGatherer(nullptr),
+	m_redShaderIsActive(false)
 {
 	OutputDebugString("D3D ProxyDev Created\n");
 
@@ -172,8 +173,9 @@ void D3DProxyDevice::Init(ProxyHelper::ProxyConfig& cfg)
 	m_pGameHandler->Load(config, m_spShaderViewAdjustment);
 	stereoView = StereoViewFactory::Get(config, m_spShaderViewAdjustment->HMDInfo());
 
-	if (cfg.game_type == 11)
+	if (cfg.game_type == 11) {
 		m_pDataGatherer = new DataGatherer();
+	}
 
 	OnCreateOrRestore();
 }
@@ -244,6 +246,45 @@ void D3DProxyDevice::OnCreateOrRestore()
 	}
 
 
+	if (m_pDataGatherer) {
+
+		// Load red pixel shader
+		char viewPath[512];
+		ProxyHelper helper;
+		helper.GetPath(viewPath, "hlsl\\MakeItRed.cso");
+
+		std::ifstream file (viewPath, std::ios::in | std::ios::binary | std::ios::ate);
+
+		if (file.is_open())
+		{
+			std::ifstream::pos_type size = file.tellg();
+			char * memblock;
+			memblock = new char [(unsigned int)size];
+			file.seekg (0, std::ios::beg);
+			file.read (memblock, size);
+			file.close();
+
+			IDirect3DPixelShader9* pPShader;
+			if (FAILED(CreatePixelShader((DWORD*)memblock, &pPShader))) {
+
+				OutputDebugString("MakeItRed, Create shader failed.\n");
+				_SAFE_RELEASE(pPShader);
+			}
+			else {
+				m_pRedPixelShader = static_cast<BaseDirect3DPixelShader9*>(pPShader);
+				OutputDebugString("MakeItRed, Create shader  OK\n");
+			}
+
+			delete[] memblock;
+		}
+		else { 
+			OutputDebugString("Unable to open MakeItRed file\n");
+		}
+
+		
+	}
+
+
 	SetupText();
 
 	stereoView->Init(getActual());
@@ -256,19 +297,13 @@ void D3DProxyDevice::OnCreateOrRestore()
 void D3DProxyDevice::ReleaseEverything()
 {
 	// Fonts and any othe D3DX interfaces should be released first.
-	// They frequently hold stateblocks which are holding further references to other resources.
-	if(hudFont) {
-		hudFont->Release();
-		hudFont = NULL;
-	}
+	_SAFE_RELEASE(hudFont);
+	_SAFE_RELEASE(m_pRedPixelShader);
 
 	
 	m_spManagedShaderRegisters->ReleaseResources();
 
-	if (m_pCapturingStateTo) {
-		m_pCapturingStateTo->Release();
-		m_pCapturingStateTo = NULL;
-	}
+	_SAFE_RELEASE(m_pCapturingStateTo);
 
 	// one of these will still have a count of 1 until the backbuffer is released
 	for(std::vector<D3D9ProxySurface*>::size_type i = 0; i != m_activeRenderTargets.size(); i++) 
@@ -298,32 +333,11 @@ void D3DProxyDevice::ReleaseEverything()
 	}
 
 
-
-
-	if (m_pActiveStereoDepthStencil) {
-		m_pActiveStereoDepthStencil->Release();
-		m_pActiveStereoDepthStencil = NULL;
-	}
-
-	if (m_pActiveIndicies) {
-		m_pActiveIndicies->Release();
-		m_pActiveIndicies = NULL;
-	}
-
-	if (m_pActivePixelShader) {
-		m_pActivePixelShader->Release();
-		m_pActivePixelShader = NULL;
-	}
-
-	if (m_pActiveVertexShader) {
-		m_pActiveVertexShader->Release();
-		m_pActiveVertexShader = NULL;
-	}
-
-	if (m_pActiveVertexDeclaration) {
-		m_pActiveVertexDeclaration->Release();
-		m_pActiveVertexDeclaration = NULL;
-	}
+	_SAFE_RELEASE(m_pActiveStereoDepthStencil);
+	_SAFE_RELEASE(m_pActiveIndicies);
+	_SAFE_RELEASE(m_pActivePixelShader);
+	_SAFE_RELEASE(m_pActiveVertexShader);
+	_SAFE_RELEASE(m_pActiveVertexDeclaration);
 }
 
 
@@ -414,14 +428,28 @@ void D3DProxyDevice::HandleControls()
 
 	if (!keyWait) {
 		
-		if(KEY_DOWN(VK_NUMPAD0))		// turn on/off stereo3D
+		if(KEY_DOWN(VK_NUMPAD0))
 		{
 			std::stringstream sstm;
 			sstm << "HUD Scale: " << m_spShaderViewAdjustment->BasicAdjustmentValue(ViewAdjustment::HUD_SCALE) << std::endl;
 			sstm << "HUD Distance: " << m_spShaderViewAdjustment->BasicAdjustmentValue(ViewAdjustment::HUD_DISTANCE) << std::endl;
+			if (m_pDataGatherer) {
+				sstm << "Selected Shader Hash: " << m_pDataGatherer->CurrentHashCode() << std::endl;
+			}
 			OutputDebugString(sstm.str().c_str());
 
 			anyKeyPressed = true;
+		}
+
+		if (m_pDataGatherer) {
+			if(KEY_DOWN(VK_NUMPAD1))
+			{
+				OutputDebugString("Next Shader Hash\n");
+
+				m_pDataGatherer->NextShaderHash();
+
+				anyKeyPressed = true;
+			}
 		}
 
 
@@ -958,6 +986,8 @@ HRESULT WINAPI D3DProxyDevice::CreateVertexShader(CONST DWORD* pFunction,IDirect
 		if (m_pDataGatherer) {
 			m_pDataGatherer->OnCreateVertexShader(pWrappedVertexShader);
 		}
+
+
 	}
 
 	return creationResult;
@@ -1076,13 +1106,34 @@ HRESULT WINAPI D3DProxyDevice::ColorFill(IDirect3DSurface9* pSurface,CONST RECT*
 }
 
 
+void D3DProxyDevice::BeforeDrawing()
+{
+	m_spManagedShaderRegisters->ApplyAllDirty(m_currentRenderingSide);
 
+	if (m_pDataGatherer) {
+		if (m_pDataGatherer->ShaderMatchesCurrentHash(m_pActiveVertexShader)) {
+
+			if (!m_redShaderIsActive) {
+
+				m_redShaderIsActive = true;
+				getActual()->SetPixelShader(m_pRedPixelShader->getActual());
+			}
+		}
+		else {
+
+			if (m_redShaderIsActive) {
+
+				m_redShaderIsActive = false;
+				getActual()->SetPixelShader(m_pActivePixelShader->getActual());
+			}
+		}
+	}
+}
 
 
 HRESULT WINAPI D3DProxyDevice::DrawPrimitive(D3DPRIMITIVETYPE PrimitiveType,UINT StartVertex,UINT PrimitiveCount)
 {
-	m_spManagedShaderRegisters->ApplyAllDirty(m_currentRenderingSide);
-
+	BeforeDrawing();
 
 	HRESULT result;
 	if (SUCCEEDED(result = BaseDirect3DDevice9::DrawPrimitive(PrimitiveType, StartVertex, PrimitiveCount))) {
@@ -1096,7 +1147,7 @@ HRESULT WINAPI D3DProxyDevice::DrawPrimitive(D3DPRIMITIVETYPE PrimitiveType,UINT
 
 HRESULT WINAPI D3DProxyDevice::DrawIndexedPrimitive(D3DPRIMITIVETYPE PrimitiveType,INT BaseVertexIndex,UINT MinVertexIndex,UINT NumVertices,UINT startIndex,UINT primCount)
 {
-	m_spManagedShaderRegisters->ApplyAllDirty(m_currentRenderingSide);
+	BeforeDrawing();
 
 	HRESULT result;
 	if (SUCCEEDED(result = BaseDirect3DDevice9::DrawIndexedPrimitive(PrimitiveType, BaseVertexIndex, MinVertexIndex, NumVertices, startIndex, primCount))) {
@@ -1113,7 +1164,7 @@ HRESULT WINAPI D3DProxyDevice::DrawIndexedPrimitive(D3DPRIMITIVETYPE PrimitiveTy
 
 HRESULT WINAPI D3DProxyDevice::DrawPrimitiveUP(D3DPRIMITIVETYPE PrimitiveType,UINT PrimitiveCount,CONST void* pVertexStreamZeroData,UINT VertexStreamZeroStride)
 {
-	m_spManagedShaderRegisters->ApplyAllDirty(m_currentRenderingSide);
+	BeforeDrawing();
 
 	HRESULT result;
 	if (SUCCEEDED(result = BaseDirect3DDevice9::DrawPrimitiveUP(PrimitiveType, PrimitiveCount, pVertexStreamZeroData, VertexStreamZeroStride))) {
@@ -1126,7 +1177,7 @@ HRESULT WINAPI D3DProxyDevice::DrawPrimitiveUP(D3DPRIMITIVETYPE PrimitiveType,UI
 
 HRESULT WINAPI D3DProxyDevice::DrawIndexedPrimitiveUP(D3DPRIMITIVETYPE PrimitiveType,UINT MinVertexIndex,UINT NumVertices,UINT PrimitiveCount,CONST void* pIndexData,D3DFORMAT IndexDataFormat,CONST void* pVertexStreamZeroData,UINT VertexStreamZeroStride)
 {
-	m_spManagedShaderRegisters->ApplyAllDirty(m_currentRenderingSide);
+	BeforeDrawing();
 
 	HRESULT result;
 	if (SUCCEEDED(result = BaseDirect3DDevice9::DrawIndexedPrimitiveUP(PrimitiveType, MinVertexIndex, NumVertices, PrimitiveCount, pIndexData, IndexDataFormat, pVertexStreamZeroData, VertexStreamZeroStride))) {
@@ -1139,7 +1190,7 @@ HRESULT WINAPI D3DProxyDevice::DrawIndexedPrimitiveUP(D3DPRIMITIVETYPE Primitive
 
 HRESULT WINAPI D3DProxyDevice::DrawRectPatch(UINT Handle,CONST float* pNumSegs,CONST D3DRECTPATCH_INFO* pRectPatchInfo)
 {
-	m_spManagedShaderRegisters->ApplyAllDirty(m_currentRenderingSide);
+	BeforeDrawing();
 
 	HRESULT result;
 	if (SUCCEEDED(result = BaseDirect3DDevice9::DrawRectPatch(Handle, pNumSegs, pRectPatchInfo))) {
@@ -1152,7 +1203,7 @@ HRESULT WINAPI D3DProxyDevice::DrawRectPatch(UINT Handle,CONST float* pNumSegs,C
 
 HRESULT WINAPI D3DProxyDevice::DrawTriPatch(UINT Handle,CONST float* pNumSegs,CONST D3DTRIPATCH_INFO* pTriPatchInfo)
 {
-	m_spManagedShaderRegisters->ApplyAllDirty(m_currentRenderingSide);
+	BeforeDrawing();
 
 	HRESULT result;
 	if (SUCCEEDED(result = BaseDirect3DDevice9::DrawTriPatch(Handle, pNumSegs, pTriPatchInfo))) {
@@ -1168,7 +1219,7 @@ HRESULT WINAPI D3DProxyDevice::ProcessVertices(UINT SrcStartIndex,UINT DestIndex
 	if (!pDestBuffer)
 		return D3DERR_INVALIDCALL;
 
-	m_spManagedShaderRegisters->ApplyAllDirty(m_currentRenderingSide);
+	BeforeDrawing();
 
 	BaseDirect3DVertexBuffer9* pCastDestBuffer = static_cast<BaseDirect3DVertexBuffer9*>(pDestBuffer);
 	BaseDirect3DVertexDeclaration9* pCastVertexDeclaration = NULL;

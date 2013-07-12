@@ -25,6 +25,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <d3dx9.h>
 #include <unordered_set>
 #include <fstream>
+#include <iterator>
 
 
 class DataGatherer
@@ -35,10 +36,20 @@ public:
 	
 	virtual void OnCreateVertexShader(D3D9ProxyVertexShader* pShader);
 	
+	void NextShaderHash();
+	bool ShaderMatchesCurrentHash(D3D9ProxyVertexShader* pShader);
+
+	uint32_t CurrentHashCode();
+	
 
 private:
 	std::unordered_set<uint32_t> m_recordedShaders;
+	std::unordered_set<uint32_t>::iterator m_recordedShaderIterator;
+
 	std::ofstream m_shaderDumpFile;
+	
+	bool m_recordedShaderUpdateHandled;
+	uint32_t m_currentHash;
 };
 
 #endif

@@ -27,6 +27,7 @@
       <game game_name="Dear Esther" horizontalFoV="110" separationAdjustment="0" swap_eyes="true" yaw_multiplier="1" pitch_multiplier="1" roll_multiplier="1" hudScale="3.1" hudDistance="1"/>
       <game game_name="The Ball" horizontalFoV="110" separationAdjustment="0" swap_eyes="true" yaw_multiplier="25" pitch_multiplier="25" roll_multiplier="1" />
       <game game_name="Dishonored" horizontalFoV="110"  separationAdjustment="0" swap_eyes="true" yaw_multiplier="4.54001" pitch_multiplier="25" roll_multiplier="1" />
+	  <game game_name="Batman Arkham City" horizontalFoV="110"  separationAdjustment="0" swap_eyes="true" yaw_multiplier="25" pitch_multiplier="25" roll_multiplier="1" />
     </gamesettings>
   </user>
 </users>

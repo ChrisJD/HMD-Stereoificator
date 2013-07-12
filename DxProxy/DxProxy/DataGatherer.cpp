@@ -19,7 +19,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "DataGatherer.h"
 
 DataGatherer::DataGatherer() :
-	m_recordedShaders()
+	m_recordedShaders(),
+	m_recordedShaderIterator(m_recordedShaders.begin()),
+	m_currentHash(0),
+	m_recordedShaderUpdateHandled(true)
 {
 	m_shaderDumpFile.open("vertexShaderDump.csv", std::ios::out);
 
@@ -60,6 +63,8 @@ void DataGatherer::OnCreateVertexShader(D3D9ProxyVertexShader* pWrappedShader)
 
 		if ((hash != 0) && m_recordedShaders.insert(hash).second && m_shaderDumpFile.is_open()) {
 			// insertion succeeded therefore shader not recorded yet so record shader details.
+
+			m_recordedShaderUpdateHandled = false;
 
 			for(UINT i = 0; i < pDesc.Constants; i++)
 			{
@@ -106,4 +111,66 @@ void DataGatherer::OnCreateVertexShader(D3D9ProxyVertexShader* pWrappedShader)
 
 	_SAFE_RELEASE(pConstantTable);
 	if (pData) delete[] pData;
+}
+
+
+void DataGatherer::NextShaderHash()
+{
+	if (m_recordedShaders.size() == 0) {
+		m_currentHash = 0;
+		return;
+	}
+
+
+	// iterator has been invalidated by changes to set
+	if (!m_recordedShaderUpdateHandled) {
+		OutputDebugString("Handling shader list change\n");
+		m_recordedShaderUpdateHandled = true;
+		m_recordedShaderIterator = m_recordedShaders.begin();
+
+			
+		if (m_currentHash != 0) {
+
+			// move iterator back to the same hash it was on before
+			bool found = false;
+			while (m_recordedShaderIterator != m_recordedShaders.end()) {
+
+				if (*m_recordedShaderIterator == m_currentHash) {
+					found = true;
+					break;
+				}
+
+				++m_recordedShaderIterator;
+			}
+
+
+			if (!found) {
+				m_recordedShaderIterator = m_recordedShaders.begin();
+			}
+		}
+	}
+
+	// Move to next hash. If that puts us at the end go back to the beginning
+	++m_recordedShaderIterator;
+	if (m_recordedShaderIterator == m_recordedShaders.end()) {
+		m_recordedShaderIterator = m_recordedShaders.begin();
+		OutputDebugString("End of shader hash list\n");
+	}
+
+	m_currentHash = *m_recordedShaderIterator;
+}
+
+
+bool DataGatherer::ShaderMatchesCurrentHash(D3D9ProxyVertexShader* pShader)
+{
+	if (!pShader) {
+		return false;
+	}
+
+	return pShader->GetHash() == m_currentHash;
+}
+
+uint32_t DataGatherer::CurrentHashCode()
+{
+	return m_currentHash;
 }

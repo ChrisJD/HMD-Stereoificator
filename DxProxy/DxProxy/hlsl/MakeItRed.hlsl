@@ -1,0 +1,4 @@
+float4 main() : COLOR
+{
+	return float4(1,0,0,0.75);
+}

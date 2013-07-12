@@ -44,6 +44,9 @@
     <Filter Include="cfg\shader_rules">
       <UniqueIdentifier>{001cd5d3-206b-4679-9b96-8e7a1aacf08f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="hlsl">
+      <UniqueIdentifier>{7704aea2-c0bf-4df4-916f-fcd03ddc979f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
@@ -408,6 +411,9 @@
     </CustomBuild>
     <CustomBuild Include="..\..\Release\Stereoificator\cfg\defaults.users.xml">
       <Filter>cfg</Filter>
+    </CustomBuild>
+    <CustomBuild Include="hlsl\MakeItRed.hlsl">
+      <Filter>hlsl</Filter>
     </CustomBuild>
   </ItemGroup>
 </Project>
