@@ -114,7 +114,7 @@ void DataGatherer::OnCreateVertexShader(D3D9ProxyVertexShader* pWrappedShader)
 }
 
 
-void DataGatherer::NextShaderHash()
+uint32_t DataGatherer::NextShaderHash()
 {
 	if (m_recordedShaders.size() == 0) {
 		m_currentHash = 0;
@@ -158,6 +158,8 @@ void DataGatherer::NextShaderHash()
 	}
 
 	m_currentHash = *m_recordedShaderIterator;
+
+	return m_currentHash;
 }
 
 

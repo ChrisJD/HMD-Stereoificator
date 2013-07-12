@@ -36,7 +36,7 @@ public:
 	
 	virtual void OnCreateVertexShader(D3D9ProxyVertexShader* pShader);
 	
-	void NextShaderHash();
+	uint32_t NextShaderHash();
 	bool ShaderMatchesCurrentHash(D3D9ProxyVertexShader* pShader);
 
 	uint32_t CurrentHashCode();
