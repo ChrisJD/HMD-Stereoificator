@@ -56,6 +56,7 @@ D3DProxyDevice::D3DProxyDevice(IDirect3DDevice9* pDevice, BaseDirect3D9* pCreate
 	m_activeSwapChains(),
 	m_keyRepeatRate(0.15f), // 150ms
 	m_pDataGatherer(nullptr),
+	m_pRedPixelShader(nullptr),
 	m_redShaderIsActive(false)
 {
 	OutputDebugString("D3D ProxyDev Created\n");
