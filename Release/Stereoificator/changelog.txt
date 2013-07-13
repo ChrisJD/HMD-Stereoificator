@@ -1,15 +1,21 @@
 Stereoificator Change Log.
 
--Clean install needed, don't install over existing without overwriting all files and deleting existing users.xml as xml layout has changed significantly.
--Moved a lot of the cfg options from profiles.xml into users.xml. (users.xml will be generated the first time Stereoificator is run now, it also shouldn't need to be overwritten in the future so settings shouldn't get lost with each new version (no promises))
--Shift-F6 resets all user.xml settings to defaults.
--HUD reprojection in Source (making the HUD float in 3D space). Adjust distance with F4/F5 and size with ctrl-F4/ctrl-F5
+v0.01.0005a
 
-
-v0.01.0001a (unstable)
--Experimenting with HUD reprojection in Source (making the HUD float in 3D space). 
-F5 moves HUD away from player position, F4 moves it towards the player. 
-ctrl+F5 scales the HUD up, ctrl-F4 scales it down 
-It would be much better if individual HUD elements were being scaled up, but that's a lot more work to implement. Not sure if anything will actually be readable in the Rift as it is here.
+-Clean install needed, don't install over an existing install as xml layouts have changed significantly.
+-Remember that if a game needs the d3d9.dll copied into its directory then you have to do that again if you install a new version of Stereoificator.
+-Moved a lot of the cfg options from profiles.xml into users.xml. users.xml will be generated the first time Stereoificator is run, it also shouldn't need to be overwritten in the future so user settings shouldn't get lost with each new version (no promises). Only a single user is currently supported.
+-Shift-F6 resets all user settings for the game you are playing to defaults.
+-HUD reprojection in Source (making the HUD float in 3D space). Adjust distance with F4/F5 and size with ctrl-F4/ctrl-F5. (Doesn't handle player names over characters in the l4d games properly.)
+-Fixed tracking rate multipliers not being applied on start.
+-Changed all game profiles to use a default horizontalFov (this scales how much of the screen is used) of 110 (image will fill slightly wider than screen width). Hopefully this is less confusing than the prior defaults.
 -Dishonored profile from: http://www.reddit.com/r/oculus/comments/1h3jcm/hmd_stereoificator_a_fork_of_vireio/cauq2e4
--Changed deafult yaw and pitch multipliers for Dear Esther based on the same post.
+-Changed default yaw and pitch multipliers for Dear Esther based on the same post.
+-Documentation updated to reflect changes https://github.com/ChrisJD/HMD-Stereoificator/wiki
+
+
+Controls added in this build:
+
+Shift-F6 - Resets all user settings for the game you are playing to defaults.
+F4/F5 - Adjust HUD distance from player (Source only)
+Ctrl-F4/Ctrl-F5 - Adjust HUD Scale (Source only)

@@ -15,7 +15,7 @@
     <gamesettings>
       <game game_name="AaAaAA!!!" horizontalFoV="110" separationAdjustment="0" swap_eyes="true" yaw_multiplier="25" pitch_multiplier="25" roll_multiplier="1" />
       <game game_name="inMomentum" horizontalFoV="110" separationAdjustment="0" swap_eyes="true" yaw_multiplier="25" pitch_multiplier="25" roll_multiplier="1" />
-      <game game_name="Mirrors Edge" horizontalFoV="90" separationAdjustment="0" swap_eyes="true" yaw_multiplier="25" pitch_multiplier="25" roll_multiplier="1" />
+      <game game_name="Mirrors Edge" horizontalFoV="110" separationAdjustment="0" swap_eyes="true" yaw_multiplier="25" pitch_multiplier="25" roll_multiplier="1" />
       <game game_name="GRID" horizontalFoV="110" separationAdjustment="0" swap_eyes="true" yaw_multiplier="25" pitch_multiplier="25" roll_multiplier="1" />
       <game game_name="DiRT 2" horizontalFoV="110" separationAdjustment="0" swap_eyes="true" yaw_multiplier="25" pitch_multiplier="25" roll_multiplier="1" />
       <game game_name="DiRT 3" horizontalFoV="110" separationAdjustment="0" swap_eyes="true" yaw_multiplier="25" pitch_multiplier="25" roll_multiplier="1" />
@@ -23,8 +23,8 @@
       <game game_name="Borderlands" horizontalFoV="110" separationAdjustment="0" swap_eyes="true" yaw_multiplier="25" pitch_multiplier="25" roll_multiplier="1" />
       <game game_name="Borderlands 2" horizontalFoV="110" separationAdjustment="0" swap_eyes="true" yaw_multiplier="25" pitch_multiplier="25" roll_multiplier="1" />
       <game game_name="Halflife 2 and Portal" horizontalFoV="110" separationAdjustment="0" swap_eyes="true" yaw_multiplier="25" pitch_multiplier="25" roll_multiplier="1" hudScale="3.1" hudDistance="1" />
-      <game game_name="Left 4 Dead" horizontalFoV="90" separationAdjustment="0" swap_eyes="true" yaw_multiplier="25" pitch_multiplier="25" roll_multiplier="1" hudScale="3.1" hudDistance="1" />
-      <game game_name="Left 4 Dead 2" horizontalFoV="90" separationAdjustment="0" swap_eyes="true" yaw_multiplier="25" pitch_multiplier="25" roll_multiplier="1" hudScale="3.1" hudDistance="1" />
+      <game game_name="Left 4 Dead" horizontalFoV="110" separationAdjustment="0" swap_eyes="true" yaw_multiplier="25" pitch_multiplier="25" roll_multiplier="1" hudScale="3.1" hudDistance="1" />
+      <game game_name="Left 4 Dead 2" horizontalFoV="110" separationAdjustment="0" swap_eyes="true" yaw_multiplier="25" pitch_multiplier="25" roll_multiplier="1" hudScale="3.1" hudDistance="1" />
       <game game_name="Portal 2" horizontalFoV="110" separationAdjustment="0" swap_eyes="true" yaw_multiplier="25" pitch_multiplier="25" roll_multiplier="1" hudScale="3.1" hudDistance="1" />
       <game game_name="Dear Esther" horizontalFoV="110" separationAdjustment="0" swap_eyes="true" yaw_multiplier="1" pitch_multiplier="1" roll_multiplier="1" hudScale="3.1" hudDistance="1"/>
       <game game_name="The Ball" horizontalFoV="110" separationAdjustment="0" swap_eyes="true" yaw_multiplier="25" pitch_multiplier="25" roll_multiplier="1" />
