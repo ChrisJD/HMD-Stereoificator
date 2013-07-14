@@ -1359,6 +1359,14 @@ HRESULT WINAPI D3DProxyDevice::SetRenderTarget(DWORD RenderTargetIndex, IDirect3
 
 				break;
 
+				// TODO: On switch from mono to stereo or vise versa (see SetRenderTarget), set a "primaryRenderTargetModeChanged" flag.
+				// Before drawing check this flag, if it is set, go through all the render targets and set a flag on them
+				// that indicates the contents is either stereo or mono (the result of querying this from the target will 
+				// also depend on whether the surface itself is capable of stereo). 
+
+				// When a texture is copied/updated/set to a sampler check the texture to see if it contains mono or stereo data 
+				// (rather than checking if it is capable of holding said data.)
+
 			case stereoificator::Center:
 
 				// if currently drawing mono but target is stereo switch to first stereo side
@@ -1448,11 +1456,28 @@ HRESULT WINAPI D3DProxyDevice::SetDepthStencilSurface(IDirect3DSurface9* pNewZSt
 	D3D9ProxySurface* pNewDepthStencil = static_cast<D3D9ProxySurface*>(pNewZStencil);
 
 	IDirect3DSurface9* pActualStencilForCurrentSide = NULL;
+
 	if (pNewDepthStencil) {
-		if (m_currentRenderingSide == stereoificator::Left)
-			pActualStencilForCurrentSide = pNewDepthStencil->getActualLeft();
-		else
+		switch (m_currentRenderingSide) 
+		{
+		case stereoificator::Right:
 			pActualStencilForCurrentSide = pNewDepthStencil->getActualRight();
+			break;
+
+		case stereoificator::Left:
+			pActualStencilForCurrentSide = pNewDepthStencil->getActualLeft();
+			break;
+
+		case stereoificator::Center:
+			pActualStencilForCurrentSide = pNewDepthStencil->getActualMono();
+			break;
+
+		default:
+			OutputDebugString("SetDepthStencilSurface - Unknown rendering position");
+			DebugBreak();
+
+			break;
+		}
 	}
 
 	// Update actual depth stencil
