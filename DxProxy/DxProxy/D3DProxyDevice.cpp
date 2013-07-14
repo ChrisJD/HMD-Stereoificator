@@ -1333,28 +1333,54 @@ HRESULT WINAPI D3DProxyDevice::SetRenderTarget(DWORD RenderTargetIndex, IDirect3
 	// Removing a render target
 	if (newRenderTarget == NULL) {
 		if (RenderTargetIndex == 0) {
-			OutputDebugString("Attempt to set primary render target to null");
+			OutputDebugString("Attempt to set primary render target to null, implosion imminent");
+			result = D3DERR_INVALIDCALL; 
 		}		
-		
-		result = BaseDirect3DDevice9::SetRenderTarget(RenderTargetIndex, NULL);
+		else {
+			result = BaseDirect3DDevice9::SetRenderTarget(RenderTargetIndex, NULL);
+		}
+
 	}
 	// Setting actual render target
 	else {
 
-		switch (m_currentRenderingSide) {
+		//  whether rendering is done to in stereo or mono is dependant on the primary render target
+		if (RenderTargetIndex == 0) {
 
+			switch (m_currentRenderingSide) 
+			{
+			case stereoificator::Right:
+			case stereoificator::Left:
+				
+				// if currently drawing stereo but target is mono then switch to mono
+				if (!newRenderTarget->IsStereo()) {
+					setDrawingSide(stereoificator::Center);
+				}
+
+				break;
+
+			case stereoificator::Center:
+
+				// if currently drawing mono but target is stereo switch to first stereo side
+				if (newRenderTarget->IsStereo()) {
+					setDrawingSide(stereoificator::Left);
+				}
+				break;
+
+			default:
+
+				OutputDebugString("SetRenderTarget - Unknown rendering position");
+				DebugBreak();
+
+				break;
+			}
+		}
+
+
+		switch (m_currentRenderingSide) 
+		{
 		case stereoificator::Right:
-
-			if ((RenderTargetIndex == 0) && !newRenderTarget->IsStereo()) {
-
-				// If this is the primary rendertarget and it isn't stereo then we can't make the right side active because there isn't one.
-				// So switch to mono and use that instead.
-				setDrawingSide(stereoificator::Center);
-				result = BaseDirect3DDevice9::SetRenderTarget(RenderTargetIndex, newRenderTarget->getActualMono());
-			}
-			else {
-				result = BaseDirect3DDevice9::SetRenderTarget(RenderTargetIndex, newRenderTarget->getActualRight());
-			}
+			result = BaseDirect3DDevice9::SetRenderTarget(RenderTargetIndex, newRenderTarget->getActualRight());	
 			break;
 
 		case stereoificator::Left:
@@ -1756,7 +1782,7 @@ bool D3DProxyDevice::switchDrawingSide()
  */
 bool D3DProxyDevice::setDrawingSide(stereoificator::RenderPosition side)
 {
-	// Already on the correct eye
+	// Already on the correct poisiton
 	if (side == m_currentRenderingSide) {
 		return true;
 	}
