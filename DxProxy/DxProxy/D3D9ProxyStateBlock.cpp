@@ -19,14 +19,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "D3D9ProxyStateBlock.h"
 #include <assert.h>
 
-D3D9ProxyStateBlock::D3D9ProxyStateBlock(IDirect3DStateBlock9* pActualStateBlock, D3DProxyDevice *pOwningDevice, CaptureType type, bool isSideLeft) :
+D3D9ProxyStateBlock::D3D9ProxyStateBlock(IDirect3DStateBlock9* pActualStateBlock, D3DProxyDevice *pOwningDevice, CaptureType type, stereoificator::RenderPosition renderPosition) :
 	BaseDirect3DStateBlock9(pActualStateBlock, pOwningDevice),
 	m_pWrappedDevice(pOwningDevice),
 	m_eCaptureMode(type),
 	m_storedTextureStages(),
 	m_storedVertexBuffers(),
 	m_storedViewport(),
-	m_eSidesAre(isSideLeft ? SidesAllLeft : SidesAllRight),
 	m_selectedStates(),
 	m_selectedTextureSamplers(),
 	m_selectedVertexStreams(),
@@ -42,13 +41,18 @@ D3D9ProxyStateBlock::D3D9ProxyStateBlock(IDirect3DStateBlock9* pActualStateBlock
 
 	m_pWrappedDevice->AddRef();
 
+	
+	m_eSidesAre = CapSideFrom(renderPosition);
+
 	m_pStoredIndicies = NULL;
 	m_pStoredVertexShader = NULL;
 	m_pStoredVertexDeclaration = NULL;
 	m_pStoredPixelShader = NULL;
 	
+	D3DXMatrixIdentity(&m_storedCenterView);
 	D3DXMatrixIdentity(&m_storedLeftView);
 	D3DXMatrixIdentity(&m_storedRightView);
+	D3DXMatrixIdentity(&m_storedCenterProjection);
 	D3DXMatrixIdentity(&m_storedLeftProjection);
 	D3DXMatrixIdentity(&m_storedRightProjection);
 
@@ -105,6 +109,33 @@ D3D9ProxyStateBlock::~D3D9ProxyStateBlock()
 }
 
 
+D3D9ProxyStateBlock::CaptureSides D3D9ProxyStateBlock::CapSideFrom(stereoificator::RenderPosition renderPos)
+{
+	CaptureSides result;
+	switch (renderPos) 
+	{
+	case stereoificator::Left:
+		result = SidesAllLeft;
+		break;
+
+	case stereoificator::Right:
+		result = SidesAllRight;
+		break;
+
+	case stereoificator::Center:
+		result = SidesAllCenter;
+		break;
+
+	default:
+		OutputDebugString("D3D9ProxyStateBlock() - Unhandled render position");
+		result = SidesMixed;
+		break;
+	}
+
+	return result;
+}
+
+
 void D3D9ProxyStateBlock::ClearCapturedData()
 {
 	auto it = m_storedTextureStages.begin();
@@ -150,8 +181,11 @@ void D3D9ProxyStateBlock::ClearCapturedData()
 		m_pStoredPixelShader = NULL;
 	}
 
+	
+	D3DXMatrixIdentity(&m_storedCenterView);
 	D3DXMatrixIdentity(&m_storedLeftView);
 	D3DXMatrixIdentity(&m_storedRightView);
+	D3DXMatrixIdentity(&m_storedCenterProjection);
 	D3DXMatrixIdentity(&m_storedLeftProjection);
 	D3DXMatrixIdentity(&m_storedRightProjection);
 }
@@ -163,7 +197,8 @@ inline void D3D9ProxyStateBlock::updateCaptureSideTracking()
 		return;
 	
 	if (((m_pWrappedDevice->m_currentRenderingSide == stereoificator::Left) && (m_eSidesAre != SidesAllLeft)) ||
-		((m_pWrappedDevice->m_currentRenderingSide == stereoificator::Right) && (m_eSidesAre != SidesAllRight))) {
+		((m_pWrappedDevice->m_currentRenderingSide == stereoificator::Right) && (m_eSidesAre != SidesAllRight)) ||
+		((m_pWrappedDevice->m_currentRenderingSide == stereoificator::Center) && (m_eSidesAre != SidesAllCenter))) {
 
 		m_eSidesAre = SidesMixed;
 	}
@@ -305,15 +340,7 @@ void D3D9ProxyStateBlock::CaptureSelectedFromProxyDevice()
 	}
 
 
-	if (m_pWrappedDevice->m_currentRenderingSide == stereoificator::Left) {
-		m_eSidesAre = SidesAllLeft;
-	}
-	else if (m_pWrappedDevice->m_currentRenderingSide == stereoificator::Right) {
-		m_eSidesAre = SidesAllRight;
-	}
-	else {
-		OutputDebugString("CaptureSelectedFromProxyDevice: This shouldn't be possible.\n");
-	}
+	m_eSidesAre = CapSideFrom(m_pWrappedDevice->m_currentRenderingSide);
 }
 
 
@@ -338,6 +365,7 @@ void D3D9ProxyStateBlock::Capture(CaptureableState toCap)
 
 		case ViewMatricies: 
 		{
+			m_storedCenterView = m_pWrappedDevice->m_centerView;
 			m_storedLeftView = m_pWrappedDevice->m_leftView;
 			m_storedRightView = m_pWrappedDevice->m_rightView;
 			break;
@@ -345,6 +373,7 @@ void D3D9ProxyStateBlock::Capture(CaptureableState toCap)
 
 		case ProjectionMatricies: 
 		{
+			m_storedCenterProjection = m_pWrappedDevice->m_centerProjection;
 			m_storedLeftProjection = m_pWrappedDevice->m_leftProjection;
 			m_storedRightProjection = m_pWrappedDevice->m_rightProjection;
 			break;
@@ -425,14 +454,14 @@ void D3D9ProxyStateBlock::Apply(CaptureableState toApply, bool reApplyStereo)
 
 		case ViewMatricies: 
 		{
-			m_pWrappedDevice->SetStereoViewTransform(m_storedLeftView, m_storedRightView, reApplyStereo);
+			m_pWrappedDevice->SetStereoViewTransform(m_storedCenterView, m_storedLeftView, m_storedRightView, reApplyStereo);
 
 			break;
 		}
 
 		case ProjectionMatricies: 
 		{
-			m_pWrappedDevice->SetStereoProjectionTransform(m_storedLeftProjection, m_storedRightProjection, reApplyStereo);
+			m_pWrappedDevice->SetStereoProjectionTransform(m_storedCenterProjection, m_storedLeftProjection, m_storedRightProjection, reApplyStereo);
 
 			break;
 		}
@@ -489,13 +518,34 @@ HRESULT WINAPI D3D9ProxyStateBlock::Apply()
 	assert (!m_pWrappedDevice->m_bInBeginEndStateBlock);
 
 
-	// If all stereo states recorded on the same side then switch the proxy device to that side
-	if (m_eSidesAre == SidesAllLeft) {
-		m_pWrappedDevice->setDrawingSide(stereoificator::Left);
+	// If all stereo states recorded on the same side and primary render target is in the correct type to use that side then switch the proxy device to that side
+	switch (m_eSidesAre) 
+	{
+	case SidesAllLeft:
+		if ((m_pWrappedDevice->m_activeRenderTargets[0] != NULL) && !m_pWrappedDevice->m_activeRenderTargets[0]->IsStereo())
+			m_eSidesAre = SidesMixed;
+		else 
+			m_pWrappedDevice->setDrawingSide(stereoificator::Left);
+		break;
+
+	case SidesAllRight:
+		if ((m_pWrappedDevice->m_activeRenderTargets[0] != NULL) && !m_pWrappedDevice->m_activeRenderTargets[0]->IsStereo())
+			m_eSidesAre = SidesMixed;
+		else 
+			m_pWrappedDevice->setDrawingSide(stereoificator::Right);
+		break;
+
+	case SidesAllCenter:
+		if ((m_pWrappedDevice->m_activeRenderTargets[0] != NULL) && m_pWrappedDevice->m_activeRenderTargets[0]->IsStereo())
+			m_eSidesAre = SidesMixed;
+		else 
+			m_pWrappedDevice->setDrawingSide(stereoificator::Center);
+		break;
+
+	default:
+		break;
 	}
-	else if (m_eSidesAre == SidesAllRight) {
-		m_pWrappedDevice->setDrawingSide(stereoificator::Right);
-	}
+
 
 
 	HRESULT result = BaseDirect3DStateBlock9::Apply();
@@ -664,6 +714,7 @@ void D3D9ProxyStateBlock::SelectAndCaptureViewTransform(D3DXMATRIX center, D3DXM
 
 	m_selectedStates.insert(ViewMatricies);
 
+	m_storedCenterView = center;
 	m_storedLeftView = left;
 	m_storedRightView = right;
 
@@ -678,6 +729,7 @@ void D3D9ProxyStateBlock::SelectAndCaptureProjectionTransform(D3DXMATRIX center,
 
 	m_selectedStates.insert(ProjectionMatricies);
 
+	m_storedCenterProjection = center;
 	m_storedLeftProjection = left;
 	m_storedRightProjection = right;
 

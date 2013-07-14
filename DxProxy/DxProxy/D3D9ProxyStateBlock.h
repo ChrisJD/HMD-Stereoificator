@@ -83,7 +83,7 @@ public:
 		The actual state block should be passed by calling EndStateBlock with the actual stateblock in the
 		EndStateBlock of the device.
 	 */
-	D3D9ProxyStateBlock(IDirect3DStateBlock9* pActualStateBlock, D3DProxyDevice* pOwningDevice, CaptureType type, bool isSideLeft);
+	D3D9ProxyStateBlock(IDirect3DStateBlock9* pActualStateBlock, D3DProxyDevice* pOwningDevice, CaptureType type, stereoificator::RenderPosition renderPosition);
 	virtual ~D3D9ProxyStateBlock();
 
 	// ID3D9ProxyStateBlock
@@ -125,6 +125,8 @@ private:
 
 	void Apply(CaptureableState toApply, bool reApplyStereo);
 
+	
+
 	// Needs to be called whenever a stereo state is recorded to see if side remains consistent.
 	// If sides ever become inconsistent amongst tracked stereo states then all stereo states need
 	// to be manually reapplied on apply. If they remain consisten then device side should be switched 
@@ -141,9 +143,11 @@ private:
 	{
 		SidesAllLeft = 1,
 		SidesAllRight = 2,
-		SidesMixed = 3
+		SidesMixed = 3,
+		SidesAllCenter = 4
 	};
 
+	CaptureSides CapSideFrom(stereoificator::RenderPosition renderPos);
 
 
 	/*	Were all states in this block captured while the device side was set to the same side. */
@@ -196,8 +200,10 @@ private:
 	D3DVIEWPORT9 m_storedViewport;
 	
 	// View and Projection matricies (transform)
+	D3DXMATRIX m_storedCenterView;
 	D3DXMATRIX m_storedLeftView;
 	D3DXMATRIX m_storedRightView;
+	D3DXMATRIX m_storedCenterProjection;
 	D3DXMATRIX m_storedLeftProjection;
 	D3DXMATRIX m_storedRightProjection;
 
