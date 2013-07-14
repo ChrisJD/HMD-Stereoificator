@@ -1815,7 +1815,7 @@ bool D3DProxyDevice::switchDrawingSide()
  */
 bool D3DProxyDevice::setDrawingSide(stereoificator::RenderPosition side)
 {
-	// Already on the correct poisiton
+	// Already on the correct position
 	if (side == m_currentRenderingSide) {
 		return true;
 	}
