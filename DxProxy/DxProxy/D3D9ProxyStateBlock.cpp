@@ -522,21 +522,21 @@ HRESULT WINAPI D3D9ProxyStateBlock::Apply()
 	switch (m_eSidesAre) 
 	{
 	case SidesAllLeft:
-		if ((m_pWrappedDevice->m_activeRenderTargets[0] != NULL) && !m_pWrappedDevice->m_activeRenderTargets[0]->IsStereo())
+		if (!m_pWrappedDevice->m_activeRenderTargets[0]->IsStereo())
 			m_eSidesAre = SidesMixed;
 		else 
 			m_pWrappedDevice->setDrawingSide(stereoificator::Left);
 		break;
 
 	case SidesAllRight:
-		if ((m_pWrappedDevice->m_activeRenderTargets[0] != NULL) && !m_pWrappedDevice->m_activeRenderTargets[0]->IsStereo())
+		if (!m_pWrappedDevice->m_activeRenderTargets[0]->IsStereo())
 			m_eSidesAre = SidesMixed;
 		else 
 			m_pWrappedDevice->setDrawingSide(stereoificator::Right);
 		break;
 
 	case SidesAllCenter:
-		if ((m_pWrappedDevice->m_activeRenderTargets[0] != NULL) && m_pWrappedDevice->m_activeRenderTargets[0]->IsStereo())
+		if (m_pWrappedDevice->m_activeRenderTargets[0]->IsStereo())
 			m_eSidesAre = SidesMixed;
 		else 
 			m_pWrappedDevice->setDrawingSide(stereoificator::Center);
