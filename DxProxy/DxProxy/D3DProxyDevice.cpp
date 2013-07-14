@@ -78,8 +78,7 @@ D3DProxyDevice::D3DProxyDevice(IDirect3DDevice9* pDevice, BaseDirect3D9* pCreate
 	D3DXMatrixIdentity(&m_leftProjection);
 	D3DXMatrixIdentity(&m_rightProjection);	
 
-	m_currentRenderingSide = stereoificator::Left;
-	m_pCurrentMatViewTransform = &m_spShaderViewAdjustment->LeftAdjustmentMatrix(); 
+	m_currentRenderingSide = stereoificator::Left; 
 	m_pCurrentView = &m_leftView;
 	m_pCurrentProjection = &m_leftProjection;
 
@@ -205,7 +204,6 @@ void D3DProxyDevice::OnCreateOrRestore()
 	OutputDebugString("\n");
 
 	m_currentRenderingSide = stereoificator::Left;
-	m_pCurrentMatViewTransform = &m_spShaderViewAdjustment->LeftAdjustmentMatrix();
 	m_pCurrentView = &m_leftView;
 	m_pCurrentProjection = &m_leftProjection;
 
@@ -1818,11 +1816,26 @@ bool D3DProxyDevice::setDrawingSide(stereoificator::RenderPosition side)
 	// update view transform for new side 
 	if (m_bViewTransformSet) {
 
-		if (side == stereoificator::Left) {
+		switch (m_currentRenderingSide) {
+
+		case stereoificator::Left:
 			m_pCurrentView = &m_leftView;
-		}
-		else {
+			break;
+
+		case stereoificator::Right:
 			m_pCurrentView = &m_rightView;
+			break;
+
+		case stereoificator::Center:
+			m_pCurrentView = &m_centerView;
+			break;
+
+		default:
+
+			OutputDebugString("Unknown rendering position");
+			DebugBreak();
+
+			break;
 		}
 
 		BaseDirect3DDevice9::SetTransform(D3DTS_VIEW, m_pCurrentView);
@@ -1832,23 +1845,29 @@ bool D3DProxyDevice::setDrawingSide(stereoificator::RenderPosition side)
 	// update projection transform for new side 
 	if (m_bProjectionTransformSet) {
 
-		if (side == stereoificator::Left) {
+		switch (m_currentRenderingSide) {
+
+		case stereoificator::Left:
 			m_pCurrentProjection = &m_leftProjection;
-		}
-		else {
+			break;
+
+		case stereoificator::Right:
 			m_pCurrentProjection = &m_rightProjection;
+			break;
+
+		case stereoificator::Center:
+			m_pCurrentProjection = &m_centerProjection;
+			break;
+
+		default:
+
+			OutputDebugString("Unknown rendering position");
+			DebugBreak();
+
+			break;
 		}
 
 		BaseDirect3DDevice9::SetTransform(D3DTS_PROJECTION, m_pCurrentProjection);
-	}
-
-
-	// Updated computed view translation (used by several derived proxies - see: ComputeViewTranslation)
-	if (side == stereoificator::Left) {
-		m_pCurrentMatViewTransform = &m_spShaderViewAdjustment->LeftAdjustmentMatrix();
-	}
-	else {
-		m_pCurrentMatViewTransform = &m_spShaderViewAdjustment->RightAdjustmentMatrix();
 	}
 
 
@@ -2350,7 +2369,7 @@ HRESULT WINAPI D3DProxyDevice::MultiplyTransform(D3DTRANSFORMSTATETYPE State,CON
 {
 	OutputDebugString(__FUNCTION__); 
 	OutputDebugString("\n"); 
-	OutputDebugString("Not implemented - Fix Me! (if i need fixing)\n"); 
+	OutputDebugString("Not implemented - Fix Me!\n"); 
 
 	return BaseDirect3DDevice9::MultiplyTransform(State, pMatrix);
 }
