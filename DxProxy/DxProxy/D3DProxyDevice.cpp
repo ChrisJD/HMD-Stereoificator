@@ -1333,20 +1333,45 @@ HRESULT WINAPI D3DProxyDevice::SetRenderTarget(DWORD RenderTargetIndex, IDirect3
 	// Removing a render target
 	if (newRenderTarget == NULL) {
 		if (RenderTargetIndex == 0) {
-			// main render target should never be set to NULL
-			result = D3DERR_INVALIDCALL; 
+			OutputDebugString("Attempt to set primary render target to null");
 		}		
-		else {
-			result = BaseDirect3DDevice9::SetRenderTarget(RenderTargetIndex, NULL);
-		}
+		
+		result = BaseDirect3DDevice9::SetRenderTarget(RenderTargetIndex, NULL);
 	}
-	// Setting a render target
+	// Setting actual render target
 	else {
-		if (m_currentRenderingSide == stereoificator::Left) {
+
+		switch (m_currentRenderingSide) {
+
+		case stereoificator::Right:
+
+			if ((RenderTargetIndex == 0) && !newRenderTarget->IsStereo()) {
+
+				// If this is the primary rendertarget and it isn't stereo then we can't make the right side active because there isn't one.
+				// So switch to mono and use that instead.
+				setDrawingSide(stereoificator::Center);
+				result = BaseDirect3DDevice9::SetRenderTarget(RenderTargetIndex, newRenderTarget->getActualMono());
+			}
+			else {
+				result = BaseDirect3DDevice9::SetRenderTarget(RenderTargetIndex, newRenderTarget->getActualRight());
+			}
+			break;
+
+		case stereoificator::Left:
 			result = BaseDirect3DDevice9::SetRenderTarget(RenderTargetIndex, newRenderTarget->getActualLeft());
-		}
-		else {
-			result = BaseDirect3DDevice9::SetRenderTarget(RenderTargetIndex, newRenderTarget->getActualRight());
+			break;
+
+		case stereoificator::Center:
+			result = BaseDirect3DDevice9::SetRenderTarget(RenderTargetIndex, newRenderTarget->getActualMono());
+			break;
+
+		default:
+
+			result = D3DERR_INVALIDCALL;
+			OutputDebugString("SetRenderTarget - Unknown rendering position");
+			DebugBreak();
+
+			break;
 		}
 	}
 
@@ -1354,7 +1379,7 @@ HRESULT WINAPI D3DProxyDevice::SetRenderTarget(DWORD RenderTargetIndex, IDirect3
 	
 	
 	//// update proxy collection of stereo render targets to reflect new actual render target ////
-	if (result == D3D_OK) {		
+	if (SUCCEEDED(result)) {		
 		// changing rendertarget resets viewport to fullsurface
 		m_bActiveViewportIsDefault = true;
 
