@@ -71,8 +71,10 @@ D3DProxyDevice::D3DProxyDevice(IDirect3DDevice9* pDevice, BaseDirect3D9* pCreate
 	DWORD maxRenderTargets = capabilities.NumSimultaneousRTs;
 	m_activeRenderTargets.resize(maxRenderTargets, NULL);
 
+	D3DXMatrixIdentity(&m_centerView);
 	D3DXMatrixIdentity(&m_leftView);
 	D3DXMatrixIdentity(&m_rightView);
+	D3DXMatrixIdentity(&m_centerProjection);
 	D3DXMatrixIdentity(&m_leftProjection);
 	D3DXMatrixIdentity(&m_rightProjection);	
 
@@ -2114,24 +2116,41 @@ HRESULT WINAPI D3DProxyDevice::UpdateTexture(IDirect3DBaseTexture9* pSourceTextu
 }
 
 
-HRESULT D3DProxyDevice::SetStereoViewTransform(D3DXMATRIX pLeftMatrix, D3DXMATRIX pRightMatrix, bool apply)
+HRESULT D3DProxyDevice::SetStereoViewTransform(D3DXMATRIX pCenterMatrix, D3DXMATRIX pLeftMatrix, D3DXMATRIX pRightMatrix, bool apply)
 {
-	if (D3DXMatrixIsIdentity(&pLeftMatrix) && D3DXMatrixIsIdentity(&pRightMatrix)) {
+	if (D3DXMatrixIsIdentity(&pCenterMatrix)) {
 		m_bViewTransformSet = false;
 	}
 	else {
 		m_bViewTransformSet = true;
 	}
 	
+	m_centerView = pCenterMatrix;
 	m_leftView = pLeftMatrix;
 	m_rightView = pRightMatrix;
 
-	if (m_currentRenderingSide == stereoificator::Left) {
+	switch (m_currentRenderingSide) {
+
+	case stereoificator::Left:
 		m_pCurrentView = &m_leftView;
-	}
-	else {
+		break;
+
+	case stereoificator::Right:
 		m_pCurrentView = &m_rightView;
+		break;
+
+	case stereoificator::Center:
+		m_pCurrentView = &m_centerView;
+		break;
+
+	default:
+
+		OutputDebugString("Unknown rendering position");
+		DebugBreak();
+
+		break;
 	}
+
 
 	if (apply)
 		return BaseDirect3DDevice9::SetTransform(D3DTS_VIEW, m_pCurrentView);
@@ -2140,7 +2159,7 @@ HRESULT D3DProxyDevice::SetStereoViewTransform(D3DXMATRIX pLeftMatrix, D3DXMATRI
 }
 
 
-HRESULT D3DProxyDevice::SetStereoProjectionTransform(D3DXMATRIX pLeftMatrix, D3DXMATRIX pRightMatrix, bool apply)
+HRESULT D3DProxyDevice::SetStereoProjectionTransform(D3DXMATRIX pCenterMatrix, D3DXMATRIX pLeftMatrix, D3DXMATRIX pRightMatrix, bool apply)
 {
 	if (D3DXMatrixIsIdentity(&pLeftMatrix) && D3DXMatrixIsIdentity(&pRightMatrix)) {
 		m_bProjectionTransformSet = false;
@@ -2149,15 +2168,34 @@ HRESULT D3DProxyDevice::SetStereoProjectionTransform(D3DXMATRIX pLeftMatrix, D3D
 		m_bProjectionTransformSet = true;
 	}
 	
+	m_centerProjection = pCenterMatrix;
 	m_leftProjection = pLeftMatrix;
 	m_rightProjection = pRightMatrix;
 
-	if (m_currentRenderingSide == stereoificator::Left) {
+
+	switch (m_currentRenderingSide) {
+
+	case stereoificator::Left:
 		m_pCurrentProjection = &m_leftProjection;
-	}
-	else {
+		break;
+
+	case stereoificator::Right:
 		m_pCurrentProjection = &m_rightProjection;
+		break;
+
+	case stereoificator::Center:
+		m_pCurrentProjection = &m_centerProjection;
+		break;
+
+	default:
+
+		OutputDebugString("Unknown rendering position");
+		DebugBreak();
+
+		break;
 	}
+
+
 
 	if (apply)
 		return BaseDirect3DDevice9::SetTransform(D3DTS_PROJECTION, m_pCurrentProjection);
@@ -2170,129 +2208,138 @@ HRESULT WINAPI D3DProxyDevice::SetTransform(D3DTRANSFORMSTATETYPE State, CONST D
 {
 	if(State == D3DTS_VIEW)
 	{
+		D3DXMATRIX tempCenter;
 		D3DXMATRIX tempLeft;
 		D3DXMATRIX tempRight;
 		D3DXMATRIX* pViewToSet = NULL;
-		bool tempIsTransformSet = false;
 
 		if (!pMatrix) {
+			D3DXMatrixIdentity(&tempCenter);
 			D3DXMatrixIdentity(&tempLeft);
 			D3DXMatrixIdentity(&tempRight);
 		}
 		else {
 
-			D3DXMATRIX sourceMatrix(*pMatrix);
+			tempCenter = *pMatrix;
 
 			// If the view is set to the identity then we don't need to perform any adjustments
-			if (D3DXMatrixIsIdentity(&sourceMatrix)) {
+			if (D3DXMatrixIsIdentity(&tempCenter)) {
 
 				D3DXMatrixIdentity(&tempLeft);
 				D3DXMatrixIdentity(&tempRight);
 			}
 			else {
 				// If the view matrix is modified we need to apply left/right adjustments (for stereo rendering)
-				tempLeft = sourceMatrix * m_spShaderViewAdjustment->LeftViewTransform();
-				tempRight = sourceMatrix * m_spShaderViewAdjustment->RightViewTransform();
-
-				tempIsTransformSet = true;
+				tempLeft = tempCenter * m_spShaderViewAdjustment->LeftViewTransform();
+				tempRight = tempCenter * m_spShaderViewAdjustment->RightViewTransform();
 			}
 		}
 
 
 		// If capturing state block capture without updating proxy device
 		if (m_pCapturingStateTo) {
-			m_pCapturingStateTo->SelectAndCaptureViewTransform(tempLeft, tempRight);
-			if (m_currentRenderingSide == stereoificator::Left) {
+			m_pCapturingStateTo->SelectAndCaptureViewTransform(tempCenter, tempLeft, tempRight);
+
+			// We don't update the proxy device but the actual device still needs updating so it can store the active side in it's stateblock (the way things are currently done anyway)
+			switch (m_currentRenderingSide) {
+
+			case stereoificator::Left:
 				pViewToSet = &tempLeft;
-			}
-			else {
+				break;
+
+			case stereoificator::Right:
 				pViewToSet = &tempRight;
+				break;
+
+			case stereoificator::Center:
+				pViewToSet = &tempCenter;
+				break;
+
+			default:
+
+				OutputDebugString("Unknown rendering position");
+				DebugBreak();
+
+				break;
 			}
+
+			return BaseDirect3DDevice9::SetTransform(State, pViewToSet);
+
 		}
 		else { // otherwise update proxy device
 
-			m_bViewTransformSet = tempIsTransformSet;
-			m_leftView = tempLeft;
-			m_rightView = tempRight;
-
-			if (m_currentRenderingSide == stereoificator::Left) {
-				m_pCurrentView = &m_leftView;
-			}
-			else {
-				m_pCurrentView = &m_rightView;
-			}
-
-			pViewToSet = m_pCurrentView;
+			return SetStereoViewTransform(tempCenter, tempLeft, tempRight, true);
 		}
 
-		return BaseDirect3DDevice9::SetTransform(State, pViewToSet);
+		
 		
 	}
 	else if(State == D3DTS_PROJECTION)
 	{
-
+		D3DXMATRIX tempCenter;
 		D3DXMATRIX tempLeft;
 		D3DXMATRIX tempRight;
 		D3DXMATRIX* pProjectionToSet = NULL;
-		bool tempIsTransformSet = false;
 
 		if (!pMatrix) {
-			
+			D3DXMatrixIdentity(&tempCenter);
 			D3DXMatrixIdentity(&tempLeft);
 			D3DXMatrixIdentity(&tempRight);
 		}
 		else {
-			D3DXMATRIX sourceMatrix(*pMatrix);
+			tempCenter = *pMatrix;
 
 			// If the view is set to the identity then we don't need to perform any adjustments
 		
-			if (D3DXMatrixIsIdentity(&sourceMatrix)) {
+			if (D3DXMatrixIsIdentity(&tempCenter)) {
 
 				D3DXMatrixIdentity(&tempLeft);
 				D3DXMatrixIdentity(&tempRight);
 			}
 			else {
 				
-
-				tempLeft = sourceMatrix * m_spShaderViewAdjustment->LeftShiftProjection();
-				tempRight = sourceMatrix * m_spShaderViewAdjustment->RightShiftProjection();
-
-				tempIsTransformSet = true;
+				tempLeft = tempCenter * m_spShaderViewAdjustment->LeftShiftProjection();
+				tempRight = tempCenter * m_spShaderViewAdjustment->RightShiftProjection();
 			}
-
-
-			
 		}
 
 
 		// If capturing state block capture without updating proxy device
 		if (m_pCapturingStateTo) {
 
-			m_pCapturingStateTo->SelectAndCaptureProjectionTransform(tempLeft, tempRight);
-			if (m_currentRenderingSide == stereoificator::Left) {
+			m_pCapturingStateTo->SelectAndCaptureProjectionTransform(tempCenter, tempLeft, tempRight);
+
+			switch (m_currentRenderingSide) {
+
+			case stereoificator::Left:
 				pProjectionToSet = &tempLeft;
-			}
-			else {
+				break;
+
+			case stereoificator::Right:
 				pProjectionToSet = &tempRight;
+				break;
+
+			case stereoificator::Center:
+				pProjectionToSet = &tempCenter;
+				break;
+
+			default:
+
+				OutputDebugString("Unknown rendering position");
+				DebugBreak();
+
+				break;
 			}
+
+
+			return BaseDirect3DDevice9::SetTransform(State, pProjectionToSet);
 		}
 		else { // otherwise update proxy device
 
-			m_bProjectionTransformSet = tempIsTransformSet;
-			m_leftProjection = tempLeft;
-			m_rightProjection = tempRight;
-
-			if (m_currentRenderingSide == stereoificator::Left) {
-				m_pCurrentProjection = &m_leftProjection;
-			}
-			else {
-				m_pCurrentProjection = &m_rightProjection;
-			}
-
-			pProjectionToSet = m_pCurrentProjection;
+			return SetStereoProjectionTransform(tempCenter, tempLeft, tempRight, true);
 		}
 
-		return BaseDirect3DDevice9::SetTransform(State, pProjectionToSet);
+		
 	}
 
 	return BaseDirect3DDevice9::SetTransform(State, pMatrix);

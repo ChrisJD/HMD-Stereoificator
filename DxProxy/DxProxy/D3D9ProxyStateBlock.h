@@ -93,8 +93,8 @@ public:
 	/*** Use these methods when the respective methods on the device are called between Start/End StateBlock ***/
 	void SelectAndCaptureState(BaseDirect3DIndexBuffer9* pWrappedIndexBuffer);
 	void SelectAndCaptureState(D3DVIEWPORT9 viewport);
-	void SelectAndCaptureViewTransform(D3DXMATRIX left, D3DXMATRIX right);
-	void SelectAndCaptureProjectionTransform(D3DXMATRIX left, D3DXMATRIX right);
+	void SelectAndCaptureViewTransform(D3DXMATRIX center, D3DXMATRIX left, D3DXMATRIX right);
+	void SelectAndCaptureProjectionTransform(D3DXMATRIX center, D3DXMATRIX left, D3DXMATRIX right);
 	void SelectAndCaptureState(BaseDirect3DPixelShader9* pWrappedPixelShader);
 	void SelectAndCaptureState(D3D9ProxyVertexShader* pWrappedVertexShader);
 	void SelectAndCaptureState(BaseDirect3DVertexDeclaration9* pWrappedVertexDeclaration);

@@ -248,8 +248,9 @@ private:
 	void ReleaseEverything();
 	bool isViewportDefaultForMainRT(CONST D3DVIEWPORT9* pViewport);
 
-	HRESULT SetStereoViewTransform(D3DXMATRIX pLeftMatrix, D3DXMATRIX pRightMatrix, bool apply);
-	HRESULT SetStereoProjectionTransform(D3DXMATRIX pLeftMatrix, D3DXMATRIX pRightMatrix, bool apply);
+	// apply = should apply to actual device, if false the proxydevice state will change but the chage won't be applied to the actual device (only use this if you know the device already has the correct state)
+	HRESULT SetStereoViewTransform(D3DXMATRIX pCenterMatrix, D3DXMATRIX pLeftMatrix, D3DXMATRIX pRightMatrix, bool apply);
+	HRESULT SetStereoProjectionTransform(D3DXMATRIX pCenterMatrix, D3DXMATRIX pLeftMatrix, D3DXMATRIX pRightMatrix, bool apply);
 
 	std::shared_ptr<ShaderRegisters> m_spManagedShaderRegisters;
 	GameHandler* m_pGameHandler;
@@ -282,13 +283,16 @@ private:
 
 	bool m_bInBeginEndStateBlock;
 
+	// Are the transform and or projection set to something other than the identity matrix
 	bool m_bViewTransformSet;
 	bool m_bProjectionTransformSet;
 
 
+	D3DXMATRIX m_centerView;
 	D3DXMATRIX m_leftView;
 	D3DXMATRIX m_rightView;
 
+	D3DXMATRIX m_centerProjection;
 	D3DXMATRIX m_leftProjection;
 	D3DXMATRIX m_rightProjection;
 

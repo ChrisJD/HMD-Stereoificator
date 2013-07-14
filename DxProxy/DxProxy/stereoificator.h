@@ -33,7 +33,7 @@ namespace stereoificator {
 
 	enum RenderPosition
 	{
-		// porbably need an 'Original' here
+		Center = 0,
 		Left = 1,
 		Right = 2
 		

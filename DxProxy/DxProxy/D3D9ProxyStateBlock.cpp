@@ -656,7 +656,7 @@ void D3D9ProxyStateBlock::SelectAndCaptureState(D3DVIEWPORT9 viewport)
 	m_storedViewport = viewport;
 }
 
-void D3D9ProxyStateBlock::SelectAndCaptureViewTransform(D3DXMATRIX left, D3DXMATRIX right)
+void D3D9ProxyStateBlock::SelectAndCaptureViewTransform(D3DXMATRIX center, D3DXMATRIX left, D3DXMATRIX right)
 {
 	assert(m_eCaptureMode == Cap_Type_Selected);
 	assert (m_pWrappedDevice->m_bInBeginEndStateBlock);
@@ -670,7 +670,7 @@ void D3D9ProxyStateBlock::SelectAndCaptureViewTransform(D3DXMATRIX left, D3DXMAT
 	updateCaptureSideTracking();
 }
 
-void D3D9ProxyStateBlock::SelectAndCaptureProjectionTransform(D3DXMATRIX left, D3DXMATRIX right)
+void D3D9ProxyStateBlock::SelectAndCaptureProjectionTransform(D3DXMATRIX center, D3DXMATRIX left, D3DXMATRIX right)
 {
 	assert(m_eCaptureMode == Cap_Type_Selected);
 	assert (m_pWrappedDevice->m_bInBeginEndStateBlock);
