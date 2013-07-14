@@ -236,7 +236,27 @@ void ShaderRegisters::ApplyStereoConstants(stereoificator::RenderPosition curren
 
 			if (dirtyOnly) {
 				// Apply this dirty constant to device
-				m_pActualDevice->SetVertexShaderConstantF(itStereoConstant->second.StartRegister(), (currentSide == stereoificator::Left) ? itStereoConstant->second.DataLeftPointer() : itStereoConstant->second.DataRightPointer(), itStereoConstant->second.Count());
+				float* data;
+				switch (currentSide) {
+
+				case stereoificator::Left:
+					data = itStereoConstant->second.DataLeftPointer();
+					break;
+
+				case stereoificator::Right:
+					data = itStereoConstant->second.DataRightPointer();
+					break;
+
+				case stereoificator::Center:
+					data = itStereoConstant->second.DataOriginalPointer();
+					break;
+
+				default:
+					OutputDebugString("SetSide - Unknown rendering position");
+					DebugBreak();
+					break;
+				}
+				m_pActualDevice->SetVertexShaderConstantF(itStereoConstant->second.StartRegister(), data, itStereoConstant->second.Count());
 			}
 
 			// These registers are no longer dirty
@@ -246,7 +266,27 @@ void ShaderRegisters::ApplyStereoConstants(stereoificator::RenderPosition curren
 
 		if (!dirtyOnly) {
 			// Apply this constant to device
-			m_pActualDevice->SetVertexShaderConstantF(itStereoConstant->second.StartRegister(), (currentSide == stereoificator::Left) ? itStereoConstant->second.DataLeftPointer() : itStereoConstant->second.DataRightPointer(), itStereoConstant->second.Count());
+			float* data;
+			switch (currentSide) {
+
+			case stereoificator::Left:
+				data = itStereoConstant->second.DataLeftPointer();
+				break;
+
+			case stereoificator::Right:
+				data = itStereoConstant->second.DataRightPointer();
+				break;
+
+			case stereoificator::Center:
+				data = itStereoConstant->second.DataOriginalPointer();
+				break;
+
+			default:
+				OutputDebugString("SetSide - Unknown rendering position");
+				DebugBreak();
+				break;
+			}
+			m_pActualDevice->SetVertexShaderConstantF(itStereoConstant->second.StartRegister(), data, itStereoConstant->second.Count());
 		}
 
 		++itStereoConstant;

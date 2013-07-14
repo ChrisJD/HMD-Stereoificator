@@ -1027,7 +1027,7 @@ HRESULT WINAPI D3DProxyDevice::CreateStateBlock(D3DSTATEBLOCKTYPE Type,IDirect3D
 			}    
 		}
 
-		*ppSB = new D3D9ProxyStateBlock(pActualStateBlock, this, capType, m_currentRenderingSide == stereoificator::Left);
+		*ppSB = new D3D9ProxyStateBlock(pActualStateBlock, this, capType, m_currentRenderingSide);
 	}
 
 	return creationResult;
@@ -1087,8 +1087,9 @@ HRESULT WINAPI D3DProxyDevice::DrawPrimitive(D3DPRIMITIVETYPE PrimitiveType,UINT
 
 	HRESULT result;
 	if (SUCCEEDED(result = BaseDirect3DDevice9::DrawPrimitive(PrimitiveType, StartVertex, PrimitiveCount))) {
-		if (switchDrawingSide())
+		if (m_activeRenderTargets[0]->IsStereo() && switchDrawingSide()) {
 			BaseDirect3DDevice9::DrawPrimitive(PrimitiveType, StartVertex, PrimitiveCount);
+		}
 	}
 
 	return result;
@@ -1101,7 +1102,7 @@ HRESULT WINAPI D3DProxyDevice::DrawIndexedPrimitive(D3DPRIMITIVETYPE PrimitiveTy
 
 	HRESULT result;
 	if (SUCCEEDED(result = BaseDirect3DDevice9::DrawIndexedPrimitive(PrimitiveType, BaseVertexIndex, MinVertexIndex, NumVertices, startIndex, primCount))) {
-		if (switchDrawingSide()) {
+		if (m_activeRenderTargets[0]->IsStereo() && switchDrawingSide()) {
 			HRESULT result2 = BaseDirect3DDevice9::DrawIndexedPrimitive(PrimitiveType, BaseVertexIndex, MinVertexIndex, NumVertices, startIndex, primCount);
 			if (result != result2)
 				OutputDebugString("moop\n");
@@ -1118,8 +1119,9 @@ HRESULT WINAPI D3DProxyDevice::DrawPrimitiveUP(D3DPRIMITIVETYPE PrimitiveType,UI
 
 	HRESULT result;
 	if (SUCCEEDED(result = BaseDirect3DDevice9::DrawPrimitiveUP(PrimitiveType, PrimitiveCount, pVertexStreamZeroData, VertexStreamZeroStride))) {
-		if (switchDrawingSide())
+		if (m_activeRenderTargets[0]->IsStereo() && switchDrawingSide()) {
 			BaseDirect3DDevice9::DrawPrimitiveUP(PrimitiveType, PrimitiveCount, pVertexStreamZeroData, VertexStreamZeroStride);
+		}
 	}
 
 	return result;
@@ -1131,8 +1133,9 @@ HRESULT WINAPI D3DProxyDevice::DrawIndexedPrimitiveUP(D3DPRIMITIVETYPE Primitive
 
 	HRESULT result;
 	if (SUCCEEDED(result = BaseDirect3DDevice9::DrawIndexedPrimitiveUP(PrimitiveType, MinVertexIndex, NumVertices, PrimitiveCount, pIndexData, IndexDataFormat, pVertexStreamZeroData, VertexStreamZeroStride))) {
-		if (switchDrawingSide())
+		if (m_activeRenderTargets[0]->IsStereo() && switchDrawingSide()) {
 			BaseDirect3DDevice9::DrawIndexedPrimitiveUP(PrimitiveType, MinVertexIndex, NumVertices, PrimitiveCount, pIndexData, IndexDataFormat, pVertexStreamZeroData, VertexStreamZeroStride);
+		}
 	}
 
 	return result;
@@ -1144,8 +1147,9 @@ HRESULT WINAPI D3DProxyDevice::DrawRectPatch(UINT Handle,CONST float* pNumSegs,C
 
 	HRESULT result;
 	if (SUCCEEDED(result = BaseDirect3DDevice9::DrawRectPatch(Handle, pNumSegs, pRectPatchInfo))) {
-		if (switchDrawingSide())
+		if (m_activeRenderTargets[0]->IsStereo() && switchDrawingSide()) {
 			BaseDirect3DDevice9::DrawRectPatch(Handle, pNumSegs, pRectPatchInfo);
+		}
 	}
 
 	return result;
@@ -1157,8 +1161,9 @@ HRESULT WINAPI D3DProxyDevice::DrawTriPatch(UINT Handle,CONST float* pNumSegs,CO
 
 	HRESULT result;
 	if (SUCCEEDED(result = BaseDirect3DDevice9::DrawTriPatch(Handle, pNumSegs, pTriPatchInfo))) {
-		if (switchDrawingSide())
+		if (m_activeRenderTargets[0]->IsStereo() && switchDrawingSide()) {
 			BaseDirect3DDevice9::DrawTriPatch(Handle, pNumSegs, pTriPatchInfo);
+		}
 	}
 
 	return result;
@@ -1367,6 +1372,8 @@ HRESULT WINAPI D3DProxyDevice::SetRenderTarget(DWORD RenderTargetIndex, IDirect3
 				// When a texture is copied/updated/set to a sampler check the texture to see if it contains mono or stereo data 
 				// (rather than checking if it is capable of holding said data.)
 
+				// Texture side switching needs to change to accomodate this as well
+
 			case stereoificator::Center:
 
 				// if currently drawing mono but target is stereo switch to first stereo side
@@ -1522,7 +1529,7 @@ HRESULT WINAPI D3DProxyDevice::SetTexture(DWORD Stage,IDirect3DBaseTexture9* pTe
 		UnWrapTexture(pTexture, &pActualLeftTexture, &pActualRightTexture);
 		
 		// Try and Update the actual devices textures
-		if ((pActualRightTexture == NULL) || (m_currentRenderingSide == stereoificator::Left)) // use left (mono) if not stereo or one left side
+		if ((pActualRightTexture == NULL) || (m_currentRenderingSide == stereoificator::Left)) // use left (mono) if not stereo or on left side
 			result = BaseDirect3DDevice9::SetTexture(Stage, pActualLeftTexture);
 		else
 			result = BaseDirect3DDevice9::SetTexture(Stage, pActualRightTexture);
@@ -1754,7 +1761,7 @@ HRESULT WINAPI D3DProxyDevice::BeginStateBlock()
 	HRESULT result;
 	if (SUCCEEDED(result = BaseDirect3DDevice9::BeginStateBlock())) {
 		m_bInBeginEndStateBlock = true;
-		m_pCapturingStateTo = new D3D9ProxyStateBlock(NULL, this, D3D9ProxyStateBlock::Cap_Type_Selected, m_currentRenderingSide == stereoificator::Left);
+		m_pCapturingStateTo = new D3D9ProxyStateBlock(NULL, this, D3D9ProxyStateBlock::Cap_Type_Selected, m_currentRenderingSide);
 	}
 
 	return result;
@@ -1791,7 +1798,8 @@ bool D3DProxyDevice::switchDrawingSide()
 		switched = setDrawingSide(stereoificator::Left);
 	}
 	else {
-		DebugBreak();
+		OutputDebugString("Tried to switch side when side wasn't left or right");
+		switched = false;
 	}
 
 	return switched;
@@ -1833,10 +1841,25 @@ bool D3DProxyDevice::setDrawingSide(stereoificator::RenderPosition side)
 	{
 		if ((pCurrentRT = m_activeRenderTargets[i]) != NULL) {
 
-			if (side == stereoificator::Left) 
+			switch (m_currentRenderingSide) {
+
+			case stereoificator::Left:
 				result = BaseDirect3DDevice9::SetRenderTarget(i, pCurrentRT->getActualLeft()); 
-			else 
-				result = BaseDirect3DDevice9::SetRenderTarget(i, pCurrentRT->getActualRight());
+				break;
+
+			case stereoificator::Right:
+				result = BaseDirect3DDevice9::SetRenderTarget(i, pCurrentRT->getActualRight());				
+				break;
+
+			case stereoificator::Center:
+				result = BaseDirect3DDevice9::SetRenderTarget(i, pCurrentRT->getActualMono());		
+				break;
+
+			default:
+				OutputDebugString("SetSide - Unknown rendering position");
+				DebugBreak();
+				break;
+			}
 				
 			if (result != D3D_OK) {
 				OutputDebugString("Error trying to set one of the Render Targets while switching between active eyes for drawing.\n");
@@ -1856,10 +1879,27 @@ bool D3DProxyDevice::setDrawingSide(stereoificator::RenderPosition side)
 
 	// switch depth stencil to new side
 	if (m_pActiveStereoDepthStencil != NULL) { 
-		if (side == stereoificator::Left) 
-			result = BaseDirect3DDevice9::SetDepthStencilSurface(m_pActiveStereoDepthStencil->getActualLeft()); 
-		else 
+
+		switch (m_currentRenderingSide) 
+		{
+		case stereoificator::Right:
 			result = BaseDirect3DDevice9::SetDepthStencilSurface(m_pActiveStereoDepthStencil->getActualRight());
+			break;
+
+		case stereoificator::Left:
+			result = BaseDirect3DDevice9::SetDepthStencilSurface(m_pActiveStereoDepthStencil->getActualLeft()); 
+			break;
+
+		case stereoificator::Center:
+			result = BaseDirect3DDevice9::SetDepthStencilSurface(m_pActiveStereoDepthStencil->getActualMono());
+			break;
+
+		default:
+			OutputDebugString("SetDepthStencilSurface - Unknown rendering position");
+			DebugBreak();
+
+			break;
+		}			
 	}
 
 

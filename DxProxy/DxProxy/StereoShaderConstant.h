@@ -73,6 +73,11 @@ public:
 		return &m_DataRight[0];
 	}
 
+	T* DataOriginalPointer() 
+	{
+		return &m_DataOriginal[0];
+	}
+
 	UINT StartRegister() { return m_StartRegister; }
 	UINT Count() { return m_Count; }
 	
