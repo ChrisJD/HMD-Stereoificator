@@ -2,6 +2,9 @@
 Vireio Perception: Open-Source Stereoscopic 3D Driver
 Copyright (C) 2012 Andres Hernandez
 
+Stereoificator
+Modifications Copyright (C) 2013 Chris Drain
+
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
@@ -411,7 +414,7 @@ bool ProxyHelper::LoadUserConfig(ProxyConfig& config, bool forceDefault)
 			xml_node user_profile = docUsers.child("users").child("user");
 
 			config.ipd = user_profile.attribute("ipd").as_float(IPD_DEFAULT);
-			vireio::clamp(&config.ipd, 0.01f, 0.1f); // 10mm to 100mm
+			stereoificator::clamp(&config.ipd, 0.01f, 0.1f); // 10mm to 100mm
 
 
 			gameSettings = user_profile.child("gamesettings");

@@ -162,8 +162,8 @@ inline void D3D9ProxyStateBlock::updateCaptureSideTracking()
 	if (m_eSidesAre == SidesMixed)
 		return;
 	
-	if (((m_pWrappedDevice->m_currentRenderingSide == vireio::Left) && (m_eSidesAre != SidesAllLeft)) ||
-		((m_pWrappedDevice->m_currentRenderingSide == vireio::Right) && (m_eSidesAre != SidesAllRight))) {
+	if (((m_pWrappedDevice->m_currentRenderingSide == stereoificator::Left) && (m_eSidesAre != SidesAllLeft)) ||
+		((m_pWrappedDevice->m_currentRenderingSide == stereoificator::Right) && (m_eSidesAre != SidesAllRight))) {
 
 		m_eSidesAre = SidesMixed;
 	}
@@ -305,10 +305,10 @@ void D3D9ProxyStateBlock::CaptureSelectedFromProxyDevice()
 	}
 
 
-	if (m_pWrappedDevice->m_currentRenderingSide == vireio::Left) {
+	if (m_pWrappedDevice->m_currentRenderingSide == stereoificator::Left) {
 		m_eSidesAre = SidesAllLeft;
 	}
-	else if (m_pWrappedDevice->m_currentRenderingSide == vireio::Right) {
+	else if (m_pWrappedDevice->m_currentRenderingSide == stereoificator::Right) {
 		m_eSidesAre = SidesAllRight;
 	}
 	else {
@@ -491,10 +491,10 @@ HRESULT WINAPI D3D9ProxyStateBlock::Apply()
 
 	// If all stereo states recorded on the same side then switch the proxy device to that side
 	if (m_eSidesAre == SidesAllLeft) {
-		m_pWrappedDevice->setDrawingSide(vireio::Left);
+		m_pWrappedDevice->setDrawingSide(stereoificator::Left);
 	}
 	else if (m_eSidesAre == SidesAllRight) {
-		m_pWrappedDevice->setDrawingSide(vireio::Right);
+		m_pWrappedDevice->setDrawingSide(stereoificator::Right);
 	}
 
 

@@ -23,7 +23,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "d3d9.h"
 #include "d3dx9.h"
 #include "ShaderConstantModification.h"
-#include "Vireio.h"
+#include "Stereoificator.h"
 #include "ShaderMatrixModification.h"
 
 // This is the intent, not sure that the math holds up but it works for HL2. (Doesn't seem to work for omd2, stops all separation)
@@ -38,7 +38,7 @@ public:
 		// in the old code. The 'correct' way to do this in this version would be to have an override shader rule that applies to the shader used for the ui; assuming it's not used
 		// for other models as well... if it is this seems like the only option unless there is another way to identify the constant from it's properties rather than the actual value
 		// don't apply if matrix is orthographic
-		return vireio::AlmostSame(in[15], 1.0f, 0.00001f);
+		return stereoificator::AlmostSame(in[15], 1.0f, 0.00001f);
 	}
 };
 

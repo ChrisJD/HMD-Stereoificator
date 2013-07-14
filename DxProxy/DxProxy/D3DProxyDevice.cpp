@@ -76,7 +76,7 @@ D3DProxyDevice::D3DProxyDevice(IDirect3DDevice9* pDevice, BaseDirect3D9* pCreate
 	D3DXMatrixIdentity(&m_leftProjection);
 	D3DXMatrixIdentity(&m_rightProjection);	
 
-	m_currentRenderingSide = vireio::Left;
+	m_currentRenderingSide = stereoificator::Left;
 	m_pCurrentMatViewTransform = &m_spShaderViewAdjustment->LeftAdjustmentMatrix(); 
 	m_pCurrentView = &m_leftView;
 	m_pCurrentProjection = &m_leftProjection;
@@ -202,7 +202,7 @@ void D3DProxyDevice::OnCreateOrRestore()
 	OutputDebugString(__FUNCTION__);
 	OutputDebugString("\n");
 
-	m_currentRenderingSide = vireio::Left;
+	m_currentRenderingSide = stereoificator::Left;
 	m_pCurrentMatViewTransform = &m_spShaderViewAdjustment->LeftAdjustmentMatrix();
 	m_pCurrentView = &m_leftView;
 	m_pCurrentProjection = &m_leftProjection;
@@ -1027,7 +1027,7 @@ HRESULT WINAPI D3DProxyDevice::CreateStateBlock(D3DSTATEBLOCKTYPE Type,IDirect3D
 			}    
 		}
 
-		*ppSB = new D3D9ProxyStateBlock(pActualStateBlock, this, capType, m_currentRenderingSide == vireio::Left);
+		*ppSB = new D3D9ProxyStateBlock(pActualStateBlock, this, capType, m_currentRenderingSide == stereoificator::Left);
 	}
 
 	return creationResult;
@@ -1342,7 +1342,7 @@ HRESULT WINAPI D3DProxyDevice::SetRenderTarget(DWORD RenderTargetIndex, IDirect3
 	}
 	// Setting a render target
 	else {
-		if (m_currentRenderingSide == vireio::Left) {
+		if (m_currentRenderingSide == stereoificator::Left) {
 			result = BaseDirect3DDevice9::SetRenderTarget(RenderTargetIndex, newRenderTarget->getActualLeft());
 		}
 		else {
@@ -1398,7 +1398,7 @@ HRESULT WINAPI D3DProxyDevice::SetDepthStencilSurface(IDirect3DSurface9* pNewZSt
 
 	IDirect3DSurface9* pActualStencilForCurrentSide = NULL;
 	if (pNewDepthStencil) {
-		if (m_currentRenderingSide == vireio::Left)
+		if (m_currentRenderingSide == stereoificator::Left)
 			pActualStencilForCurrentSide = pNewDepthStencil->getActualLeft();
 		else
 			pActualStencilForCurrentSide = pNewDepthStencil->getActualRight();
@@ -1446,7 +1446,7 @@ HRESULT WINAPI D3DProxyDevice::SetTexture(DWORD Stage,IDirect3DBaseTexture9* pTe
 		UnWrapTexture(pTexture, &pActualLeftTexture, &pActualRightTexture);
 		
 		// Try and Update the actual devices textures
-		if ((pActualRightTexture == NULL) || (m_currentRenderingSide == vireio::Left)) // use left (mono) if not stereo or one left side
+		if ((pActualRightTexture == NULL) || (m_currentRenderingSide == stereoificator::Left)) // use left (mono) if not stereo or one left side
 			result = BaseDirect3DDevice9::SetTexture(Stage, pActualLeftTexture);
 		else
 			result = BaseDirect3DDevice9::SetTexture(Stage, pActualRightTexture);
@@ -1678,7 +1678,7 @@ HRESULT WINAPI D3DProxyDevice::BeginStateBlock()
 	HRESULT result;
 	if (SUCCEEDED(result = BaseDirect3DDevice9::BeginStateBlock())) {
 		m_bInBeginEndStateBlock = true;
-		m_pCapturingStateTo = new D3D9ProxyStateBlock(NULL, this, D3D9ProxyStateBlock::Cap_Type_Selected, m_currentRenderingSide == vireio::Left);
+		m_pCapturingStateTo = new D3D9ProxyStateBlock(NULL, this, D3D9ProxyStateBlock::Cap_Type_Selected, m_currentRenderingSide == stereoificator::Left);
 	}
 
 	return result;
@@ -1708,11 +1708,11 @@ bool D3DProxyDevice::switchDrawingSide()
 {
 	bool switched = false;
 
-	if (m_currentRenderingSide == vireio::Left) {
-		switched = setDrawingSide(vireio::Right);
+	if (m_currentRenderingSide == stereoificator::Left) {
+		switched = setDrawingSide(stereoificator::Right);
 	}
-	else if (m_currentRenderingSide == vireio::Right) {
-		switched = setDrawingSide(vireio::Left);
+	else if (m_currentRenderingSide == stereoificator::Right) {
+		switched = setDrawingSide(stereoificator::Left);
 	}
 	else {
 		DebugBreak();
@@ -1729,7 +1729,7 @@ bool D3DProxyDevice::switchDrawingSide()
 	when the current primary active render target (target 0  in m_activeRenderTargets) is not stereo.
 	Attempting to switch to a side when that side is already the active side will return true without making any changes.
  */
-bool D3DProxyDevice::setDrawingSide(vireio::RenderPosition side)
+bool D3DProxyDevice::setDrawingSide(stereoificator::RenderPosition side)
 {
 	// Already on the correct eye
 	if (side == m_currentRenderingSide) {
@@ -1739,7 +1739,7 @@ bool D3DProxyDevice::setDrawingSide(vireio::RenderPosition side)
 
 
 	// should never try and render for the right eye if there is no render target for the main render targets right side
-	if (!m_activeRenderTargets[0]->IsStereo() && (side == vireio::Right)) {
+	if (!m_activeRenderTargets[0]->IsStereo() && (side == stereoificator::Right)) {
 		return false;
 	}
 
@@ -1757,7 +1757,7 @@ bool D3DProxyDevice::setDrawingSide(vireio::RenderPosition side)
 	{
 		if ((pCurrentRT = m_activeRenderTargets[i]) != NULL) {
 
-			if (side == vireio::Left) 
+			if (side == stereoificator::Left) 
 				result = BaseDirect3DDevice9::SetRenderTarget(i, pCurrentRT->getActualLeft()); 
 			else 
 				result = BaseDirect3DDevice9::SetRenderTarget(i, pCurrentRT->getActualRight());
@@ -1780,7 +1780,7 @@ bool D3DProxyDevice::setDrawingSide(vireio::RenderPosition side)
 
 	// switch depth stencil to new side
 	if (m_pActiveStereoDepthStencil != NULL) { 
-		if (side == vireio::Left) 
+		if (side == stereoificator::Left) 
 			result = BaseDirect3DDevice9::SetDepthStencilSurface(m_pActiveStereoDepthStencil->getActualLeft()); 
 		else 
 			result = BaseDirect3DDevice9::SetDepthStencilSurface(m_pActiveStereoDepthStencil->getActualRight());
@@ -1800,7 +1800,7 @@ bool D3DProxyDevice::setDrawingSide(vireio::RenderPosition side)
 
 			// if stereo texture
 			if (pActualRightTexture != NULL) { 
-				if (side == vireio::Left) 
+				if (side == stereoificator::Left) 
 					result = BaseDirect3DDevice9::SetTexture(it->first, pActualLeftTexture); 
 				else 
 					result = BaseDirect3DDevice9::SetTexture(it->first, pActualRightTexture);
@@ -1816,7 +1816,7 @@ bool D3DProxyDevice::setDrawingSide(vireio::RenderPosition side)
 	// update view transform for new side 
 	if (m_bViewTransformSet) {
 
-		if (side == vireio::Left) {
+		if (side == stereoificator::Left) {
 			m_pCurrentView = &m_leftView;
 		}
 		else {
@@ -1830,7 +1830,7 @@ bool D3DProxyDevice::setDrawingSide(vireio::RenderPosition side)
 	// update projection transform for new side 
 	if (m_bProjectionTransformSet) {
 
-		if (side == vireio::Left) {
+		if (side == stereoificator::Left) {
 			m_pCurrentProjection = &m_leftProjection;
 		}
 		else {
@@ -1842,7 +1842,7 @@ bool D3DProxyDevice::setDrawingSide(vireio::RenderPosition side)
 
 
 	// Updated computed view translation (used by several derived proxies - see: ComputeViewTranslation)
-	if (side == vireio::Left) {
+	if (side == stereoificator::Left) {
 		m_pCurrentMatViewTransform = &m_spShaderViewAdjustment->LeftAdjustmentMatrix();
 	}
 	else {
@@ -2126,7 +2126,7 @@ HRESULT D3DProxyDevice::SetStereoViewTransform(D3DXMATRIX pLeftMatrix, D3DXMATRI
 	m_leftView = pLeftMatrix;
 	m_rightView = pRightMatrix;
 
-	if (m_currentRenderingSide == vireio::Left) {
+	if (m_currentRenderingSide == stereoificator::Left) {
 		m_pCurrentView = &m_leftView;
 	}
 	else {
@@ -2152,7 +2152,7 @@ HRESULT D3DProxyDevice::SetStereoProjectionTransform(D3DXMATRIX pLeftMatrix, D3D
 	m_leftProjection = pLeftMatrix;
 	m_rightProjection = pRightMatrix;
 
-	if (m_currentRenderingSide == vireio::Left) {
+	if (m_currentRenderingSide == stereoificator::Left) {
 		m_pCurrentProjection = &m_leftProjection;
 	}
 	else {
@@ -2202,7 +2202,7 @@ HRESULT WINAPI D3DProxyDevice::SetTransform(D3DTRANSFORMSTATETYPE State, CONST D
 		// If capturing state block capture without updating proxy device
 		if (m_pCapturingStateTo) {
 			m_pCapturingStateTo->SelectAndCaptureViewTransform(tempLeft, tempRight);
-			if (m_currentRenderingSide == vireio::Left) {
+			if (m_currentRenderingSide == stereoificator::Left) {
 				pViewToSet = &tempLeft;
 			}
 			else {
@@ -2215,7 +2215,7 @@ HRESULT WINAPI D3DProxyDevice::SetTransform(D3DTRANSFORMSTATETYPE State, CONST D
 			m_leftView = tempLeft;
 			m_rightView = tempRight;
 
-			if (m_currentRenderingSide == vireio::Left) {
+			if (m_currentRenderingSide == stereoificator::Left) {
 				m_pCurrentView = &m_leftView;
 			}
 			else {
@@ -2269,7 +2269,7 @@ HRESULT WINAPI D3DProxyDevice::SetTransform(D3DTRANSFORMSTATETYPE State, CONST D
 		if (m_pCapturingStateTo) {
 
 			m_pCapturingStateTo->SelectAndCaptureProjectionTransform(tempLeft, tempRight);
-			if (m_currentRenderingSide == vireio::Left) {
+			if (m_currentRenderingSide == stereoificator::Left) {
 				pProjectionToSet = &tempLeft;
 			}
 			else {
@@ -2282,7 +2282,7 @@ HRESULT WINAPI D3DProxyDevice::SetTransform(D3DTRANSFORMSTATETYPE State, CONST D
 			m_leftProjection = tempLeft;
 			m_rightProjection = tempRight;
 
-			if (m_currentRenderingSide == vireio::Left) {
+			if (m_currentRenderingSide == stereoificator::Left) {
 				m_pCurrentProjection = &m_leftProjection;
 			}
 			else {

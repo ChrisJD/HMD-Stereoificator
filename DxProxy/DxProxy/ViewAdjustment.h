@@ -25,7 +25,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "d3d9.h"
 #include "d3dx9.h"
 #include "HMDisplayInfo.h"
-#include "Vireio.h"
+#include "Stereoificator.h"
 #include "ProxyHelper.h"
 #include "LimitedRangeValue.h"
 

@@ -32,7 +32,7 @@ public:
 
 	virtual void DoMatrixModification(D3DXMATRIX in, D3DXMATRIX& outLeft, D3DXMATRIX& outright)
 	{
-		if (vireio::AlmostSame(in[15], 1.0f, 0.00001f)) {
+		if (stereoificator::AlmostSame(in[15], 1.0f, 0.00001f)) {
 
 			outLeft = in * m_spAdjustmentMatricies->LeftOrthoReproject();
 			outright = in * m_spAdjustmentMatricies->RightOrthoReproject();

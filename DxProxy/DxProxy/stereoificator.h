@@ -19,8 +19,8 @@ You should have received a copy of the GNU Lesser General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ********************************************************************/
 
-#ifndef VIREIO_H_INCLUDED
-#define VIREIO_H_INCLUDED
+#ifndef STEREOIFICATOR_H_INCLUDED
+#define STEREOIFICATOR_H_INCLUDED
 
 #include <d3d9.h>
 #include <assert.h>
@@ -29,7 +29,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 // 64mm in meters
 #define IPD_DEFAULT 0.064f
 
-namespace vireio {
+namespace stereoificator {
 
 	enum RenderPosition
 	{

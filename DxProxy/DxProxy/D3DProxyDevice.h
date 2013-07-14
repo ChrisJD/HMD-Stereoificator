@@ -2,7 +2,7 @@
 Vireio Perception: Open-Source Stereoscopic 3D Driver
 Copyright (C) 2012 Andres Hernandez
 
-HMD-Stereoificator
+Stereoificator
 Modifications Copyright (C) 2013 Chris Drain
 
 This program is free software: you can redistribute it and/or modify
@@ -53,7 +53,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "ProxyHelper.h"
 #include "StereoView.h"
 #include "MotionTracker.h"
-#include "Vireio.h"
+#include "Stereoificator.h"
 #include "StereoShaderConstant.h"
 #include "StereoBackBuffer.h"
 #include "GameHandler.h"
@@ -222,12 +222,12 @@ protected:
 	// Overriding classes should call the base implementation first and then makes any extra needed changes
 	// based on the result of the base implementation (if the base class doesn't change side then derived shouldn't 
 	// change either)
-	virtual bool setDrawingSide(vireio::RenderPosition side);
+	virtual bool setDrawingSide(stereoificator::RenderPosition side);
 
 	// Try and toggle to other drawing side. Returns false if changes fails due to the current render target being mono.
 	bool switchDrawingSide();
 
-	vireio::RenderPosition m_currentRenderingSide;
+	stereoificator::RenderPosition m_currentRenderingSide;
 
 	D3DXMATRIX* m_pCurrentMatViewTransform;
 	

@@ -21,10 +21,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
 
-#include "Vireio.h"
+#include "Stereoificator.h"
 
 
-namespace vireio {
+namespace stereoificator {
 
 	bool AlmostSame(float a, float b, float epsilon)
 	{

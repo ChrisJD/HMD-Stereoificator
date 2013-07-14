@@ -151,10 +151,10 @@
     <ClCompile Include="..\..\DxProxy\DxProxy\ShaderRegisters.cpp" />
     <ClCompile Include="..\..\DxProxy\DxProxy\SharedMemoryTracker.cpp" />
     <ClCompile Include="..\..\DxProxy\DxProxy\StereoBackbuffer.cpp" />
+    <ClCompile Include="..\..\DxProxy\DxProxy\Stereoificator.cpp" />
     <ClCompile Include="..\..\DxProxy\DxProxy\StereoView.cpp" />
     <ClCompile Include="..\..\DxProxy\DxProxy\StereoViewFactory.cpp" />
     <ClCompile Include="..\..\DxProxy\DxProxy\ViewAdjustment.cpp" />
-    <ClCompile Include="..\..\DxProxy\DxProxy\Vireio.cpp" />
     <ClCompile Include="apihijack.cpp" />
     <ClCompile Include="dllmain.cpp" />
   </ItemGroup>
@@ -208,13 +208,13 @@
     <ClInclude Include="..\..\DxProxy\DxProxy\ShaderRegisters.h" />
     <ClInclude Include="..\..\DxProxy\DxProxy\SharedMemoryTracker.h" />
     <ClInclude Include="..\..\DxProxy\DxProxy\StereoBackbuffer.h" />
+    <ClInclude Include="..\..\DxProxy\DxProxy\stereoificator.h" />
     <ClInclude Include="..\..\DxProxy\DxProxy\StereoShaderConstant.h" />
     <ClInclude Include="..\..\DxProxy\DxProxy\StereoView.h" />
     <ClInclude Include="..\..\DxProxy\DxProxy\StereoViewFactory.h" />
     <ClInclude Include="..\..\DxProxy\DxProxy\Vec4SimpleTranslate.h" />
     <ClInclude Include="..\..\DxProxy\DxProxy\Vector4SimpleTranslate.h" />
     <ClInclude Include="..\..\DxProxy\DxProxy\ViewAdjustment.h" />
-    <ClInclude Include="..\..\DxProxy\DxProxy\Vireio.h" />
     <ClInclude Include="apihijack.h" />
     <ClInclude Include="hijackdll.h" />
   </ItemGroup>

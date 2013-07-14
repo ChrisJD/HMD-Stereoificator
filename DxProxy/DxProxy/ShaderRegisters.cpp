@@ -171,7 +171,7 @@ bool ShaderRegisters::AnyDirty(UINT start, UINT count)
 	return true;
 }
 		
-void ShaderRegisters::ApplyAllDirty(vireio::RenderPosition currentSide) 
+void ShaderRegisters::ApplyAllDirty(stereoificator::RenderPosition currentSide) 
 {	
 	
 	if (m_dirtyRegistersF.size() == 0)
@@ -216,12 +216,12 @@ void ShaderRegisters::ApplyAllDirty(vireio::RenderPosition currentSide)
 	m_dirtyRegistersF.clear();
 }
 
-void ShaderRegisters::ApplyAllStereoConstants(vireio::RenderPosition currentSide)
+void ShaderRegisters::ApplyAllStereoConstants(stereoificator::RenderPosition currentSide)
 {
 	ApplyStereoConstants(currentSide, false);
 }
 
-void ShaderRegisters::ApplyStereoConstants(vireio::RenderPosition currentSide, const bool dirtyOnly)
+void ShaderRegisters::ApplyStereoConstants(stereoificator::RenderPosition currentSide, const bool dirtyOnly)
 {
 	if (!m_pActiveVertexShader)
 		return;
@@ -236,7 +236,7 @@ void ShaderRegisters::ApplyStereoConstants(vireio::RenderPosition currentSide, c
 
 			if (dirtyOnly) {
 				// Apply this dirty constant to device
-				m_pActualDevice->SetVertexShaderConstantF(itStereoConstant->second.StartRegister(), (currentSide == vireio::Left) ? itStereoConstant->second.DataLeftPointer() : itStereoConstant->second.DataRightPointer(), itStereoConstant->second.Count());
+				m_pActualDevice->SetVertexShaderConstantF(itStereoConstant->second.StartRegister(), (currentSide == stereoificator::Left) ? itStereoConstant->second.DataLeftPointer() : itStereoConstant->second.DataRightPointer(), itStereoConstant->second.Count());
 			}
 
 			// These registers are no longer dirty
@@ -246,7 +246,7 @@ void ShaderRegisters::ApplyStereoConstants(vireio::RenderPosition currentSide, c
 
 		if (!dirtyOnly) {
 			// Apply this constant to device
-			m_pActualDevice->SetVertexShaderConstantF(itStereoConstant->second.StartRegister(), (currentSide == vireio::Left) ? itStereoConstant->second.DataLeftPointer() : itStereoConstant->second.DataRightPointer(), itStereoConstant->second.Count());
+			m_pActualDevice->SetVertexShaderConstantF(itStereoConstant->second.StartRegister(), (currentSide == stereoificator::Left) ? itStereoConstant->second.DataLeftPointer() : itStereoConstant->second.DataRightPointer(), itStereoConstant->second.Count());
 		}
 
 		++itStereoConstant;

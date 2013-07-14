@@ -23,7 +23,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "d3d9.h"
 #include "d3dx9.h"
 #include "ShaderConstantModification.h"
-#include "Vireio.h"
+#include "Stereoificator.h"
 #include "ShaderMatrixModification.h"
 
 class MatrixHudSquash : public ShaderMatrixModification

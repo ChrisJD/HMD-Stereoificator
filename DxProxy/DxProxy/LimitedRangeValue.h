@@ -21,7 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
 #include <unordered_map>
-#include "Vireio.h"
+#include "Stereoificator.h"
 
 
 class LimitedRangeValue
@@ -52,8 +52,8 @@ public:
 		m_minValue = minValue;
 		m_maxValue = maxValue;
 		m_defaultValue = defaultValue;
-		vireio::clamp(&m_defaultValue, m_minValue, m_maxValue);
-		vireio::clamp(&m_currentValue, m_minValue, m_maxValue);
+		stereoificator::clamp(&m_defaultValue, m_minValue, m_maxValue);
+		stereoificator::clamp(&m_currentValue, m_minValue, m_maxValue);
 	}
 
 	// Attempts to add the provided value to the current value. If the resulting value will be clamped to the min-max range.
@@ -62,7 +62,7 @@ public:
 	{
 		m_currentValue += toAdd;
 	
-		vireio::clamp(&m_currentValue, m_minValue, m_maxValue);
+		stereoificator::clamp(&m_currentValue, m_minValue, m_maxValue);
 
 		return m_currentValue;
 	}
@@ -73,7 +73,7 @@ public:
 	{
 		m_currentValue = newValue;
 	
-		vireio::clamp(&m_currentValue, m_minValue, m_maxValue);
+		stereoificator::clamp(&m_currentValue, m_minValue, m_maxValue);
 
 		return m_currentValue;
 	}

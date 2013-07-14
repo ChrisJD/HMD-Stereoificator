@@ -29,7 +29,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <map>
 #include <algorithm>
 #include "D3D9ProxyVertexShader.h"
-#include "Vireio.h"
+#include "Stereoificator.h"
 
 
 class D3D9ProxyVertexShader;
@@ -71,12 +71,12 @@ public:
 		Note that stereo constants will only be applied if the underlying register has changed. To apply a specific side whether dirty or not
 		use ApplyStereoConstants with forceApply true.
 	 */
-	void ApplyAllDirty(vireio::RenderPosition currentSide);
+	void ApplyAllDirty(stereoificator::RenderPosition currentSide);
 
 	/*
 		This will apply all StereoShaderConstants to the device (updating dirty ones before applying them)
 	 */
-	void ApplyAllStereoConstants(vireio::RenderPosition currentSide);
+	void ApplyAllStereoConstants(stereoificator::RenderPosition currentSide);
 
 	//void UpdateStereoConstants()
 
@@ -85,7 +85,7 @@ public:
 private:
 
 
-	void ApplyStereoConstants(vireio::RenderPosition currentSide, const bool dirtyOnly);
+	void ApplyStereoConstants(stereoificator::RenderPosition currentSide, const bool dirtyOnly);
 
 	
 	// Marks the first register for each stereoconstant in the active shader dirty to make sure they are updated before being drawn

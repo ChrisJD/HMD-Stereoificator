@@ -152,7 +152,7 @@
     <ClCompile Include="StereoView.cpp" />
     <ClCompile Include="StereoViewFactory.cpp" />
     <ClCompile Include="ViewAdjustment.cpp" />
-    <ClCompile Include="Vireio.cpp" />
+    <ClCompile Include="Stereoificator.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="D3D9ProxyCubeTexture.h" />
@@ -172,7 +172,7 @@
     <ClInclude Include="ShaderMatrixModification.h" />
     <ClInclude Include="MatrixIgnoreOrtho.h" />
     <ClInclude Include="ViewAdjustment.h" />
-    <ClInclude Include="Vireio.h" />
+    <ClInclude Include="stereoificator.h" />
     <ClInclude Include="MurmurHash3.h" />
     <ClInclude Include="ShaderConstantModification.h" />
     <ClInclude Include="ShaderConstantModificationFactory.h" />
