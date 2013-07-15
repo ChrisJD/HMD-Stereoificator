@@ -250,6 +250,7 @@
     <None Include="..\..\Release\Stereoificator\cfg\shader_rules\source.xml">
       <SubType>Designer</SubType>
     </None>
+    <None Include="..\..\Release\Stereoificator\cfg\shader_rules\theball.xml" />
     <None Include="..\..\Release\Stereoificator\cfg\shader_rules\unreal.xml">
       <SubType>Designer</SubType>
     </None>
