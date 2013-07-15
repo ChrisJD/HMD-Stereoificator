@@ -306,10 +306,6 @@ HRESULT RegGetString(HKEY hKey, LPCTSTR szValueName, LPTSTR * lpszResult) {
 }
 
 
-void ProxyHelper::ResetConfigToDeafult(ProxyConfig& config)
-{
-
-}
 
 
 bool ProxyHelper::SaveConfig(ProxyConfig& cfg)
@@ -380,7 +376,7 @@ bool ProxyHelper::SaveConfig2(int mode)
 }
 
 
-// currently only one user supported. More is realtively low priority just because of the work involved in updating the gui
+// currently only one user supported. More is realtively low priority because of the work involved in updating the gui
 bool ProxyHelper::LoadUserConfig(ProxyConfig& config, bool forceDefault)
 {
 	// get the user_profile
@@ -401,72 +397,92 @@ bool ProxyHelper::LoadUserConfig(ProxyConfig& config, bool forceDefault)
 
 
 	xml_document docUsers;
-	xml_parse_result resultUsers = docUsers.load_file(usersPath);	
+	xml_parse_result resultUsers;
+	xml_node gameSettings;
 
-	if(resultUsers.status == status_ok)
-	{
-		xml_node user_profile = docUsers.child("users").child("user");
+	if (!forceDefault) {
+	
+		OutputDebugString("Attempting to load from users.xml\n");
 
-		config.ipd = user_profile.attribute("ipd").as_float(IPD_DEFAULT);
-		vireio::clamp(&config.ipd, 0.01f, 0.1f); // 10mm to 100mm
+		resultUsers = docUsers.load_file(usersPath);	
 
-
-		
-		xml_node gameSettings = user_profile.child("gamesettings");
-
-		for (xml_node settingsEntry = gameSettings.child("game"); settingsEntry; settingsEntry = settingsEntry.next_sibling("game"))
+		if(resultUsers.status == status_ok)
 		{
-			if( config.gameName.compare(settingsEntry.attribute("game_name").as_string()) == 0)
-			{
-				OutputDebugString("User specific profile settings found.\n");
-				
-				UserConfigFromNode(config, settingsEntry);
+			xml_node user_profile = docUsers.child("users").child("user");
 
-				settingsFound = true;
-				break;
+			config.ipd = user_profile.attribute("ipd").as_float(IPD_DEFAULT);
+			vireio::clamp(&config.ipd, 0.01f, 0.1f); // 10mm to 100mm
+
+
+			gameSettings = user_profile.child("gamesettings");
+			for (xml_node settingsEntry = gameSettings.child("game"); settingsEntry; settingsEntry = settingsEntry.next_sibling("game"))
+			{
+				if( config.gameName.compare(settingsEntry.attribute("game_name").as_string()) == 0)
+				{
+					UserConfigFromNode(config, settingsEntry);
+
+					settingsFound = true;
+					OutputDebugString("User settings loaded from users.xml\n");
+					break;
+				}
 			}
 		}
+	}
 
 
-		if (!settingsFound) {
+	if (!settingsFound) {
 			
-			char defaultUsersPath[512];
+		char defaultUsersPath[512];
 
-			OutputDebugString("No entry for game found in users.xml, attempting to load from defaults.\n");
-			GetPath(defaultUsersPath, "cfg\\defaults.users.xml");
-			OutputDebugString(defaultUsersPath);
-			OutputDebugString("\n");
+		OutputDebugString("Attempting to load from defaults.users.xml\n");
+		GetPath(defaultUsersPath, "cfg\\defaults.users.xml");
+		OutputDebugString(defaultUsersPath);
+		OutputDebugString("\n");
 
-			xml_document docDefaultUsers;
-			xml_parse_result resultDefaultUsers = docDefaultUsers.load_file(defaultUsersPath);	
+		xml_document docDefaultUsers;
+		xml_parse_result resultDefaultUsers = docDefaultUsers.load_file(defaultUsersPath);	
 
-			if(resultDefaultUsers.status == status_ok)
+		if(resultDefaultUsers.status == status_ok)
+		{
+			xml_node defaultUserProfile = docDefaultUsers.child("users").child("user");
+			xml_node defaultGameSettings = defaultUserProfile.child("gamesettings");
+
+			for (xml_node settingsEntry = defaultGameSettings.child("game"); settingsEntry; settingsEntry = settingsEntry.next_sibling("game"))
 			{
-				xml_node defaultUserProfile = docDefaultUsers.child("users").child("user");
-				xml_node defaultGameSettings = defaultUserProfile.child("gamesettings");
+				if( config.gameName.compare(settingsEntry.attribute("game_name").as_string()) == 0)
+				{						
+					UserConfigFromNode(config, settingsEntry);
+					settingsFound = true;
+					OutputDebugString("User settings loaded from defaults.users.xml\n");
 
-				for (xml_node settingsEntry = defaultGameSettings.child("game"); settingsEntry; settingsEntry = settingsEntry.next_sibling("game"))
-				{
-					if( config.gameName.compare(settingsEntry.attribute("game_name").as_string()) == 0)
-					{
-						OutputDebugString("Default user settings found.\n");
+					// If defaults being loaded as a fallback from normal load and If this entry doesn't exist in the existing users.xml, Copy the settings to users.xml and save it
+					if (!forceDefault && (gameSettings.type() != node_null) && (resultUsers.status == status_ok)) {
 						
-						UserConfigFromNode(config, settingsEntry);
-						settingsFound = true;
-
-						// As this entry doesn't exist in the existing users.xml, Copy the settings to users.xml and save it
 						gameSettings.append_copy(settingsEntry);
 						docUsers.save_file(usersPath);
+						OutputDebugString("User settings defaults copied to users.xml\n");
 					}
 				}
 			}
 		}
-		
-		
 	}
+
 
 	if (!settingsFound) {
 		OutputDebugString("Error loading user settings for game.\n");
+
+		// If we are trying to force a reset to defaults we fallback to using these hardcoded defaults
+		if (forceDefault) {
+			config.separationAdjustment = 0.0f;
+			config.swap_eyes = true;
+			config.yaw_multiplier = 25.0f;
+			config.pitch_multiplier = 25.0f;
+			config.roll_multiplier = 1.0f;
+			config.horizontalGameFov = 110.0f;
+
+			config.hudScale = 1.0f;
+			config.hudDistance= 1.0f;
+		}
 	}
 
 	return settingsFound;

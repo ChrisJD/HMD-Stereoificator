@@ -1,8 +1,10 @@
 <?xml version="1.0"?>
 <!-- 
-    Do not edit: this file will be overwritten with each new version of Steroificator that is released.
-    All changes made using the in-game controls will be saved to users.xml, that file will not be overwritten if it already exists.
-    users.xml is generated the first time the Stereoificator application is run.
+    Do not edit values in this file. They will be overwritten with each new version of Steroificator that is released.
+	
+	Run Stereoificator once to generate users.xml if it doesn't already exist. Make changes in that file instead, it
+	shouldn't be overwritten with future updates. Where as this file will always be replaced with updates.
+	
     If a profile is reset to defaults using shift-F6 in-game then the appropriate default profile entry from here will be copied to the 
     corresponding entry in users.xml.
     
@@ -13,7 +15,7 @@
     <gamesettings>
       <game game_name="AaAaAA!!!" horizontalFoV="110" separationAdjustment="0" swap_eyes="true" yaw_multiplier="25" pitch_multiplier="25" roll_multiplier="1" />
       <game game_name="inMomentum" horizontalFoV="110" separationAdjustment="0" swap_eyes="true" yaw_multiplier="25" pitch_multiplier="25" roll_multiplier="1" />
-      <game game_name="Mirrors Edge" horizontalFoV="90" separationAdjustment="0" swap_eyes="true" yaw_multiplier="25" pitch_multiplier="25" roll_multiplier="1" />
+      <game game_name="Mirrors Edge" horizontalFoV="110" separationAdjustment="0" swap_eyes="true" yaw_multiplier="25" pitch_multiplier="25" roll_multiplier="1" />
       <game game_name="GRID" horizontalFoV="110" separationAdjustment="0" swap_eyes="true" yaw_multiplier="25" pitch_multiplier="25" roll_multiplier="1" />
       <game game_name="DiRT 2" horizontalFoV="110" separationAdjustment="0" swap_eyes="true" yaw_multiplier="25" pitch_multiplier="25" roll_multiplier="1" />
       <game game_name="DiRT 3" horizontalFoV="110" separationAdjustment="0" swap_eyes="true" yaw_multiplier="25" pitch_multiplier="25" roll_multiplier="1" />
@@ -21,8 +23,8 @@
       <game game_name="Borderlands" horizontalFoV="110" separationAdjustment="0" swap_eyes="true" yaw_multiplier="25" pitch_multiplier="25" roll_multiplier="1" />
       <game game_name="Borderlands 2" horizontalFoV="110" separationAdjustment="0" swap_eyes="true" yaw_multiplier="25" pitch_multiplier="25" roll_multiplier="1" />
       <game game_name="Halflife 2 and Portal" horizontalFoV="110" separationAdjustment="0" swap_eyes="true" yaw_multiplier="25" pitch_multiplier="25" roll_multiplier="1" hudScale="3.1" hudDistance="1" />
-      <game game_name="Left 4 Dead" horizontalFoV="90" separationAdjustment="0" swap_eyes="true" yaw_multiplier="25" pitch_multiplier="25" roll_multiplier="1" hudScale="3.1" hudDistance="1" />
-      <game game_name="Left 4 Dead 2" horizontalFoV="90" separationAdjustment="0" swap_eyes="true" yaw_multiplier="25" pitch_multiplier="25" roll_multiplier="1" hudScale="3.1" hudDistance="1" />
+      <game game_name="Left 4 Dead" horizontalFoV="110" separationAdjustment="0" swap_eyes="true" yaw_multiplier="25" pitch_multiplier="25" roll_multiplier="1" hudScale="3.1" hudDistance="1" />
+      <game game_name="Left 4 Dead 2" horizontalFoV="110" separationAdjustment="0" swap_eyes="true" yaw_multiplier="25" pitch_multiplier="25" roll_multiplier="1" hudScale="3.1" hudDistance="1" />
       <game game_name="Portal 2" horizontalFoV="110" separationAdjustment="0" swap_eyes="true" yaw_multiplier="25" pitch_multiplier="25" roll_multiplier="1" hudScale="3.1" hudDistance="1" />
       <game game_name="Dear Esther" horizontalFoV="110" separationAdjustment="0" swap_eyes="true" yaw_multiplier="1" pitch_multiplier="1" roll_multiplier="1" hudScale="3.1" hudDistance="1"/>
       <game game_name="The Ball" horizontalFoV="110" separationAdjustment="0" swap_eyes="true" yaw_multiplier="25" pitch_multiplier="25" roll_multiplier="1" />
