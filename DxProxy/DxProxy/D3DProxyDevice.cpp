@@ -1036,7 +1036,7 @@ HRESULT WINAPI D3DProxyDevice::Clear(DWORD Count,CONST D3DRECT* pRects,DWORD Fla
 
 	HRESULT result;
 	if (SUCCEEDED(result = BaseDirect3DDevice9::Clear(Count, pRects, Flags, Color, Z, Stencil))) {
-		if (switchDrawingSide()) {
+		if (m_activeRenderTargets[0]->IsStereo() && switchDrawingSide()) {
 
 			HRESULT hr;
 			if (FAILED(hr = BaseDirect3DDevice9::Clear(Count, pRects, Flags, Color, Z, Stencil))) {
@@ -1065,7 +1065,7 @@ HRESULT WINAPI D3DProxyDevice::ColorFill(IDirect3DSurface9* pSurface,CONST RECT*
 {	
 	HRESULT result;
 	if (SUCCEEDED(result = BaseDirect3DDevice9::ColorFill(pSurface, pRect, color))) {
-		if (switchDrawingSide())
+		if (m_activeRenderTargets[0]->IsStereo() && switchDrawingSide())
 			BaseDirect3DDevice9::ColorFill(pSurface, pRect, color);
 	}
 
@@ -1345,7 +1345,7 @@ HRESULT WINAPI D3DProxyDevice::SetRenderTarget(DWORD RenderTargetIndex, IDirect3
 	// Setting actual render target
 	else {
 
-		//  whether rendering is done to in stereo or mono is dependant on the primary render target
+		//  whether rendering is done in stereo or mono is dependant on the primary render target
 		if (RenderTargetIndex == 0) {
 
 			switch (m_currentRenderingSide) 
