@@ -176,6 +176,11 @@ void D3DProxyDevice::Init(ProxyHelper::ProxyConfig& cfg)
 
 	if (cfg.game_type == 11) {
 		m_pDataGatherer = new DataGatherer();
+
+		OutputDebugString("Data Gatherering Mode Active.\n");
+		OutputDebugString("Data Gatherering Mode Active.\n");
+		OutputDebugString("Data Gatherering Mode Active.\n");
+		OutputDebugString("Data Gatherering Mode Active.\n");
 	}
 
 	OnCreateOrRestore();

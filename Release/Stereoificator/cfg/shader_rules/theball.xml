@@ -3,12 +3,12 @@
   <rules>
     <rule id="1" constantType="MatrixC" modToApply="3" constantName ="ViewProjectionMatrix" partialName="true"/>
     <rule id="2" constantType="MatrixC" modToApply="6" constantName ="ProjectionMatrix" />
-    <rule id="3" constantType="MatrixC" modToApply="3" startReg="0"/>    
   </rules>
 
   <defaultRuleIDs>
     <ruleID id="1" />
     <ruleID id="2" />
   </defaultRuleIDs>
+
 
 </shaderConfig>
