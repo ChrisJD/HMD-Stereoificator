@@ -38,6 +38,7 @@ public:
 	
 	void OnCreateRT(UINT Width, UINT Height, D3DFORMAT Format, D3DMULTISAMPLE_TYPE MultiSample, DWORD MultisampleQuality, bool isSwapChainBackBuffer);
 	void OnCreateRTTexture(UINT Width, UINT Height, UINT Levels, D3DFORMAT Format);
+	void OnCreateCubeRTTexture(UINT EdgeLength, UINT Levels, D3DFORMAT Format);
 	void OnCreateDepthStencilSurface(UINT Width, UINT Height ,D3DFORMAT Format, D3DMULTISAMPLE_TYPE MultiSample, DWORD MultisampleQuality, BOOL Discard);
 	void OnCreateVertexShader(D3D9ProxyVertexShader* pShader);
 	void OnSetVertexShader(D3D9ProxyVertexShader* pShader);

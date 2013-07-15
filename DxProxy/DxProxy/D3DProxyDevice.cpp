@@ -32,7 +32,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "DxErr.h"
 #endif
 
-
+#define IS_RENDER_TARGET(d3dusage) ((d3dusage & D3DUSAGE_RENDERTARGET) > 0 ? true : false)
 
 #pragma comment(lib, "d3dx9.lib")
 
@@ -934,7 +934,7 @@ HRESULT WINAPI D3DProxyDevice::CreateTexture(UINT Width,UINT Height,UINT Levels,
 	// try and create left
 	if (SUCCEEDED(creationResult = BaseDirect3DDevice9::CreateTexture(Width, Height, Levels, Usage, Format, Pool, &pLeftTexture, pSharedHandle))) {
 
-		if (m_pDataGatherer) {
+		if (m_pDataGatherer && IS_RENDER_TARGET(Usage)) {
 			m_pDataGatherer->OnCreateRTTexture(Width, Height, Levels, Format);
 		}
 		
@@ -971,6 +971,10 @@ HRESULT WINAPI D3DProxyDevice::CreateCubeTexture(UINT EdgeLength, UINT Levels, D
 
 	// try and create left
 	if (SUCCEEDED(creationResult = BaseDirect3DDevice9::CreateCubeTexture(EdgeLength, Levels, Usage, Format, Pool, &pLeftCubeTexture, pSharedHandle))) {
+
+		if (m_pDataGatherer && IS_RENDER_TARGET(Usage)) {
+			m_pDataGatherer->OnCreateCubeRTTexture(EdgeLength, Levels, Format);
+		}
 		
 		// Does this Texture need duplicating?
 		if (m_pGameHandler->ShouldDuplicateCubeTexture(EdgeLength, Levels, Usage, Format, Pool)) {
@@ -1173,6 +1177,34 @@ void D3DProxyDevice::BeforeDrawing()
 				getActual()->SetPixelShader((m_pActivePixelShader ? m_pActivePixelShader->getActual() : NULL));
 			}
 		}
+
+
+		// finding what the format of te textures being used as input to this shader are
+		//if (m_pActiveVertexShader && m_pActiveVertexShader->GetHash() == 671997634) {
+
+		//	std::stringstream sstm;
+		//	D3DSURFACE_DESC desc;
+
+		//	sstm << "Begin" << std::endl;
+
+		//	auto textureIt = m_activeTextureStages.begin();
+		//	while (textureIt != m_activeTextureStages.end()) {
+
+		//		if (textureIt->second && textureIt->second->GetType() == D3DRTYPE_TEXTURE) {
+
+		//			D3D9ProxyTexture* pDerivedTexture = static_cast<D3D9ProxyTexture*> (textureIt->second);
+		//			pDerivedTexture->GetLevelDesc(0, &desc);
+
+		//			if (IS_RENDER_TARGET(desc.Usage)) { 
+		//				sstm << "TextureRenderTarget" << "," << desc.Width << "," << desc.Height << "," << desc.Format << "," << desc.MultiSampleType << "," << desc.MultiSampleQuality << "," /*<< (isSwapChainBackBuffer ? "yes" : "no")*/ << ","  << pDerivedTexture->GetLevelCount() << "," <<  /* Discard N/A */"," /*EdgeLength*/<< std::endl;
+		//			}
+		//		}
+		//		
+		//		++textureIt;
+		//	}
+
+		//	OutputDebugString(sstm.str().c_str());
+		//}
 	}
 }
 
