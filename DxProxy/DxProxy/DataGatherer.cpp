@@ -19,10 +19,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "DataGatherer.h"
 
 DataGatherer::DataGatherer() :
-	m_recordedShaders(),
-	m_recordedShaderIterator(m_recordedShaders.begin()),
+	m_vshadersInUse(),
+	m_vshadersInUseIterator(m_vshadersInUse.begin()),
+	m_allRecordedVShaders(),
 	m_currentHash(0),
-	m_recordedShaderUpdateHandled(true)
+	m_capturingInUseShaders(false)
 {
 	m_shaderDumpFile.open("vertexShaderDump.csv", std::ios::out);
 
@@ -61,11 +62,8 @@ void DataGatherer::OnCreateVertexShader(D3D9ProxyVertexShader* pWrappedShader)
 		
 		uint32_t hash = pWrappedShader->GetHash();
 
-		if ((hash != 0) && (std::find(m_recordedShaders.begin(), m_recordedShaders.end(), hash) == m_recordedShaders.end()) && m_shaderDumpFile.is_open()) {
-
-			// shader not yet recorded so record shader details.
-			m_recordedShaders.push_back(hash);
-			m_recordedShaderUpdateHandled = false;
+		// if shader not yet recorded, record shader details.
+		if ((hash != 0) && m_allRecordedVShaders.insert(hash).second && m_shaderDumpFile.is_open()) {
 
 			for(UINT i = 0; i < pDesc.Constants; i++)
 			{
@@ -115,78 +113,99 @@ void DataGatherer::OnCreateVertexShader(D3D9ProxyVertexShader* pWrappedShader)
 }
 
 
-void DataGatherer::CheckForListChange()
+void DataGatherer::OnSetVertexShader(D3D9ProxyVertexShader* pShader)
+{
+	if (m_capturingInUseShaders && pShader && (std::find(m_vshadersInUse.begin(), m_vshadersInUse.end(), pShader->GetHash()) == m_vshadersInUse.end())) {
+		m_vshadersInUse.push_back(pShader->GetHash());
+	}
+}
+
+void DataGatherer::StartInUseShaderCapture()
+{
+	m_capturingInUseShaders = true;
+	m_currentHash = 0;
+	m_vshadersInUse.clear();
+}
+
+void DataGatherer::EndInUseShaderCapture()
+{
+	m_capturingInUseShaders = false;
+	m_vshadersInUseIterator = m_vshadersInUse.begin();
+}
+
+bool DataGatherer::CapturingInUseVShaders()
+{
+	return m_capturingInUseShaders;
+}
+
+
+/*void DataGatherer::CheckForListChange()
 {
 	// iterator has been invalidated by changes to set
 	if (!m_recordedShaderUpdateHandled) {
 		OutputDebugString("Handling shader list change\n");
 		m_recordedShaderUpdateHandled = true;
-		m_recordedShaderIterator = m_recordedShaders.begin();
+		m_vshadersInUseIterator = m_vshadersInUse.begin();
 
 			
 		if (m_currentHash != 0) {
 
 			// move iterator back to the same hash it was on before
 			bool found = false;
-			while (m_recordedShaderIterator != m_recordedShaders.end()) {
+			while (m_vshadersInUseIterator != m_vshadersInUse.end()) {
 
-				if (*m_recordedShaderIterator == m_currentHash) {
+				if (*m_vshadersInUseIterator == m_currentHash) {
 					found = true;
 					break;
 				}
 
-				++m_recordedShaderIterator;
+				++m_vshadersInUseIterator;
 			}
 
 
 			if (!found) {
-				m_recordedShaderIterator = m_recordedShaders.begin();
+				m_vshadersInUseIterator = m_vshadersInUse.begin();
 			}
 		}
 	}
-}
+}*/
 
 
 uint32_t DataGatherer::NextShaderHash()
 {
-	if (m_recordedShaders.size() == 0) {
+	if ((m_vshadersInUse.size() == 0) || m_capturingInUseShaders) {
 		m_currentHash = 0;
 		return m_currentHash;
 	}
 
-	CheckForListChange();
-	
-
 	// Move to next hash. If that puts us at the end go back to the beginning
-	++m_recordedShaderIterator;
-	if (m_recordedShaderIterator == m_recordedShaders.end()) {
-		m_recordedShaderIterator = m_recordedShaders.begin();
+	++m_vshadersInUseIterator;
+	if (m_vshadersInUseIterator == m_vshadersInUse.end()) {
+		m_vshadersInUseIterator = m_vshadersInUse.begin();
 		OutputDebugString("End of shader hash list\n");
 	}
 
-	m_currentHash = *m_recordedShaderIterator;
+	m_currentHash = *m_vshadersInUseIterator;
 
 	return m_currentHash;
 }
 
 uint32_t DataGatherer::PreviousShaderHash()
 {
-	if (m_recordedShaders.size() == 0) {
+	if ((m_vshadersInUse.size() == 0) || m_capturingInUseShaders) {
 		m_currentHash = 0;
 		return m_currentHash;
 	}
-
-	CheckForListChange();
 	
 
 	// Move to previous hash. If that puts us at the start go to the end
-	--m_recordedShaderIterator;
-	if (m_recordedShaderIterator == m_recordedShaders.begin()) {
-		m_recordedShaderIterator = m_recordedShaders.end();
+	--m_vshadersInUseIterator;
+	if (m_vshadersInUseIterator == m_vshadersInUse.begin()) {
+		m_vshadersInUseIterator = m_vshadersInUse.end();
 		OutputDebugString("Wrap around\n");
 	}
 
-	m_currentHash = *m_recordedShaderIterator;
+	m_currentHash = *m_vshadersInUseIterator;
 
 	return m_currentHash;
 }
@@ -207,7 +226,7 @@ uint32_t DataGatherer::CurrentHashCode()
 	return m_currentHash;
 }
 
-UINT DataGatherer::VertexShaderCount()
+UINT DataGatherer::VShaderInUseCount()
 {
-	return m_recordedShaders.size();
+	return m_vshadersInUse.size();
 }

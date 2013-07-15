@@ -163,9 +163,6 @@
     <ClCompile Include="StereoBackbuffer.cpp">
       <Filter>Direct3D9Vireio</Filter>
     </ClCompile>
-    <ClCompile Include="DataGatherer.cpp">
-      <Filter>Direct3D9Vireio\Direct3DDevice9</Filter>
-    </ClCompile>
     <ClCompile Include="MurmurHash3.cpp">
       <Filter>MurmurHash3</Filter>
     </ClCompile>
@@ -185,6 +182,9 @@
       <Filter>Direct3D9Vireio</Filter>
     </ClCompile>
     <ClCompile Include="ViewAdjustment.cpp">
+      <Filter>Direct3D9Vireio</Filter>
+    </ClCompile>
+    <ClCompile Include="DataGatherer.cpp">
       <Filter>Direct3D9Vireio</Filter>
     </ClCompile>
   </ItemGroup>
@@ -344,9 +344,6 @@
     <ClInclude Include="StereoBackbuffer.h">
       <Filter>Direct3D9Vireio</Filter>
     </ClInclude>
-    <ClInclude Include="DataGatherer.h">
-      <Filter>Direct3D9Vireio\Direct3DDevice9</Filter>
-    </ClInclude>
     <ClInclude Include="ShaderRegisters.h">
       <Filter>Direct3D9Vireio</Filter>
     </ClInclude>
@@ -400,6 +397,9 @@
     </ClInclude>
     <ClInclude Include="MatrixSimplePlusOrthoReproject.h">
       <Filter>Direct3D9Vireio\ShaderConstantModification</Filter>
+    </ClInclude>
+    <ClInclude Include="DataGatherer.h">
+      <Filter>Direct3D9Vireio</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -436,7 +436,7 @@ void D3DProxyDevice::HandleControls()
 			sstm << "HUD Distance: " << m_spShaderViewAdjustment->BasicAdjustmentValue(ViewAdjustment::HUD_DISTANCE) << std::endl;
 			if (m_pDataGatherer) {
 				sstm << "Selected Shader Hash: " << m_pDataGatherer->CurrentHashCode() << std::endl;
-				sstm << "Vertex Shader Count: " << m_pDataGatherer->VertexShaderCount() << std::endl;
+				sstm << "Vertex Shader Count: " << m_pDataGatherer->VShaderInUseCount() << std::endl;
 			}
 			OutputDebugString(sstm.str().c_str());
 
@@ -458,6 +458,29 @@ void D3DProxyDevice::HandleControls()
 				std::stringstream sstm;
 				sstm << "Current Shader Hash: " << m_pDataGatherer->PreviousShaderHash() << std::endl;
 				OutputDebugString(sstm.str().c_str());
+
+				anyKeyPressed = true;
+			}
+
+			if(KEY_DOWN(VK_NUMPAD9))
+			{
+				
+				
+				if (m_pDataGatherer->CapturingInUseVShaders()) {
+
+					m_pDataGatherer->EndInUseShaderCapture();
+
+					std::stringstream sstm;
+					sstm << "Capture ended, " << m_pDataGatherer->VShaderInUseCount() << " shaders used during capture period." << std::endl;
+					OutputDebugString(sstm.str().c_str());
+				}
+				else {
+					m_pDataGatherer->StartInUseShaderCapture();
+					OutputDebugString("Capture started.");
+				}
+
+
+				
 
 				anyKeyPressed = true;
 			}
@@ -1135,7 +1158,7 @@ void D3DProxyDevice::BeforeDrawing()
 			if (m_redShaderIsActive) {
 
 				m_redShaderIsActive = false;
-				getActual()->SetPixelShader(m_pActivePixelShader->getActual());
+				getActual()->SetPixelShader((m_pActivePixelShader ? m_pActivePixelShader->getActual() : NULL));
 			}
 		}
 	}
@@ -1635,6 +1658,10 @@ HRESULT WINAPI D3DProxyDevice::SetVertexShader(IDirect3DVertexShader9* pShader)
 
 	// Update stored proxy Vertex shader
 	if (SUCCEEDED(result)) {
+
+		if (m_pDataGatherer && pWrappedVShaderData) {
+			m_pDataGatherer->OnSetVertexShader(pWrappedVShaderData);
+		}
 
 		// If in a Begin-End StateBlock pair update the block state rather than the current proxy device state
 		if (m_pCapturingStateTo) {

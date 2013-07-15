@@ -24,6 +24,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <d3dx9.h>
 #include <list>
+#include <unordered_set>
 #include <fstream>
 #include <iterator>
 #include <algorithm>
@@ -35,18 +36,19 @@ public:
 	DataGatherer();
 	virtual ~DataGatherer();
 	
-	virtual void OnCreateVertexShader(D3D9ProxyVertexShader* pShader);
+	void OnCreateVertexShader(D3D9ProxyVertexShader* pShader);
+	void OnSetVertexShader(D3D9ProxyVertexShader* pShader);
 	
 	uint32_t NextShaderHash();
 	uint32_t PreviousShaderHash();
 	bool ShaderMatchesCurrentHash(D3D9ProxyVertexShader* pShader);
 
 	uint32_t CurrentHashCode();
-	UINT VertexShaderCount();
+	UINT VShaderInUseCount();
 
-	//TODO capture a list of shaders to cycle through based on shaders used between start and end (should give much more reasonable list to cycle through)
 	void StartInUseShaderCapture();
 	void EndInUseShaderCapture();
+	bool CapturingInUseVShaders();
 	
 
 private:
@@ -54,12 +56,16 @@ private:
 	void CheckForListChange();
 
 
-	std::list<uint32_t> m_recordedShaders;
-	std::list<uint32_t>::iterator m_recordedShaderIterator;
+	std::unordered_set<uint32_t> m_allRecordedVShaders;
+
+	// Shaders currently is use.
+	std::list<uint32_t> m_vshadersInUse;
+	std::list<uint32_t>::iterator m_vshadersInUseIterator;
+	bool m_capturingInUseShaders;
 
 	std::ofstream m_shaderDumpFile;
 	
-	bool m_recordedShaderUpdateHandled;
+	
 	uint32_t m_currentHash;
 };
 

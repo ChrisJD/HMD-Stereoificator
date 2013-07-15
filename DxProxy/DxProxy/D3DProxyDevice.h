@@ -324,6 +324,7 @@ private:
 
 	BaseDirect3DPixelShader9* m_pRedPixelShader;
 	bool m_redShaderIsActive;
+
 };
 
 #endif
