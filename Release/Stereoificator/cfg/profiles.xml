@@ -14,6 +14,6 @@
 	<profile game_name="Left 4 Dead 2" game_exe="left4dead2.exe" shaderModRules="source.xml" rollEnabled="true" worldScaleFactor="2.5" game_type="101" />
 	<profile game_name="Portal 2" game_exe="portal2.exe" shaderModRules="source.xml" rollEnabled="true" worldScaleFactor="2.0" game_type="101" />
 	<profile game_name="Dear Esther" game_exe="dearesther.exe" shaderModRules="source.xml" rollEnabled="true" worldScaleFactor="2.5" game_type="101" />
-	<profile game_name="The Ball" game_exe="TheBall.exe" shaderModRules="unreal.xml" rollEnabled="true" worldScaleFactor="5"/>
+	<profile game_name="The Ball" game_exe="TheBall.exe" shaderModRules="unreal.xml" rollEnabled="true" worldScaleFactor="5" game_type="11"/>
 	<profile game_name="Dishonored" game_exe="Dishonored.exe" shaderModRules="unreal.xml" rollEnabled="true" worldScaleFactor="5" />
 </profiles>

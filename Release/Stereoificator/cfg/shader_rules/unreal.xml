@@ -2,9 +2,15 @@
 <shaderConfig>
   <rules>
     <rule id="1" constantType="MatrixR" modToApply="1" startReg="0"/>
+    <rule id="2" constantType="MatrixR" modToApply="3" startReg="0"/>
   </rules>
 
   <defaultRuleIDs>
     <ruleID id="1" />
   </defaultRuleIDs>
+
+  
+  <shaderSpecificRuleIDs shaderHash="203008268">
+    <ruleID id="2" />
+  </shaderSpecificRuleIDs>
 </shaderConfig>

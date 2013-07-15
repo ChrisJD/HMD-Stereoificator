@@ -168,7 +168,9 @@
     <ClInclude Include="LimitedRangeValue.h" />
     <ClInclude Include="MatrixDoNothing.h" />
     <ClInclude Include="MatrixHudSquash.h" />
+    <ClInclude Include="MatrixShiftProjection.h" />
     <ClInclude Include="MatrixSimplePlusOrthoReproject.h" />
+    <ClInclude Include="MatrixSimplePlusOrthoShift.h" />
     <ClInclude Include="ShaderMatrixModification.h" />
     <ClInclude Include="MatrixIgnoreOrtho.h" />
     <ClInclude Include="ViewAdjustment.h" />

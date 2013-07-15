@@ -32,6 +32,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "MatrixDoNothing.h"
 #include "MatrixHudSquash.h"
 #include "MatrixSimplePlusOrthoReproject.h"
+#include "MatrixShiftProjection.h"
+#include "MatrixSimplePlusOrthoShift.h"
 
 
 
@@ -51,7 +53,9 @@ public:
 		MatSimpleTranslate = 1, 
 		MatSimpleTranslateIgnoreOrtho = 3,
 		MatHudSquash = 4,
-		MatSimpleTranslateOrthoReproject = 5
+		MatSimpleTranslateOrthoReproject = 5,
+		MatShiftProjection = 6,
+		MatSimplePlusOrthoShift = 7
 	};
 
 
@@ -97,6 +101,12 @@ public:
 
 		case MatSimpleTranslateOrthoReproject:
 			return std::make_shared<MatrixSimplePlusOrthoReproject>(mod, adjustmentMatricies, transpose);
+
+		case MatShiftProjection:
+			return std::make_shared<MatrixShiftProjection>(mod, adjustmentMatricies, transpose);
+
+		case MatSimplePlusOrthoShift:
+			return std::make_shared<MatrixSimplePlusOrthoShift>(mod, adjustmentMatricies, transpose);
 
 		default:
 			OutputDebugString("Nonexistant matrix modification\n");
