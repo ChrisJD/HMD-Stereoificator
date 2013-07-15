@@ -1164,11 +1164,10 @@ void D3DProxyDevice::BeforeDrawing()
 	if (m_pDataGatherer) {
 		if (m_pDataGatherer->ShaderMatchesCurrentHash(m_pActiveVertexShader)) {
 
-			if (!m_redShaderIsActive) {
-
-				m_redShaderIsActive = true;
-				getActual()->SetPixelShader(m_pRedPixelShader->getActual());
-			}
+			// Always set pixel shader. The m_redShaderIsActive flag could be set false when a pixel shader is set in SetPixelShader
+			// but as this only happens in datagathering mode I'm leaving it like this rather than spreading conditional checks around elsewhere.
+			m_redShaderIsActive = true;
+			getActual()->SetPixelShader(m_pRedPixelShader->getActual());
 		}
 		else {
 
