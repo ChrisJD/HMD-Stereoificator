@@ -815,6 +815,10 @@ HRESULT WINAPI D3DProxyDevice::CreateRenderTarget(UINT Width, UINT Height, D3DFO
 	// create left/mono
 	if (SUCCEEDED(creationResult = BaseDirect3DDevice9::CreateRenderTarget(Width, Height, Format, MultiSample, MultisampleQuality, Lockable, &pLeftRenderTarget, pSharedHandle))) {
 
+		if (m_pDataGatherer) {
+			m_pDataGatherer->OnCreateRT(Width, Height, Format, MultiSample, MultisampleQuality, isSwapChainBackBuffer);
+		}
+
 		/* "If Needed" heuristic is the complicated part here.
 		  Fixed heuristics (based on type, format, size, etc) + game specific overrides + isForcedMono + magic? */
 		// TODO Should we duplicate this Render Target? Replace "true" with heuristic
@@ -871,6 +875,10 @@ HRESULT WINAPI D3DProxyDevice::CreateDepthStencilSurface(UINT Width,UINT Height,
 	// create left/mono
 	if (SUCCEEDED(creationResult = BaseDirect3DDevice9::CreateDepthStencilSurface(Width, Height, Format, MultiSample, MultisampleQuality, Discard, &pDepthStencilSurfaceLeft, pSharedHandle))) {
 
+		if (m_pDataGatherer) {
+			m_pDataGatherer->OnCreateDepthStencilSurface(Width, Height, Format, MultiSample, MultisampleQuality, Discard);
+		}
+
 		// TODO Should we always duplicated Depth stencils? I think yes, but there may be exceptions
 		if (m_pGameHandler->ShouldDuplicateDepthStencilSurface(Width, Height, Format, MultiSample, MultisampleQuality, Discard)) 
 		{
@@ -925,6 +933,10 @@ HRESULT WINAPI D3DProxyDevice::CreateTexture(UINT Width,UINT Height,UINT Levels,
 
 	// try and create left
 	if (SUCCEEDED(creationResult = BaseDirect3DDevice9::CreateTexture(Width, Height, Levels, Usage, Format, Pool, &pLeftTexture, pSharedHandle))) {
+
+		if (m_pDataGatherer) {
+			m_pDataGatherer->OnCreateRTTexture(Width, Height, Levels, Format);
+		}
 		
 		// Does this Texture need duplicating?
 		if (m_pGameHandler->ShouldDuplicateTexture(Width, Height, Levels, Usage, Format, Pool)) {

@@ -26,18 +26,34 @@ DataGatherer::DataGatherer() :
 	m_capturingInUseShaders(false)
 {
 	m_shaderDumpFile.open("vertexShaderDump.csv", std::ios::out);
+	m_renderTargetDumpFile.open("renderTargetDump.csv", std::ios::out);
 
 	m_shaderDumpFile << "Shader Hash,Constant Name,ConstantType,Start Register,Register Count" << std::endl;
+	m_renderTargetDumpFile << "Type,Width,Height,Format,Multisample,MultisampleQuality,IsBackBuffer,Levels,Discard" << std::endl;
 }
 
 DataGatherer::~DataGatherer()
 {
 	m_shaderDumpFile.close();
+	m_renderTargetDumpFile.close();
 }
 
 
 
+void DataGatherer::OnCreateRT(UINT Width, UINT Height, D3DFORMAT Format, D3DMULTISAMPLE_TYPE MultiSample, DWORD MultisampleQuality, bool isSwapChainBackBuffer)
+{
+	m_renderTargetDumpFile << "RenderTarget" << "," << Width << "," << Height << "," << Format << "," << MultiSample << "," << MultisampleQuality << "," << (isSwapChainBackBuffer ? "yes" : "no") << ","  /* Levels N/A */ << "," <<  /* Discard N/A */ std::endl;
+}
 
+void DataGatherer::OnCreateRTTexture(UINT Width, UINT Height, UINT Levels, D3DFORMAT Format)
+{
+	m_renderTargetDumpFile << "TextureRenderTarget" << "," << Width << "," << Height << "," << Format << "," /*<< MultiSample*/ << "," /*<< MultisampleQuality*/ << "," /*<< (isSwapChainBackBuffer ? "yes" : "no")*/ << ","  << Levels << "," <<  /* Discard N/A */ std::endl;
+}
+
+void DataGatherer::OnCreateDepthStencilSurface(UINT Width, UINT Height ,D3DFORMAT Format, D3DMULTISAMPLE_TYPE MultiSample, DWORD MultisampleQuality, BOOL Discard)
+{
+	m_renderTargetDumpFile << "DepthStencil" << "," << Width << "," << Height << "," << Format << "," << MultiSample << "," << MultisampleQuality << "," /*<< (isSwapChainBackBuffer ? "yes" : "no")*/ << ","  /*<< Levels*/ << "," <<  (Discard ? "yes" : "no") << std::endl;
+}
 
 void DataGatherer::OnCreateVertexShader(D3D9ProxyVertexShader* pWrappedShader)
 {
