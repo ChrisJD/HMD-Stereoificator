@@ -168,7 +168,9 @@
     <ClInclude Include="LimitedRangeValue.h" />
     <ClInclude Include="MatrixDoNothing.h" />
     <ClInclude Include="MatrixHudSquash.h" />
+    <ClInclude Include="MatrixShiftProjection.h" />
     <ClInclude Include="MatrixSimplePlusOrthoReproject.h" />
+    <ClInclude Include="MatrixSimplePlusOrthoShift.h" />
     <ClInclude Include="ShaderMatrixModification.h" />
     <ClInclude Include="MatrixIgnoreOrtho.h" />
     <ClInclude Include="ViewAdjustment.h" />
@@ -248,12 +250,17 @@
     <None Include="..\..\Release\Stereoificator\cfg\shader_rules\source.xml">
       <SubType>Designer</SubType>
     </None>
-    <None Include="..\..\Release\Stereoificator\cfg\shader_rules\unreal.xml">
-      <SubType>Designer</SubType>
-    </None>
+	<None Include="..\..\Release\Stereoificator\cfg\shader_rules\theball.xml" />
     <None Include="..\..\Release\Stereoificator\fx\HMDBarrel.fx" />
     <None Include="..\..\Release\Stereoificator\fx\SideBySide.fx" />
     <None Include="Exports.def" />
+    <CustomBuild Include="hlsl\MakeItRed.hlsl">
+      <FileType>Document</FileType>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">"$(DXSDK_DIR)Utilities\bin\x86\"fxc.exe  /T ps_2_0 /Fo "$(SolutionDir)$(Configuration)\Stereoificator\hlsl\%(Filename).cso" "%(FullPath)"</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(filename).fxo</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">"$(DXSDK_DIR)Utilities\bin\x86\"fxc.exe  /T ps_2_0 /Fo "$(SolutionDir)$(Configuration)\Stereoificator\hlsl\%(Filename).cso" "%(FullPath)"</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(filename).fxo</Outputs>
+    </CustomBuild>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

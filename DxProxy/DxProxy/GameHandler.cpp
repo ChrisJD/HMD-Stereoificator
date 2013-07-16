@@ -81,12 +81,14 @@ bool GameHandler::ShouldDuplicateRenderTarget(UINT Width, UINT Height, D3DFORMAT
 	// enabling the line above breaks reflections in f1 2010
 	//TODO implementation
 	return true;
-
+	//return Width != Height;
 }
 
 bool GameHandler::ShouldDuplicateDepthStencilSurface(UINT Width,UINT Height,D3DFORMAT Format,D3DMULTISAMPLE_TYPE MultiSample,DWORD MultisampleQuality,BOOL Discard)
 {
 	//TODO implementation
+	//return MultiSample == 4;
+	//return Width != Height;
 	return true;
 }
 
@@ -94,6 +96,7 @@ bool GameHandler::ShouldDuplicateTexture(UINT Width,UINT Height,UINT Levels,DWOR
 {
 	//TODO implementation
 	// IF render target then check render target rules?
+	//return false;
 	return IS_RENDER_TARGET(Usage);
 }
 
@@ -101,6 +104,7 @@ bool GameHandler::ShouldDuplicateCubeTexture(UINT EdgeLength, UINT Levels, DWORD
 {
 	//TODO implementation
 	// IF render target then check render target rules?
+	//return false;
 	return IS_RENDER_TARGET(Usage);
 }
 

@@ -19,21 +19,46 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "DataGatherer.h"
 
 DataGatherer::DataGatherer() :
-	m_recordedShaders()
+	m_vshadersInUse(),
+	m_vshadersInUseIterator(m_vshadersInUse.begin()),
+	m_allRecordedVShaders(),
+	m_currentHash(0),
+	m_capturingInUseShaders(false)
 {
 	m_shaderDumpFile.open("vertexShaderDump.csv", std::ios::out);
+	m_renderTargetDumpFile.open("renderTargetDump.csv", std::ios::out);
 
 	m_shaderDumpFile << "Shader Hash,Constant Name,ConstantType,Start Register,Register Count" << std::endl;
+	m_renderTargetDumpFile << "Type,Width,Height,Format,Multisample,MultisampleQuality,IsBackBuffer,Levels,Discard,EdgeLength" << std::endl;
 }
 
 DataGatherer::~DataGatherer()
 {
 	m_shaderDumpFile.close();
+	m_renderTargetDumpFile.close();
 }
 
 
 
+void DataGatherer::OnCreateRT(UINT Width, UINT Height, D3DFORMAT Format, D3DMULTISAMPLE_TYPE MultiSample, DWORD MultisampleQuality, bool isSwapChainBackBuffer)
+{
+	m_renderTargetDumpFile << "RenderTarget" << "," << Width << "," << Height << "," << Format << "," << MultiSample << "," << MultisampleQuality << "," << (isSwapChainBackBuffer ? "yes" : "no") << ","  /* Levels N/A */ << "," <<  /* Discard N/A */"," /*EdgeLength*/<< std::endl;
+}
 
+void DataGatherer::OnCreateRTTexture(UINT Width, UINT Height, UINT Levels, D3DFORMAT Format)
+{
+	m_renderTargetDumpFile << "TextureRenderTarget" << "," << Width << "," << Height << "," << Format << "," /*<< MultiSample*/ << "," /*<< MultisampleQuality*/ << "," /*<< (isSwapChainBackBuffer ? "yes" : "no")*/ << ","  << Levels << "," <<  /* Discard N/A */"," /*EdgeLength*/<< std::endl;
+}
+
+void DataGatherer::OnCreateDepthStencilSurface(UINT Width, UINT Height ,D3DFORMAT Format, D3DMULTISAMPLE_TYPE MultiSample, DWORD MultisampleQuality, BOOL Discard)
+{
+	m_renderTargetDumpFile << "DepthStencil" << "," << Width << "," << Height << "," << Format << "," << MultiSample << "," << MultisampleQuality << "," /*<< (isSwapChainBackBuffer ? "yes" : "no")*/ << ","  /*<< Levels*/ << "," <<  (Discard ? "yes" : "no") << "," /*EdgeLength*/<< std::endl;
+}
+
+void DataGatherer::OnCreateCubeRTTexture(UINT EdgeLength, UINT Levels, D3DFORMAT Format)
+{
+	m_renderTargetDumpFile << "CubeTextureRenderTarget" << "," /*<< Width*/ << "," /*<< Height*/ << "," << Format << "," /*<< MultiSample*/ << "," /*<< MultisampleQuality*/ << "," /*<< (isSwapChainBackBuffer ? "yes" : "no")*/ << ","  /* Levels N/A */ << "," <<  /* Discard N/A */"," << EdgeLength << std::endl;
+}
 
 void DataGatherer::OnCreateVertexShader(D3D9ProxyVertexShader* pWrappedShader)
 {
@@ -58,8 +83,8 @@ void DataGatherer::OnCreateVertexShader(D3D9ProxyVertexShader* pWrappedShader)
 		
 		uint32_t hash = pWrappedShader->GetHash();
 
-		if ((hash != 0) && m_recordedShaders.insert(hash).second && m_shaderDumpFile.is_open()) {
-			// insertion succeeded therefore shader not recorded yet so record shader details.
+		// if shader not yet recorded, record shader details.
+		if ((hash != 0) && m_allRecordedVShaders.insert(hash).second && m_shaderDumpFile.is_open()) {
 
 			for(UINT i = 0; i < pDesc.Constants; i++)
 			{
@@ -106,4 +131,123 @@ void DataGatherer::OnCreateVertexShader(D3D9ProxyVertexShader* pWrappedShader)
 
 	_SAFE_RELEASE(pConstantTable);
 	if (pData) delete[] pData;
+}
+
+
+void DataGatherer::OnSetVertexShader(D3D9ProxyVertexShader* pShader)
+{
+	if (m_capturingInUseShaders && pShader && (std::find(m_vshadersInUse.begin(), m_vshadersInUse.end(), pShader->GetHash()) == m_vshadersInUse.end())) {
+		m_vshadersInUse.push_back(pShader->GetHash());
+	}
+}
+
+void DataGatherer::StartInUseShaderCapture()
+{
+	m_capturingInUseShaders = true;
+	m_currentHash = 0;
+	m_vshadersInUse.clear();
+}
+
+void DataGatherer::EndInUseShaderCapture()
+{
+	m_capturingInUseShaders = false;
+	m_vshadersInUseIterator = m_vshadersInUse.begin();
+}
+
+bool DataGatherer::CapturingInUseVShaders()
+{
+	return m_capturingInUseShaders;
+}
+
+
+/*void DataGatherer::CheckForListChange()
+{
+	// iterator has been invalidated by changes to set
+	if (!m_recordedShaderUpdateHandled) {
+		OutputDebugString("Handling shader list change\n");
+		m_recordedShaderUpdateHandled = true;
+		m_vshadersInUseIterator = m_vshadersInUse.begin();
+
+			
+		if (m_currentHash != 0) {
+
+			// move iterator back to the same hash it was on before
+			bool found = false;
+			while (m_vshadersInUseIterator != m_vshadersInUse.end()) {
+
+				if (*m_vshadersInUseIterator == m_currentHash) {
+					found = true;
+					break;
+				}
+
+				++m_vshadersInUseIterator;
+			}
+
+
+			if (!found) {
+				m_vshadersInUseIterator = m_vshadersInUse.begin();
+			}
+		}
+	}
+}*/
+
+
+uint32_t DataGatherer::NextShaderHash()
+{
+	if ((m_vshadersInUse.size() == 0) || m_capturingInUseShaders) {
+		m_currentHash = 0;
+		return m_currentHash;
+	}
+
+	// Move to next hash. If that puts us at the end go back to the beginning
+	++m_vshadersInUseIterator;
+	if (m_vshadersInUseIterator == m_vshadersInUse.end()) {
+		m_vshadersInUseIterator = m_vshadersInUse.begin();
+		OutputDebugString("End of shader hash list\n");
+	}
+
+	m_currentHash = *m_vshadersInUseIterator;
+
+	return m_currentHash;
+}
+
+uint32_t DataGatherer::PreviousShaderHash()
+{
+	if ((m_vshadersInUse.size() == 0) || m_capturingInUseShaders) {
+		m_currentHash = 0;
+		return m_currentHash;
+	}
+	
+
+	// Move to previous hash. If that puts us at the start go to the end
+	--m_vshadersInUseIterator;
+	if (m_vshadersInUseIterator == m_vshadersInUse.begin()) {
+		m_vshadersInUseIterator = m_vshadersInUse.end();
+		OutputDebugString("Wrap around\n");
+	}
+
+	m_currentHash = *m_vshadersInUseIterator;
+
+	return m_currentHash;
+}
+
+
+
+bool DataGatherer::ShaderMatchesCurrentHash(D3D9ProxyVertexShader* pShader)
+{
+	if (!pShader) {
+		return false;
+	}
+
+	return pShader->GetHash() == m_currentHash;
+}
+
+uint32_t DataGatherer::CurrentHashCode()
+{
+	return m_currentHash;
+}
+
+UINT DataGatherer::VShaderInUseCount()
+{
+	return m_vshadersInUse.size();
 }

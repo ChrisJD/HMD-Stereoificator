@@ -23,8 +23,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "D3D9ProxyVertexShader.h"
 
 #include <d3dx9.h>
+#include <list>
 #include <unordered_set>
 #include <fstream>
+#include <iterator>
+#include <algorithm>
 
 
 class DataGatherer
@@ -33,12 +36,41 @@ public:
 	DataGatherer();
 	virtual ~DataGatherer();
 	
-	virtual void OnCreateVertexShader(D3D9ProxyVertexShader* pShader);
+	void OnCreateRT(UINT Width, UINT Height, D3DFORMAT Format, D3DMULTISAMPLE_TYPE MultiSample, DWORD MultisampleQuality, bool isSwapChainBackBuffer);
+	void OnCreateRTTexture(UINT Width, UINT Height, UINT Levels, D3DFORMAT Format);
+	void OnCreateCubeRTTexture(UINT EdgeLength, UINT Levels, D3DFORMAT Format);
+	void OnCreateDepthStencilSurface(UINT Width, UINT Height ,D3DFORMAT Format, D3DMULTISAMPLE_TYPE MultiSample, DWORD MultisampleQuality, BOOL Discard);
+	void OnCreateVertexShader(D3D9ProxyVertexShader* pShader);
+	void OnSetVertexShader(D3D9ProxyVertexShader* pShader);
+	
+	uint32_t NextShaderHash();
+	uint32_t PreviousShaderHash();
+	bool ShaderMatchesCurrentHash(D3D9ProxyVertexShader* pShader);
+
+	uint32_t CurrentHashCode();
+	UINT VShaderInUseCount();
+
+	void StartInUseShaderCapture();
+	void EndInUseShaderCapture();
+	bool CapturingInUseVShaders();
 	
 
 private:
-	std::unordered_set<uint32_t> m_recordedShaders;
+
+	void CheckForListChange();
+
+
+	std::unordered_set<uint32_t> m_allRecordedVShaders;
+
+	// Shaders currently is use.
+	std::list<uint32_t> m_vshadersInUse;
+	std::list<uint32_t>::iterator m_vshadersInUseIterator;
+	bool m_capturingInUseShaders;
+
 	std::ofstream m_shaderDumpFile;
+	std::ofstream m_renderTargetDumpFile;
+	
+	uint32_t m_currentHash;
 };
 
 #endif

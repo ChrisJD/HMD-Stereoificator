@@ -32,7 +32,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "DxErr.h"
 #endif
 
-
+#define IS_RENDER_TARGET(d3dusage) ((d3dusage & D3DUSAGE_RENDERTARGET) > 0 ? true : false)
 
 #pragma comment(lib, "d3dx9.lib")
 
@@ -54,8 +54,11 @@ D3DProxyDevice::D3DProxyDevice(IDirect3DDevice9* pDevice, BaseDirect3D9* pCreate
 	m_activeTextureStages(),
 	m_activeVertexBuffers(),
 	m_activeSwapChains(),
-	m_keyRepeatRate(0.1f), // 100ms
-	m_pDataGatherer(nullptr)
+	m_keyRepeatRate(0.15f), // 150ms
+	m_pDataGatherer(nullptr),
+	m_pRedPixelShader(nullptr),
+	m_redShaderIsActive(false),
+	m_highlightDrawnWithoutVShader(false)
 {
 	OutputDebugString("D3D ProxyDev Created\n");
 
@@ -173,8 +176,14 @@ void D3DProxyDevice::Init(ProxyHelper::ProxyConfig& cfg)
 	m_pGameHandler->Load(config, m_spShaderViewAdjustment);
 	stereoView = StereoViewFactory::Get(config, m_spShaderViewAdjustment->HMDInfo());
 
-	if (cfg.game_type == 11)
+	if (cfg.game_type == 11) {
 		m_pDataGatherer = new DataGatherer();
+
+		OutputDebugString("Data Gatherering Mode Active.\n");
+		OutputDebugString("Data Gatherering Mode Active.\n");
+		OutputDebugString("Data Gatherering Mode Active.\n");
+		OutputDebugString("Data Gatherering Mode Active.\n");
+	}
 
 	OnCreateOrRestore();
 }
@@ -244,6 +253,45 @@ void D3DProxyDevice::OnCreateOrRestore()
 	}
 
 
+	if (m_pDataGatherer) {
+
+		// Load red pixel shader
+		char viewPath[512];
+		ProxyHelper helper;
+		helper.GetPath(viewPath, "hlsl\\MakeItRed.cso");
+
+		std::ifstream file (viewPath, std::ios::in | std::ios::binary | std::ios::ate);
+
+		if (file.is_open())
+		{
+			std::ifstream::pos_type size = file.tellg();
+			char * memblock;
+			memblock = new char [(unsigned int)size];
+			file.seekg (0, std::ios::beg);
+			file.read (memblock, size);
+			file.close();
+
+			IDirect3DPixelShader9* pPShader;
+			if (FAILED(CreatePixelShader((DWORD*)memblock, &pPShader))) {
+
+				OutputDebugString("MakeItRed, Create shader failed.\n");
+				_SAFE_RELEASE(pPShader);
+			}
+			else {
+				m_pRedPixelShader = static_cast<BaseDirect3DPixelShader9*>(pPShader);
+				OutputDebugString("MakeItRed, Create shader  OK\n");
+			}
+
+			delete[] memblock;
+		}
+		else { 
+			OutputDebugString("Unable to open MakeItRed file\n");
+		}
+
+		
+	}
+
+
 	SetupText();
 
 	stereoView->Init(getActual());
@@ -256,19 +304,13 @@ void D3DProxyDevice::OnCreateOrRestore()
 void D3DProxyDevice::ReleaseEverything()
 {
 	// Fonts and any othe D3DX interfaces should be released first.
-	// They frequently hold stateblocks which are holding further references to other resources.
-	if(hudFont) {
-		hudFont->Release();
-		hudFont = NULL;
-	}
+	_SAFE_RELEASE(hudFont);
+	_SAFE_RELEASE(m_pRedPixelShader);
 
 	
 	m_spManagedShaderRegisters->ReleaseResources();
 
-	if (m_pCapturingStateTo) {
-		m_pCapturingStateTo->Release();
-		m_pCapturingStateTo = NULL;
-	}
+	_SAFE_RELEASE(m_pCapturingStateTo);
 
 	// one of these will still have a count of 1 until the backbuffer is released
 	for(std::vector<D3D9ProxySurface*>::size_type i = 0; i != m_activeRenderTargets.size(); i++) 
@@ -298,32 +340,11 @@ void D3DProxyDevice::ReleaseEverything()
 	}
 
 
-
-
-	if (m_pActiveStereoDepthStencil) {
-		m_pActiveStereoDepthStencil->Release();
-		m_pActiveStereoDepthStencil = NULL;
-	}
-
-	if (m_pActiveIndicies) {
-		m_pActiveIndicies->Release();
-		m_pActiveIndicies = NULL;
-	}
-
-	if (m_pActivePixelShader) {
-		m_pActivePixelShader->Release();
-		m_pActivePixelShader = NULL;
-	}
-
-	if (m_pActiveVertexShader) {
-		m_pActiveVertexShader->Release();
-		m_pActiveVertexShader = NULL;
-	}
-
-	if (m_pActiveVertexDeclaration) {
-		m_pActiveVertexDeclaration->Release();
-		m_pActiveVertexDeclaration = NULL;
-	}
+	_SAFE_RELEASE(m_pActiveStereoDepthStencil);
+	_SAFE_RELEASE(m_pActiveIndicies);
+	_SAFE_RELEASE(m_pActivePixelShader);
+	_SAFE_RELEASE(m_pActiveVertexShader);
+	_SAFE_RELEASE(m_pActiveVertexDeclaration);
 }
 
 
@@ -414,14 +435,72 @@ void D3DProxyDevice::HandleControls()
 
 	if (!keyWait) {
 		
-		if(KEY_DOWN(VK_NUMPAD0))		// turn on/off stereo3D
+		if(KEY_DOWN(VK_NUMPAD0))
 		{
 			std::stringstream sstm;
 			sstm << "HUD Scale: " << m_spShaderViewAdjustment->BasicAdjustmentValue(ViewAdjustment::HUD_SCALE) << std::endl;
 			sstm << "HUD Distance: " << m_spShaderViewAdjustment->BasicAdjustmentValue(ViewAdjustment::HUD_DISTANCE) << std::endl;
+			if (m_pDataGatherer) {
+				sstm << "Selected Shader Hash: " << m_pDataGatherer->CurrentHashCode() << std::endl;
+				sstm << "Vertex Shader Count: " << m_pDataGatherer->VShaderInUseCount() << std::endl;
+			}
 			OutputDebugString(sstm.str().c_str());
 
 			anyKeyPressed = true;
+		}
+
+		if (m_pDataGatherer) {
+			if(KEY_DOWN(VK_NUMPAD1))
+			{
+				std::stringstream sstm;
+				sstm << "Current Shader Hash: " << m_pDataGatherer->NextShaderHash() << std::endl;
+				OutputDebugString(sstm.str().c_str());
+
+				anyKeyPressed = true;
+			}
+
+			if(KEY_DOWN(VK_NUMPAD2))
+			{
+				std::stringstream sstm;
+				sstm << "Current Shader Hash: " << m_pDataGatherer->PreviousShaderHash() << std::endl;
+				OutputDebugString(sstm.str().c_str());
+
+				anyKeyPressed = true;
+			}
+
+			if(KEY_DOWN(VK_NUMPAD7))
+			{
+				m_highlightDrawnWithoutVShader = !m_highlightDrawnWithoutVShader;
+				
+				if (m_highlightDrawnWithoutVShader) {
+					OutputDebugString("Highlighting models drawn without using a Vertex Shader.");
+				}
+				else {
+					OutputDebugString("Highlighting models drawn with selected Vertex Shader.");
+				}
+
+				anyKeyPressed = true;
+			}
+
+			if(KEY_DOWN(VK_NUMPAD9))
+			{
+				
+				
+				if (m_pDataGatherer->CapturingInUseVShaders()) {
+
+					m_pDataGatherer->EndInUseShaderCapture();
+
+					std::stringstream sstm;
+					sstm << "Capture ended, " << m_pDataGatherer->VShaderInUseCount() << " shaders used during capture period." << std::endl;
+					OutputDebugString(sstm.str().c_str());
+				}
+				else {
+					m_pDataGatherer->StartInUseShaderCapture();
+					OutputDebugString("Capture started.");
+				}
+
+				anyKeyPressed = true;
+			}
 		}
 
 
@@ -754,6 +833,10 @@ HRESULT WINAPI D3DProxyDevice::CreateRenderTarget(UINT Width, UINT Height, D3DFO
 	// create left/mono
 	if (SUCCEEDED(creationResult = BaseDirect3DDevice9::CreateRenderTarget(Width, Height, Format, MultiSample, MultisampleQuality, Lockable, &pLeftRenderTarget, pSharedHandle))) {
 
+		
+		if (m_pDataGatherer) {
+			m_pDataGatherer->OnCreateRT(Width, Height, Format, MultiSample, MultisampleQuality, isSwapChainBackBuffer);
+		}
 		if (m_pGameHandler->ShouldDuplicateRenderTarget(Width, Height, Format, MultiSample, MultisampleQuality, Lockable, isSwapChainBackBuffer))
 		{
 			if (FAILED(BaseDirect3DDevice9::CreateRenderTarget(Width, Height, Format, MultiSample, MultisampleQuality, Lockable, &pRightRenderTarget, pSharedHandle))) {
@@ -806,6 +889,10 @@ HRESULT WINAPI D3DProxyDevice::CreateDepthStencilSurface(UINT Width,UINT Height,
 
 	// create left/mono
 	if (SUCCEEDED(creationResult = BaseDirect3DDevice9::CreateDepthStencilSurface(Width, Height, Format, MultiSample, MultisampleQuality, Discard, &pDepthStencilSurfaceLeft, pSharedHandle))) {
+
+		if (m_pDataGatherer) {
+			m_pDataGatherer->OnCreateDepthStencilSurface(Width, Height, Format, MultiSample, MultisampleQuality, Discard);
+		}
 
 		if (m_pGameHandler->ShouldDuplicateDepthStencilSurface(Width, Height, Format, MultiSample, MultisampleQuality, Discard)) 
 		{
@@ -860,6 +947,10 @@ HRESULT WINAPI D3DProxyDevice::CreateTexture(UINT Width,UINT Height,UINT Levels,
 
 	// try and create left
 	if (SUCCEEDED(creationResult = BaseDirect3DDevice9::CreateTexture(Width, Height, Levels, Usage, Format, Pool, &pLeftTexture, pSharedHandle))) {
+
+		if (m_pDataGatherer && IS_RENDER_TARGET(Usage)) {
+			m_pDataGatherer->OnCreateRTTexture(Width, Height, Levels, Format);
+		}
 		
 		// Does this Texture need duplicating?
 		if (m_pGameHandler->ShouldDuplicateTexture(Width, Height, Levels, Usage, Format, Pool)) {
@@ -894,6 +985,10 @@ HRESULT WINAPI D3DProxyDevice::CreateCubeTexture(UINT EdgeLength, UINT Levels, D
 
 	// try and create left
 	if (SUCCEEDED(creationResult = BaseDirect3DDevice9::CreateCubeTexture(EdgeLength, Levels, Usage, Format, Pool, &pLeftCubeTexture, pSharedHandle))) {
+
+		if (m_pDataGatherer && IS_RENDER_TARGET(Usage)) {
+			m_pDataGatherer->OnCreateCubeRTTexture(EdgeLength, Levels, Format);
+		}
 		
 		// Does this Texture need duplicating?
 		if (m_pGameHandler->ShouldDuplicateCubeTexture(EdgeLength, Levels, Usage, Format, Pool)) {
@@ -955,6 +1050,8 @@ HRESULT WINAPI D3DProxyDevice::CreateVertexShader(CONST DWORD* pFunction,IDirect
 		if (m_pDataGatherer) {
 			m_pDataGatherer->OnCreateVertexShader(pWrappedVertexShader);
 		}
+
+
 	}
 
 	return creationResult;
@@ -1073,13 +1170,63 @@ HRESULT WINAPI D3DProxyDevice::ColorFill(IDirect3DSurface9* pSurface,CONST RECT*
 }
 
 
+void D3DProxyDevice::BeforeDrawing()
+{
+	m_spManagedShaderRegisters->ApplyAllDirty(m_currentRenderingSide);
 
+	if (m_pDataGatherer) {
+
+		if ((m_pDataGatherer->ShaderMatchesCurrentHash(m_pActiveVertexShader) && !m_highlightDrawnWithoutVShader) ||
+				(!m_pActiveVertexShader && m_highlightDrawnWithoutVShader)) {
+
+			// Always set pixel shader. The m_redShaderIsActive flag could be set false when a pixel shader is set in SetPixelShader
+			// but as this only happens in datagathering mode I'm leaving it like this rather than spreading conditional checks around elsewhere.
+			m_redShaderIsActive = true;
+			getActual()->SetPixelShader(m_pRedPixelShader->getActual());
+		}
+		else {
+
+			if (m_redShaderIsActive) {
+
+				m_redShaderIsActive = false;
+				getActual()->SetPixelShader((m_pActivePixelShader ? m_pActivePixelShader->getActual() : NULL));
+			}
+		}
+
+
+		// finding what the format of te textures being used as input to this shader are
+		//if (m_pActiveVertexShader && m_pActiveVertexShader->GetHash() == 671997634) {
+
+		//	std::stringstream sstm;
+		//	D3DSURFACE_DESC desc;
+
+		//	sstm << "Begin" << std::endl;
+
+		//	auto textureIt = m_activeTextureStages.begin();
+		//	while (textureIt != m_activeTextureStages.end()) {
+
+		//		if (textureIt->second && textureIt->second->GetType() == D3DRTYPE_TEXTURE) {
+
+		//			D3D9ProxyTexture* pDerivedTexture = static_cast<D3D9ProxyTexture*> (textureIt->second);
+		//			pDerivedTexture->GetLevelDesc(0, &desc);
+
+		//			if (IS_RENDER_TARGET(desc.Usage)) { 
+		//				sstm << "TextureRenderTarget" << "," << desc.Width << "," << desc.Height << "," << desc.Format << "," << desc.MultiSampleType << "," << desc.MultiSampleQuality << "," /*<< (isSwapChainBackBuffer ? "yes" : "no")*/ << ","  << pDerivedTexture->GetLevelCount() << "," <<  /* Discard N/A */"," /*EdgeLength*/<< std::endl;
+		//			}
+		//		}
+		//		
+		//		++textureIt;
+		//	}
+
+		//	OutputDebugString(sstm.str().c_str());
+		//}
+	}
+}
 
 
 HRESULT WINAPI D3DProxyDevice::DrawPrimitive(D3DPRIMITIVETYPE PrimitiveType,UINT StartVertex,UINT PrimitiveCount)
 {
-	m_spManagedShaderRegisters->ApplyAllDirty(m_currentRenderingSide);
-
+	BeforeDrawing();
 
 	HRESULT result;
 	if (SUCCEEDED(result = BaseDirect3DDevice9::DrawPrimitive(PrimitiveType, StartVertex, PrimitiveCount))) {
@@ -1094,7 +1241,7 @@ HRESULT WINAPI D3DProxyDevice::DrawPrimitive(D3DPRIMITIVETYPE PrimitiveType,UINT
 
 HRESULT WINAPI D3DProxyDevice::DrawIndexedPrimitive(D3DPRIMITIVETYPE PrimitiveType,INT BaseVertexIndex,UINT MinVertexIndex,UINT NumVertices,UINT startIndex,UINT primCount)
 {
-	m_spManagedShaderRegisters->ApplyAllDirty(m_currentRenderingSide);
+	BeforeDrawing();
 
 	HRESULT result;
 	if (SUCCEEDED(result = BaseDirect3DDevice9::DrawIndexedPrimitive(PrimitiveType, BaseVertexIndex, MinVertexIndex, NumVertices, startIndex, primCount))) {
@@ -1111,7 +1258,7 @@ HRESULT WINAPI D3DProxyDevice::DrawIndexedPrimitive(D3DPRIMITIVETYPE PrimitiveTy
 
 HRESULT WINAPI D3DProxyDevice::DrawPrimitiveUP(D3DPRIMITIVETYPE PrimitiveType,UINT PrimitiveCount,CONST void* pVertexStreamZeroData,UINT VertexStreamZeroStride)
 {
-	m_spManagedShaderRegisters->ApplyAllDirty(m_currentRenderingSide);
+	BeforeDrawing();
 
 	HRESULT result;
 	if (SUCCEEDED(result = BaseDirect3DDevice9::DrawPrimitiveUP(PrimitiveType, PrimitiveCount, pVertexStreamZeroData, VertexStreamZeroStride))) {
@@ -1125,7 +1272,7 @@ HRESULT WINAPI D3DProxyDevice::DrawPrimitiveUP(D3DPRIMITIVETYPE PrimitiveType,UI
 
 HRESULT WINAPI D3DProxyDevice::DrawIndexedPrimitiveUP(D3DPRIMITIVETYPE PrimitiveType,UINT MinVertexIndex,UINT NumVertices,UINT PrimitiveCount,CONST void* pIndexData,D3DFORMAT IndexDataFormat,CONST void* pVertexStreamZeroData,UINT VertexStreamZeroStride)
 {
-	m_spManagedShaderRegisters->ApplyAllDirty(m_currentRenderingSide);
+	BeforeDrawing();
 
 	HRESULT result;
 	if (SUCCEEDED(result = BaseDirect3DDevice9::DrawIndexedPrimitiveUP(PrimitiveType, MinVertexIndex, NumVertices, PrimitiveCount, pIndexData, IndexDataFormat, pVertexStreamZeroData, VertexStreamZeroStride))) {
@@ -1139,7 +1286,7 @@ HRESULT WINAPI D3DProxyDevice::DrawIndexedPrimitiveUP(D3DPRIMITIVETYPE Primitive
 
 HRESULT WINAPI D3DProxyDevice::DrawRectPatch(UINT Handle,CONST float* pNumSegs,CONST D3DRECTPATCH_INFO* pRectPatchInfo)
 {
-	m_spManagedShaderRegisters->ApplyAllDirty(m_currentRenderingSide);
+	BeforeDrawing();
 
 	HRESULT result;
 	if (SUCCEEDED(result = BaseDirect3DDevice9::DrawRectPatch(Handle, pNumSegs, pRectPatchInfo))) {
@@ -1153,7 +1300,7 @@ HRESULT WINAPI D3DProxyDevice::DrawRectPatch(UINT Handle,CONST float* pNumSegs,C
 
 HRESULT WINAPI D3DProxyDevice::DrawTriPatch(UINT Handle,CONST float* pNumSegs,CONST D3DTRIPATCH_INFO* pTriPatchInfo)
 {
-	m_spManagedShaderRegisters->ApplyAllDirty(m_currentRenderingSide);
+	BeforeDrawing();
 
 	HRESULT result;
 	if (SUCCEEDED(result = BaseDirect3DDevice9::DrawTriPatch(Handle, pNumSegs, pTriPatchInfo))) {
@@ -1170,7 +1317,7 @@ HRESULT WINAPI D3DProxyDevice::ProcessVertices(UINT SrcStartIndex,UINT DestIndex
 	if (!pDestBuffer)
 		return D3DERR_INVALIDCALL;
 
-	m_spManagedShaderRegisters->ApplyAllDirty(m_currentRenderingSide);
+	BeforeDrawing();
 
 	BaseDirect3DVertexBuffer9* pCastDestBuffer = static_cast<BaseDirect3DVertexBuffer9*>(pDestBuffer);
 	BaseDirect3DVertexDeclaration9* pCastVertexDeclaration = NULL;
@@ -1653,6 +1800,10 @@ HRESULT WINAPI D3DProxyDevice::SetVertexShader(IDirect3DVertexShader9* pShader)
 
 	// Update stored proxy Vertex shader
 	if (SUCCEEDED(result)) {
+
+		if (m_pDataGatherer && pWrappedVShaderData) {
+			m_pDataGatherer->OnSetVertexShader(pWrappedVShaderData);
+		}
 
 		// If in a Begin-End StateBlock pair update the block state rather than the current proxy device state
 		if (m_pCapturingStateTo) {

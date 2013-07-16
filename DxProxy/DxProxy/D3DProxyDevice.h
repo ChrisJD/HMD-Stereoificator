@@ -248,7 +248,8 @@ private:
 	void ReleaseEverything();
 	bool isViewportDefaultForMainRT(CONST D3DVIEWPORT9* pViewport);
 
-	// apply = should apply to actual device, if false the proxydevice state will change but the chage won't be applied to the actual device (only use this if you know the device already has the correct state)
+	
+	void BeforeDrawing();	// apply = should apply to actual device, if false the proxydevice state will change but the chage won't be applied to the actual device (only use this if you know the device already has the correct state)
 	HRESULT SetStereoViewTransform(D3DXMATRIX pCenterMatrix, D3DXMATRIX pLeftMatrix, D3DXMATRIX pRightMatrix, bool apply);
 	HRESULT SetStereoProjectionTransform(D3DXMATRIX pCenterMatrix, D3DXMATRIX pLeftMatrix, D3DXMATRIX pRightMatrix, bool apply);
 
@@ -323,6 +324,10 @@ private:
 	// 92.568 (use 92 if only whole numbers can be used) if horizontal, 66 if vertical (16:10 resolution), 61 if vertical (16:9 resolution)
 
 
+
+	BaseDirect3DPixelShader9* m_pRedPixelShader;
+	bool m_redShaderIsActive;
+	bool m_highlightDrawnWithoutVShader;
 };
 
 #endif

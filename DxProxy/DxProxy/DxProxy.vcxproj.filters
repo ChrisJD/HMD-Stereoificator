@@ -44,6 +44,9 @@
     <Filter Include="Direct3D9Stereoificator\ShaderConstantModification">
       <UniqueIdentifier>{084bd177-106f-45e6-a3bf-8f38a1279b73}</UniqueIdentifier>
     </Filter>
+    <Filter Include="hlsl">
+      <UniqueIdentifier>{7704aea2-c0bf-4df4-916f-fcd03ddc979f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
@@ -218,6 +221,9 @@
     </None>
     <None Include="..\..\Release\Stereoificator\fx\SideBySide.fx">
       <Filter>fx</Filter>
+    </None>
+    <None Include="..\..\Release\Stereoificator\cfg\shader_rules\theball.xml">
+      <Filter>cfg\shader_rules</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
@@ -398,6 +404,12 @@
     <ClInclude Include="stereoificator.h">
       <Filter>Direct3D9Stereoificator</Filter>
     </ClInclude>
+    <ClInclude Include="MatrixShiftProjection.h">
+      <Filter>Direct3D9Stereoificator\ShaderConstantModification</Filter>
+    </ClInclude>
+    <ClInclude Include="MatrixSimplePlusOrthoShift.h">
+      <Filter>Direct3D9Stereoificator\ShaderConstantModification</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="..\..\Release\Stereoificator\cfg\config.xml">
@@ -408,6 +420,9 @@
     </CustomBuild>
     <CustomBuild Include="..\..\Release\Stereoificator\cfg\defaults.users.xml">
       <Filter>cfg</Filter>
+    </CustomBuild>
+    <CustomBuild Include="hlsl\MakeItRed.hlsl">
+      <Filter>hlsl</Filter>
     </CustomBuild>
   </ItemGroup>
 </Project>
