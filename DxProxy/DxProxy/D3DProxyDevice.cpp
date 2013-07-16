@@ -1477,6 +1477,7 @@ HRESULT WINAPI D3DProxyDevice::SetRenderTarget(DWORD RenderTargetIndex, IDirect3
 	
 	//// Update actual render target ////
 	HRESULT result;
+	stereoificator::RenderPosition newRenderingSide = m_currentRenderingSide;
 
 	// Removing a render target
 	if (newRenderTarget == NULL) {
@@ -1502,7 +1503,7 @@ HRESULT WINAPI D3DProxyDevice::SetRenderTarget(DWORD RenderTargetIndex, IDirect3
 				
 				// if currently drawing stereo but target is mono then switch to mono
 				if (!newRenderTarget->IsStereo()) {
-					setDrawingSide(stereoificator::Center);
+					newRenderingSide = stereoificator::Center;
 				}
 
 				break;
@@ -1521,7 +1522,7 @@ HRESULT WINAPI D3DProxyDevice::SetRenderTarget(DWORD RenderTargetIndex, IDirect3
 
 				// if currently drawing mono but target is stereo switch to first stereo side
 				if (newRenderTarget->IsStereo()) {
-					setDrawingSide(stereoificator::Left);
+					newRenderingSide = stereoificator::Left;
 				}
 				break;
 
@@ -1535,7 +1536,7 @@ HRESULT WINAPI D3DProxyDevice::SetRenderTarget(DWORD RenderTargetIndex, IDirect3
 		}
 
 
-		switch (m_currentRenderingSide) 
+		switch (newRenderingSide) 
 		{
 		case stereoificator::Right:
 			result = BaseDirect3DDevice9::SetRenderTarget(RenderTargetIndex, newRenderTarget->getActualRight());	
@@ -1575,6 +1576,11 @@ HRESULT WINAPI D3DProxyDevice::SetRenderTarget(DWORD RenderTargetIndex, IDirect3
 		m_activeRenderTargets[RenderTargetIndex] = newRenderTarget;
 		if (m_activeRenderTargets[RenderTargetIndex] != NULL)
 			m_activeRenderTargets[RenderTargetIndex]->AddRef();
+
+		// can't do this until the render target has been set successfully
+		if (RenderTargetIndex == 0) {
+			setDrawingSide(newRenderingSide);
+		}
 	}
 
 	return result;
