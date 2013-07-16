@@ -50,6 +50,9 @@ public:
 	virtual IDirect3DCubeTexture9* getActualMono();
 	virtual IDirect3DCubeTexture9* getActualLeft();
 	virtual IDirect3DCubeTexture9* getActualRight();
+
+	bool ContainsStereoData();
+	void WritingInStereo(bool stereo);
 	
 	
 	// IDirect3DResource9 methods

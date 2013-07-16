@@ -80,7 +80,41 @@ IDirect3DCubeTexture9* D3D9ProxyCubeTexture::getActualRight()
 
 
 
+bool D3D9ProxyCubeTexture::ContainsStereoData()
+{
+	if (!IsStereo()) {
+		return false;
+	}
 
+	bool containsStereo = false;
+
+	// asumption: if one side of cube is stereo they all will be
+	IDirect3DSurface9* pCubeTextureLevel0;
+	GetCubeMapSurface(D3DCUBEMAP_FACE_POSITIVE_X, 0, &pCubeTextureLevel0);
+
+	D3D9ProxySurface* pWrappedTextureLevel0 = static_cast<D3D9ProxySurface*>(pCubeTextureLevel0);
+	containsStereo = pWrappedTextureLevel0->ContainsStereoData();
+
+	pCubeTextureLevel0->Release();
+
+	return containsStereo;
+}
+
+void D3D9ProxyCubeTexture::WritingInStereo(bool stereo)
+{
+	if (!IsStereo()) {
+		return;
+	}
+
+	// set all cube faces to the same mode
+	IDirect3DSurface9* pCubeTextureLevel0;
+	for (int i = 0; i < 6; i++) {
+
+		GetCubeMapSurface((D3DCUBEMAP_FACES)i, 0, &pCubeTextureLevel0);
+		static_cast<D3D9ProxySurface*>(pCubeTextureLevel0)->WritingInStereo(stereo);
+		pCubeTextureLevel0->Release();
+	}
+}
 
 
 

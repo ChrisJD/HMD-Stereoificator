@@ -24,7 +24,8 @@ D3D9ProxySurface::D3D9ProxySurface(IDirect3DSurface9* pActualSurfaceLeft, IDirec
 	BaseDirect3DSurface9(pActualSurfaceLeft),
 	m_pActualSurfaceRight(pActualSurfaceRight),
 	m_pOwningDevice(pOwningDevice),
-	m_pWrappedContainer(pWrappedContainer)
+	m_pWrappedContainer(pWrappedContainer),
+	m_containsStereoData(pActualSurfaceRight != NULL)
 {
 	assert (pOwningDevice != NULL);
 	
@@ -60,7 +61,18 @@ bool D3D9ProxySurface::IsStereo()
 	return m_pActualSurfaceRight != NULL;
 }
 
+bool D3D9ProxySurface::ContainsStereoData()
+{
+	return m_containsStereoData;
+}
 
+void D3D9ProxySurface::WritingInStereo(bool stereo)
+{
+	if (!m_pActualSurfaceRight)
+		return;
+
+	m_containsStereoData = stereo;
+}
 
 IDirect3DSurface9* D3D9ProxySurface::getActualMono()
 {

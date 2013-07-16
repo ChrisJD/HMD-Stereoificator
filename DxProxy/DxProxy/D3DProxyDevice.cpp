@@ -58,7 +58,8 @@ D3DProxyDevice::D3DProxyDevice(IDirect3DDevice9* pDevice, BaseDirect3D9* pCreate
 	m_pDataGatherer(nullptr),
 	m_pRedPixelShader(nullptr),
 	m_redShaderIsActive(false),
-	m_highlightDrawnWithoutVShader(false)
+	m_highlightDrawnWithoutVShader(false),
+	m_primaryRenderTargetModeChanged(true)
 {
 	OutputDebugString("D3D ProxyDev Created\n");
 
@@ -298,6 +299,8 @@ void D3DProxyDevice::OnCreateOrRestore()
 	
 	m_spShaderViewAdjustment->UpdateProjectionMatrices((float)stereoView->viewport.Width/(float)stereoView->viewport.Height);
 	m_spShaderViewAdjustment->ComputeViewTransforms();
+
+	m_primaryRenderTargetModeChanged = true;
 }
 
 
@@ -1172,6 +1175,35 @@ HRESULT WINAPI D3DProxyDevice::ColorFill(IDirect3DSurface9* pSurface,CONST RECT*
 
 void D3DProxyDevice::BeforeDrawing()
 {
+	if (m_primaryRenderTargetModeChanged) {
+
+		m_primaryRenderTargetModeChanged = false;
+
+		D3D9ProxySurface* pCurrentRT;
+		for(std::vector<D3D9ProxySurface*>::size_type i = 0; i != m_activeRenderTargets.size(); i++) 
+		{
+			if ((pCurrentRT = m_activeRenderTargets[i]) != NULL) {
+
+				switch (m_currentRenderingSide) 
+				{
+				case stereoificator::Left:
+				case stereoificator::Right:
+					pCurrentRT->WritingInStereo(true);
+					break;
+
+				case stereoificator::Center:
+					pCurrentRT->WritingInStereo(false);
+					break;
+
+				default:
+					OutputDebugString("BeforeDrawing - Unknown rendering position");
+					DebugBreak();
+					break;
+				}
+			}
+		}
+	}
+
 	m_spManagedShaderRegisters->ApplyAllDirty(m_currentRenderingSide);
 
 	if (m_pDataGatherer) {
@@ -1504,13 +1536,14 @@ HRESULT WINAPI D3DProxyDevice::SetRenderTarget(DWORD RenderTargetIndex, IDirect3
 				// if currently drawing stereo but target is mono then switch to mono
 				if (!newRenderTarget->IsStereo()) {
 					newRenderingSide = stereoificator::Center;
+					m_primaryRenderTargetModeChanged = true;
 				}
 
 				break;
 
-				// TODO: On switch from mono to stereo or vise versa (see SetRenderTarget), set a "primaryRenderTargetModeChanged" flag.
+				// On switch from mono to stereo or vise versa (see SetRenderTarget), set a "primaryRenderTargetModeChanged" flag.
 				// Before drawing check this flag, if it is set, go through all the render targets and set a flag on them
-				// that indicates the contents is either stereo or mono (the result of querying this from the target will 
+				// that indicates the contents is either stereo or mono (based on primary render target) (the result of querying this from a target will 
 				// also depend on whether the surface itself is capable of stereo). 
 
 				// When a texture is copied/updated/set to a sampler check the texture to see if it contains mono or stereo data 
@@ -1523,6 +1556,7 @@ HRESULT WINAPI D3DProxyDevice::SetRenderTarget(DWORD RenderTargetIndex, IDirect3
 				// if currently drawing mono but target is stereo switch to first stereo side
 				if (newRenderTarget->IsStereo()) {
 					newRenderingSide = stereoificator::Left;
+					m_primaryRenderTargetModeChanged = true;
 				}
 				break;
 
@@ -1577,7 +1611,7 @@ HRESULT WINAPI D3DProxyDevice::SetRenderTarget(DWORD RenderTargetIndex, IDirect3
 		if (m_activeRenderTargets[RenderTargetIndex] != NULL)
 			m_activeRenderTargets[RenderTargetIndex]->AddRef();
 
-		// can't do this until the render target has been set successfully
+		// can't do this until the render target has been set successfully otherwise the render target in position could be null (start up)
 		if (RenderTargetIndex == 0) {
 			setDrawingSide(newRenderingSide);
 		}
@@ -1677,12 +1711,28 @@ HRESULT WINAPI D3DProxyDevice::SetTexture(DWORD Stage,IDirect3DBaseTexture9* pTe
 
 		UnWrapTexture(pTexture, &pActualLeftTexture, &pActualRightTexture);
 		
-		// Try and Update the actual devices textures
-		if ((pActualRightTexture == NULL) || (m_currentRenderingSide == stereoificator::Left)) // use left (mono) if not stereo or on left side
-			result = BaseDirect3DDevice9::SetTexture(Stage, pActualLeftTexture);
-		else
-			result = BaseDirect3DDevice9::SetTexture(Stage, pActualRightTexture);
 
+		switch (m_currentRenderingSide) 
+		{
+		case stereoificator::Right:
+			if (ContainsStereoData(pTexture)) {
+				result = BaseDirect3DDevice9::SetTexture(Stage, pActualRightTexture);
+			}
+			else {
+				result = BaseDirect3DDevice9::SetTexture(Stage, pActualLeftTexture);
+			}
+			break;
+
+		case stereoificator::Left:
+		case stereoificator::Center:
+			result = BaseDirect3DDevice9::SetTexture(Stage, pActualLeftTexture);
+			break;
+
+		default:
+			OutputDebugString("BeforeDrawing - Unknown rendering position");
+			DebugBreak();
+			break;
+		}
 	}
 	else {
 		result = BaseDirect3DDevice9::SetTexture(Stage, NULL);
@@ -2068,7 +2118,7 @@ bool D3DProxyDevice::setDrawingSide(stereoificator::RenderPosition side)
 			UnWrapTexture(it->second, &pActualLeftTexture, &pActualRightTexture);
 
 			// if stereo texture
-			if (pActualRightTexture != NULL) { 
+			if (ContainsStereoData(it->second)) { 
 				if (side == stereoificator::Left) 
 					result = BaseDirect3DDevice9::SetTexture(it->first, pActualLeftTexture); 
 				else 
@@ -2311,17 +2361,17 @@ HRESULT WINAPI D3DProxyDevice::StretchRect(IDirect3DSurface9* pSourceSurface,CON
 	HRESULT result = BaseDirect3DDevice9::StretchRect(pSourceSurfaceLeft, pSourceRect, pDestSurfaceLeft, pDestRect, Filter);
 
 	if (SUCCEEDED(result)) {
-		if (!pSourceSurfaceRight && pDestSurfaceRight) {
+		if (!pWrappedSource->ContainsStereoData() && pWrappedDest->IsStereo()) {
 			//OutputDebugString("INFO: StretchRect - Source is not stereo, destination is stereo. Copying source to both sides of destination.\n");
 
 			if (FAILED(BaseDirect3DDevice9::StretchRect(pSourceSurfaceLeft, pSourceRect, pDestSurfaceRight, pDestRect, Filter))) {
 				OutputDebugString("ERROR: StretchRect - Failed to copy source left to destination right.\n");
 			}
 		} 
-		else if (pSourceSurfaceRight && !pDestSurfaceRight) {
+		else if (pWrappedSource->ContainsStereoData() && !pWrappedDest->IsStereo()) {
 			//OutputDebugString("INFO: StretchRect - Source is stereo, destination is not stereo. Copied Left side only.\n");
 		}
-		else if (pSourceSurfaceRight && pDestSurfaceRight)	{
+		else if (pWrappedSource->ContainsStereoData() && pWrappedDest->IsStereo())	{
 			if (FAILED(BaseDirect3DDevice9::StretchRect(pSourceSurfaceRight, pSourceRect, pDestSurfaceRight, pDestRect, Filter))) {
 				OutputDebugString("ERROR: StretchRect - Failed to copy source right to destination right.\n");
 			}
@@ -2337,25 +2387,28 @@ HRESULT WINAPI D3DProxyDevice::UpdateSurface(IDirect3DSurface9* pSourceSurface,C
 	if (!pSourceSurface || !pDestinationSurface)
 		 return D3DERR_INVALIDCALL;
 
-	IDirect3DSurface9* pSourceSurfaceLeft = static_cast<D3D9ProxySurface*>(pSourceSurface)->getActualLeft();
-	IDirect3DSurface9* pSourceSurfaceRight = static_cast<D3D9ProxySurface*>(pSourceSurface)->getActualRight();
-	IDirect3DSurface9* pDestSurfaceLeft = static_cast<D3D9ProxySurface*>(pDestinationSurface)->getActualLeft();
-	IDirect3DSurface9* pDestSurfaceRight = static_cast<D3D9ProxySurface*>(pDestinationSurface)->getActualRight();
+	D3D9ProxySurface* pWrappedSource = static_cast<D3D9ProxySurface*>(pSourceSurface);
+	D3D9ProxySurface* pWrappedDest = static_cast<D3D9ProxySurface*>(pDestinationSurface);
+
+	IDirect3DSurface9* pSourceSurfaceLeft = pWrappedSource->getActualLeft();
+	IDirect3DSurface9* pSourceSurfaceRight = pWrappedSource->getActualRight();
+	IDirect3DSurface9* pDestSurfaceLeft = pWrappedDest->getActualLeft();
+	IDirect3DSurface9* pDestSurfaceRight = pWrappedDest->getActualRight();
 
 	HRESULT result = BaseDirect3DDevice9::UpdateSurface(pSourceSurfaceLeft, pSourceRect, pDestSurfaceLeft, pDestPoint);
 
 	if (SUCCEEDED(result)) {
-		if (!pSourceSurfaceRight && pDestSurfaceRight) {
+		if (!pWrappedSource->ContainsStereoData() && pWrappedDest->IsStereo()) {
 			//OutputDebugString("INFO: UpdateSurface - Source is not stereo, destination is stereo. Copying source to both sides of destination.\n");
 
 			if (FAILED(BaseDirect3DDevice9::UpdateSurface(pSourceSurfaceLeft, pSourceRect, pDestSurfaceRight, pDestPoint))) {
 				OutputDebugString("ERROR: UpdateSurface - Failed to copy source left to destination right.\n");
 			}
 		} 
-		else if (pSourceSurfaceRight && !pDestSurfaceRight) {
+		else if (pWrappedSource->ContainsStereoData() && !pWrappedDest->IsStereo()) {
 			//OutputDebugString("INFO: UpdateSurface - Source is stereo, destination is not stereo. Copied Left side only.\n");
 		}
-		else if (pSourceSurfaceRight && pDestSurfaceRight)	{
+		else if (pWrappedSource->ContainsStereoData() && pWrappedDest->IsStereo())	{
 			if (FAILED(BaseDirect3DDevice9::UpdateSurface(pSourceSurfaceRight, pSourceRect, pDestSurfaceRight, pDestPoint))) {
 				OutputDebugString("ERROR: UpdateSurface - Failed to copy source right to destination right.\n");
 			}
@@ -2379,21 +2432,23 @@ HRESULT WINAPI D3DProxyDevice::UpdateTexture(IDirect3DBaseTexture9* pSourceTextu
 	UnWrapTexture(pSourceTexture, &pSourceTextureLeft, &pSourceTextureRight);
 	UnWrapTexture(pDestinationTexture, &pDestTextureLeft, &pDestTextureRight);
 
+	bool sourceContainsStereoData = ContainsStereoData(pSourceTexture);
+
 
 	HRESULT result = BaseDirect3DDevice9::UpdateTexture(pSourceTextureLeft, pDestTextureLeft);
 
 	if (SUCCEEDED(result)) {
-		if (!pSourceTextureRight && pDestTextureRight) {
+		if (!sourceContainsStereoData && pDestTextureRight) {
 			//OutputDebugString("INFO: UpdateTexture - Source is not stereo, destination is stereo. Copying source to both sides of destination.\n");
 
 			if (FAILED(BaseDirect3DDevice9::UpdateTexture(pSourceTextureLeft, pDestTextureRight))) {
 				OutputDebugString("ERROR: UpdateTexture - Failed to copy source left to destination right.\n");
 			}
 		} 
-		else if (pSourceTextureRight && !pDestTextureRight) {
+		else if (sourceContainsStereoData && !pDestTextureRight) {
 			//OutputDebugString("INFO: UpdateTexture - Source is stereo, destination is not stereo. Copied Left side only.\n");
 		}
-		else if (pSourceTextureRight && pDestTextureRight)	{
+		else if (sourceContainsStereoData && pDestTextureRight)	{
 			if (FAILED(BaseDirect3DDevice9::UpdateTexture(pSourceTextureRight, pDestTextureRight))) {
 				OutputDebugString("ERROR: UpdateTexture - Failed to copy source right to destination right.\n");
 			}
@@ -2722,5 +2777,35 @@ void D3DProxyDevice::UnWrapTexture(IDirect3DBaseTexture9* pWrappedTexture, IDire
 	if ((*ppActualLeftTexture) == NULL) {
 		OutputDebugString("No left texture? Unpossible!\n");
 		assert (false);
+	}
+}
+
+bool D3DProxyDevice::ContainsStereoData(IDirect3DBaseTexture9* pWrappedTexture)
+{
+	if (!pWrappedTexture)
+		assert (false);
+
+	D3DRESOURCETYPE type = pWrappedTexture->GetType();
+	
+	switch (type)
+	{
+		case D3DRTYPE_TEXTURE:
+		{
+			D3D9ProxyTexture* pDerivedTexture = static_cast<D3D9ProxyTexture*> (pWrappedTexture);
+			return pDerivedTexture->ContainsStereoData();
+			break;
+		}
+		
+		case D3DRTYPE_CUBETEXTURE:
+		{
+			D3D9ProxyCubeTexture* pDerivedTexture = static_cast<D3D9ProxyCubeTexture*> (pWrappedTexture);
+			return pDerivedTexture->ContainsStereoData();
+			break;
+		}
+
+		case D3DRTYPE_VOLUMETEXTURE:
+		default:
+			return false;
+			break;
 	}
 }

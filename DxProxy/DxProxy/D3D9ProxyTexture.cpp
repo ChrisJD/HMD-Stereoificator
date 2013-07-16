@@ -81,6 +81,40 @@ IDirect3DTexture9* D3D9ProxyTexture::getActualRight()
 
 
 
+bool D3D9ProxyTexture::ContainsStereoData()
+{
+	if (!IsStereo()) {
+		return false;
+	}
+
+	bool containsStereo = false;
+
+	IDirect3DSurface9* pTextureLevel0;
+	GetSurfaceLevel(0, &pTextureLevel0);
+
+	D3D9ProxySurface* pWrappedTextureLevel0 = static_cast<D3D9ProxySurface*>(pTextureLevel0);
+	containsStereo = pWrappedTextureLevel0->ContainsStereoData();
+
+	pTextureLevel0->Release();
+
+	return containsStereo;
+}
+
+void D3D9ProxyTexture::WritingInStereo(bool stereo)
+{
+	if (!IsStereo()) {
+		return;
+	}
+
+	IDirect3DSurface9* pTextureLevel0;
+	GetSurfaceLevel(0, &pTextureLevel0);
+
+	D3D9ProxySurface* pWrappedTextureLevel0 = static_cast<D3D9ProxySurface*>(pTextureLevel0);
+	pWrappedTextureLevel0->WritingInStereo(stereo);
+
+	pTextureLevel0->Release();
+}
+
 
 
 

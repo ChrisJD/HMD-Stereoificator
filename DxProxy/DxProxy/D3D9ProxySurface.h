@@ -38,8 +38,16 @@ public:
 	D3D9ProxySurface(IDirect3DSurface9* pActualSurfaceLeft, IDirect3DSurface9* pActualSurfaceRight, BaseDirect3DDevice9* pOwningDevice, IUnknown* pWrappedContainer);
 	virtual ~D3D9ProxySurface();
 
-
+	// Does this proxy contain a left and a right surface (no indication as to whether the data is valid of not)
 	virtual bool IsStereo();
+	// Will always return false if IsStereo is false. If the surface is stereo then it will return true if both
+	// surfaces contain data. Initial state is based on whether the surface has a right side. If it does then it
+	// is assumed that the proxy contains stereo data.
+	bool ContainsStereoData();
+
+	// Call with true if writing stereo data to this surface. False if writing mono data.
+	// Calling on a proxy surface that does not have a right surface will have no effect.
+	void WritingInStereo(bool stereo);
 
 	virtual IDirect3DSurface9* getActualMono();
 	virtual IDirect3DSurface9* getActualLeft();
@@ -106,6 +114,8 @@ protected:
 	
 	// Right surface. NULL for surfaces that aren't being duplicated.
 	IDirect3DSurface9* const m_pActualSurfaceRight;
+
+	bool m_containsStereoData;
 };
 
 #endif

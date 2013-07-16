@@ -37,6 +37,9 @@ public:
 	virtual IDirect3DTexture9* getActualMono();
 	virtual IDirect3DTexture9* getActualLeft();
 	virtual IDirect3DTexture9* getActualRight();
+
+	bool ContainsStereoData();
+	void WritingInStereo(bool stereo);
 	
 	
 	// IDirect3DResource9 methods
