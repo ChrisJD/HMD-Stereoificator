@@ -248,7 +248,9 @@
     <None Include="..\..\Release\Stereoificator\cfg\shader_rules\source.xml">
       <SubType>Designer</SubType>
     </None>
-    <None Include="..\..\Release\Stereoificator\cfg\shader_rules\unreal.xml" />
+    <None Include="..\..\Release\Stereoificator\cfg\shader_rules\unreal.xml">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="..\..\Release\Stereoificator\fx\HMDBarrel.fx" />
     <None Include="..\..\Release\Stereoificator\fx\SideBySide.fx" />
     <None Include="Exports.def" />
