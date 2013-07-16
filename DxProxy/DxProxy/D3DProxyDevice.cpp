@@ -57,7 +57,8 @@ D3DProxyDevice::D3DProxyDevice(IDirect3DDevice9* pDevice, BaseDirect3D9* pCreate
 	m_keyRepeatRate(0.15f), // 150ms
 	m_pDataGatherer(nullptr),
 	m_pRedPixelShader(nullptr),
-	m_redShaderIsActive(false)
+	m_redShaderIsActive(false),
+	m_highlightDrawnWithoutVShader(false)
 {
 	OutputDebugString("D3D ProxyDev Created\n");
 
@@ -467,6 +468,20 @@ void D3DProxyDevice::HandleControls()
 				anyKeyPressed = true;
 			}
 
+			if(KEY_DOWN(VK_NUMPAD7))
+			{
+				m_highlightDrawnWithoutVShader = !m_highlightDrawnWithoutVShader;
+				
+				if (m_highlightDrawnWithoutVShader) {
+					OutputDebugString("Highlighting models drawn without using a Vertex Shader.");
+				}
+				else {
+					OutputDebugString("Highlighting models drawn with selected Vertex Shader.");
+				}
+
+				anyKeyPressed = true;
+			}
+
 			if(KEY_DOWN(VK_NUMPAD9))
 			{
 				
@@ -483,9 +498,6 @@ void D3DProxyDevice::HandleControls()
 					m_pDataGatherer->StartInUseShaderCapture();
 					OutputDebugString("Capture started.");
 				}
-
-
-				
 
 				anyKeyPressed = true;
 			}
@@ -1167,7 +1179,9 @@ void D3DProxyDevice::BeforeDrawing()
 	m_spManagedShaderRegisters->ApplyAllDirty(m_currentRenderingSide);
 
 	if (m_pDataGatherer) {
-		if (m_pDataGatherer->ShaderMatchesCurrentHash(m_pActiveVertexShader)) {
+
+		if ((m_pDataGatherer->ShaderMatchesCurrentHash(m_pActiveVertexShader) && !m_highlightDrawnWithoutVShader) ||
+				(!m_pActiveVertexShader && m_highlightDrawnWithoutVShader)) {
 
 			// Always set pixel shader. The m_redShaderIsActive flag could be set false when a pixel shader is set in SetPixelShader
 			// but as this only happens in datagathering mode I'm leaving it like this rather than spreading conditional checks around elsewhere.
