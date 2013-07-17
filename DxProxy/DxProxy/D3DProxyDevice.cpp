@@ -59,7 +59,8 @@ D3DProxyDevice::D3DProxyDevice(IDirect3DDevice9* pDevice, BaseDirect3D9* pCreate
 	m_pRedPixelShader(nullptr),
 	m_redShaderIsActive(false),
 	m_highlightDrawnWithoutVShader(false),
-	m_primaryRenderTargetModeChanged(true)
+	m_primaryRenderTargetModeChanged(true),
+	m_printSamplerDetails(false)
 {
 	OutputDebugString("D3D ProxyDev Created\n");
 
@@ -457,6 +458,8 @@ void D3DProxyDevice::HandleControls()
 				sstm << "Vertex Shader Count: " << m_pDataGatherer->VShaderInUseCount() << std::endl;
 			}
 			OutputDebugString(sstm.str().c_str());
+
+			m_printSamplerDetails = !m_printSamplerDetails;
 
 			anyKeyPressed = true;
 		}
@@ -1217,32 +1220,55 @@ void D3DProxyDevice::BeforeDrawing()
 		}
 
 
-		// finding what the format of te textures being used as input to this shader are
-		//if (m_pActiveVertexShader && m_pActiveVertexShader->GetHash() == 671997634) {
+		// finding what the format of the textures being used as input to this shader are
+		// and the format of the output render target
+		if (m_printSamplerDetails && m_pActiveVertexShader && m_pDataGatherer->ShaderMatchesCurrentHash(m_pActiveVertexShader)) {
 
-		//	std::stringstream sstm;
-		//	D3DSURFACE_DESC desc;
+			
+			std::stringstream sstm;
+			D3DSURFACE_DESC desc;
 
-		//	sstm << "Begin" << std::endl;
+			sstm << "Samplers for " << std::endl;
 
-		//	auto textureIt = m_activeTextureStages.begin();
-		//	while (textureIt != m_activeTextureStages.end()) {
+			auto textureIt = m_activeTextureStages.begin();
+			while (textureIt != m_activeTextureStages.end()) {
 
-		//		if (textureIt->second && textureIt->second->GetType() == D3DRTYPE_TEXTURE) {
+				if (textureIt->second && textureIt->second->GetType() == D3DRTYPE_TEXTURE) {
 
-		//			D3D9ProxyTexture* pDerivedTexture = static_cast<D3D9ProxyTexture*> (textureIt->second);
-		//			pDerivedTexture->GetLevelDesc(0, &desc);
+					D3D9ProxyTexture* pDerivedTexture = static_cast<D3D9ProxyTexture*> (textureIt->second);
+					pDerivedTexture->GetLevelDesc(0, &desc);
 
-		//			if (IS_RENDER_TARGET(desc.Usage)) { 
-		//				sstm << "TextureRenderTarget" << "," << desc.Width << "," << desc.Height << "," << desc.Format << "," << desc.MultiSampleType << "," << desc.MultiSampleQuality << "," /*<< (isSwapChainBackBuffer ? "yes" : "no")*/ << ","  << pDerivedTexture->GetLevelCount() << "," <<  /* Discard N/A */"," /*EdgeLength*/<< std::endl;
-		//			}
-		//		}
-		//		
-		//		++textureIt;
-		//	}
+					if (IS_RENDER_TARGET(desc.Usage)) { 
+						sstm << "RenderTargetSampler" << "," << desc.Width << "," << desc.Height << "," << desc.Format << "," << desc.MultiSampleType << "," << desc.MultiSampleQuality << "," /*<< (isSwapChainBackBuffer ? "yes" : "no")*/ << ","  << pDerivedTexture->GetLevelCount() << "," <<  /* Discard N/A */"," /*EdgeLength*/<< std::endl;
+					} 
+					else {
+						sstm << "TextuerSampler" << "," << desc.Width << "," << desc.Height << "," << desc.Format << "," << desc.MultiSampleType << "," << desc.MultiSampleQuality << "," /*<< (isSwapChainBackBuffer ? "yes" : "no")*/ << ","  << pDerivedTexture->GetLevelCount() << "," <<  /* Discard N/A */"," /*EdgeLength*/<< std::endl;
+					}
+				}
+				
+				++textureIt;
+			}
 
-		//	OutputDebugString(sstm.str().c_str());
-		//}
+			auto rtIt = m_activeRenderTargets.begin();
+			while (rtIt != m_activeRenderTargets.end()) {
+
+				if (*rtIt) {
+
+
+					D3D9ProxySurface* pSurface = static_cast<D3D9ProxySurface*> (*rtIt);
+					pSurface->GetDesc(&desc);
+
+					if (IS_RENDER_TARGET(desc.Usage)) { 
+						sstm << "RenderTarget" << "," << desc.Width << "," << desc.Height << "," << desc.Format << "," << desc.MultiSampleType << "," << desc.MultiSampleQuality << "," /*<< (isSwapChainBackBuffer ? "yes" : "no")*/ << ","  "LevelCount" << "," <<  /* Discard N/A */"," /*EdgeLength*/<< std::endl;
+						sstm << (pSurface->ContainsStereoData() ? "Constains Stereo data" : "Contains mono data") << (pSurface->IsStereo() ? "Is Stereo" : "Is mono") << std::endl;
+					}
+				}
+				
+				++rtIt;
+			}
+
+			OutputDebugString(sstm.str().c_str());
+		}
 	}
 }
 

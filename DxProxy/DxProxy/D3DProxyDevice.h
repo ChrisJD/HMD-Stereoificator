@@ -331,6 +331,7 @@ private:
 	BaseDirect3DPixelShader9* m_pRedPixelShader;
 	bool m_redShaderIsActive;
 	bool m_highlightDrawnWithoutVShader;
+	bool m_printSamplerDetails;
 };
 
 #endif
