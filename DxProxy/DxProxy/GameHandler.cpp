@@ -22,49 +22,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define IS_POOL_DEFAULT(d3dpool) ((d3dpool & D3DPOOL_DEFAULT) > 0 ? true : false)
 
 
-GameHandler::GameHandler() :
-	m_ShaderModificationRepository(nullptr)
-{
-	
+GameHandler::GameHandler()
+{	
 }
 
 GameHandler::~GameHandler()
 {
-	if (m_ShaderModificationRepository)
-		delete m_ShaderModificationRepository;
-
-	
 }
 
-
-bool GameHandler::Load(ProxyHelper::ProxyConfig& cfg, std::shared_ptr<ViewAdjustment> spShaderViewAdjustments)
-{
-	// Get rid of existing modification repository if there is one (shouldn't be, load should only need to be called once)
-	if (m_ShaderModificationRepository) {
-		delete m_ShaderModificationRepository;
-		m_ShaderModificationRepository = nullptr;
-	}
-
-
-	bool loadSuccess = true;
-
-	//if (game profile has shader rules)
-	if (!cfg.shaderRulePath.empty()) {
-		m_ShaderModificationRepository = new ShaderModificationRepository(spShaderViewAdjustments);
-	
-		if (!m_ShaderModificationRepository->LoadRules(cfg.shaderRulePath)) {
-			OutputDebugString("Rules failed to load.");
-			loadSuccess = false;
-		}
-	}
-	else {
-		OutputDebugString("No shader rule path found. No rules to apply");
-		// We call this success as we have successfully loaded nothing. We assume 'no rules' is intentional
-	}
-	
-
-	return true;
-}
 
 //TODO implementation - For now use one set of rules for everything, at some point this is probably going to need to be reworked to allow modifications per game.
 // TODO - externalise these as rules? It might be good to have default values for various rules like
@@ -108,8 +73,3 @@ bool GameHandler::ShouldDuplicateCubeTexture(UINT EdgeLength, UINT Levels, DWORD
 	//return IS_RENDER_TARGET(Usage);
 }
 
-
-ShaderModificationRepository* GameHandler::GetShaderModificationRepository()
-{
-	return m_ShaderModificationRepository;
-}

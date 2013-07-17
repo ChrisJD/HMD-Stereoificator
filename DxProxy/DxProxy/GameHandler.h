@@ -24,10 +24,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <memory>
 #include <unordered_map>
 #include "d3d9.h"
-#include "pugixml.hpp"
-#include "ShaderModificationRepository.h"
-#include "ProxyHelper.h"
-#include "ViewAdjustment.h"
 
 class ShaderModificationRepository;
 
@@ -35,27 +31,12 @@ class GameHandler
 {
 public:
 	GameHandler(); 
-	virtual ~GameHandler();
-
-	bool Load(ProxyHelper::ProxyConfig& cfg, std::shared_ptr<ViewAdjustment> spShaderViewAdjustments); 
-
-	
+	virtual ~GameHandler();	
 
 	bool ShouldDuplicateRenderTarget(UINT Width, UINT Height, D3DFORMAT Format, D3DMULTISAMPLE_TYPE MultiSample, DWORD MultisampleQuality,BOOL Lockable, bool isSwapChainBackBuffer);
 	bool ShouldDuplicateDepthStencilSurface(UINT Width,UINT Height,D3DFORMAT Format,D3DMULTISAMPLE_TYPE MultiSample,DWORD MultisampleQuality,BOOL Discard);
 	bool ShouldDuplicateTexture(UINT Width,UINT Height,UINT Levels,DWORD Usage,D3DFORMAT Format,D3DPOOL Pool);
 	bool ShouldDuplicateCubeTexture(UINT EdgeLength, UINT Levels, DWORD Usage, D3DFORMAT Format, D3DPOOL Pool);
-
-
-	ShaderModificationRepository* GetShaderModificationRepository();
-
-
-	
-
-private:
-
-	ShaderModificationRepository* m_ShaderModificationRepository;
-
 };
 
 #endif

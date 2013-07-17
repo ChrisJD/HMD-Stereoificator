@@ -178,8 +178,7 @@ HRESULT WINAPI BaseDirect3D9::CreateDevice(UINT Adapter, D3DDEVTYPE DeviceType, 
 	OutputDebugString("\n");
 
 	// Create and return proxy
-	D3DProxyDevice* newDev = new D3DProxyDevice(*ppReturnedDeviceInterface, this);
-	newDev->Init(cfg);
+	D3DProxyDevice* newDev = new D3DProxyDevice(*ppReturnedDeviceInterface, this, cfg);
 	*ppReturnedDeviceInterface = newDev;
 
 	OutputDebugString("[OK] Stereoificator D3D device created.\n");

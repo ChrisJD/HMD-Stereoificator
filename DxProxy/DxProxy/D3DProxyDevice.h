@@ -59,6 +59,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "GameHandler.h"
 #include "ShaderRegisters.h"
 #include "ViewAdjustment.h"
+#include "ShaderModificationRepository.h"
 
 
 
@@ -76,12 +77,11 @@ class D3DProxyDevice : public BaseDirect3DDevice9
 public:
 
 
-	D3DProxyDevice(IDirect3DDevice9* pDevice, BaseDirect3D9* pCreatedBy);
+	D3DProxyDevice(IDirect3DDevice9* pDevice, BaseDirect3D9* pCreatedBy, ProxyHelper::ProxyConfig &cfg);
 	virtual ~D3DProxyDevice();
 
 	friend class D3D9ProxyStateBlock;
 
-	virtual void Init(ProxyHelper::ProxyConfig& cfg);
 	
 	virtual HRESULT WINAPI Reset(D3DPRESENT_PARAMETERS* pPresentationParameters);
 	void SetupText();
@@ -167,13 +167,10 @@ public:
 
 	ProxyHelper::ProxyConfig config;
 
-	int eyeShutter;
 
 	float aspectRatio;
 	
 	
-	bool saveDebugFile;
-	std::ofstream debugFile;
 	StereoView* stereoView;
 	ID3DXFont *hudFont;
 
@@ -256,6 +253,8 @@ private:
 	HRESULT SetStereoProjectionTransform(D3DXMATRIX pCenterMatrix, D3DXMATRIX pLeftMatrix, D3DXMATRIX pRightMatrix, bool apply);
 
 	bool m_primaryRenderTargetModeChanged;
+
+	ShaderModificationRepository* m_ShaderModificationRepository;
 
 	std::shared_ptr<ShaderRegisters> m_spManagedShaderRegisters;
 	GameHandler* m_pGameHandler;

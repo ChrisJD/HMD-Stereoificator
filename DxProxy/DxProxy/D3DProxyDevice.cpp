@@ -49,7 +49,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define PI 3.141592654
 #define RADIANS_TO_DEGREES(rad) ((float) rad * (float) (180.0 / PI))
 
-D3DProxyDevice::D3DProxyDevice(IDirect3DDevice9* pDevice, BaseDirect3D9* pCreatedBy):BaseDirect3DDevice9(pDevice, pCreatedBy),
+D3DProxyDevice::D3DProxyDevice(IDirect3DDevice9* pDevice, BaseDirect3D9* pCreatedBy, ProxyHelper::ProxyConfig &cfg):BaseDirect3DDevice9(pDevice, pCreatedBy),
 	m_activeRenderTargets (1, NULL),
 	m_activeTextureStages(),
 	m_activeVertexBuffers(),
@@ -66,8 +66,6 @@ D3DProxyDevice::D3DProxyDevice(IDirect3DDevice9* pDevice, BaseDirect3D9* pCreate
 	std::shared_ptr<HMDisplayInfo> defaultInfo = std::make_shared<HMDisplayInfo>(); // rift info
 	m_spShaderViewAdjustment = std::make_shared<ViewAdjustment>(defaultInfo, 1.0f, false);
 
-	m_pGameHandler = new GameHandler();
-	
 
 	// Check the maximum number of supported render targets
 	D3DCAPS9 capabilities;
@@ -115,6 +113,60 @@ D3DProxyDevice::D3DProxyDevice(IDirect3DDevice9* pDevice, BaseDirect3D9* pCreate
 	// should be false for published builds
 	// TODO Allow this to be turned on and off in cfg file along with vertex shader dumping and other debug/maintenance features.
 	worldScaleCalculationMode = false;
+
+
+	
+
+	if (worldScaleCalculationMode)
+		cfg.separationAdjustment = 0.0f;
+
+	config = cfg;
+
+	trackerInitialized = false;
+
+	char buf[64];
+	LPCSTR psz = NULL;
+	sprintf_s(buf, "type: %d, aspect: %f\n", config.game_type, config.aspect_multiplier);
+	psz = buf;
+	OutputDebugString(psz);
+
+	m_spShaderViewAdjustment->HMDInfo()->UpdateScale(config.horizontalGameFov);
+
+	m_spShaderViewAdjustment->Load(config);
+
+	//TODO create gamehandler
+	//m_pGameHandler->Load(config, m_spShaderViewAdjustment);
+	m_pGameHandler = new GameHandler();
+	
+
+	//if (game profile has shader rules)
+	if (!cfg.shaderRulePath.empty()) {
+		m_ShaderModificationRepository = new ShaderModificationRepository(m_spShaderViewAdjustment);
+	
+		if (!m_ShaderModificationRepository->LoadRules(cfg.shaderRulePath)) {
+			OutputDebugString("Rules failed to load.");
+		}
+	}
+	else {
+		OutputDebugString("No shader rule path found. No rules to apply");
+		// We call this success as we have successfully loaded nothing. We assume 'no rules' is intentional
+	}
+
+
+	stereoView = StereoViewFactory::Get(config, m_spShaderViewAdjustment->HMDInfo());
+
+
+
+	if (cfg.debugMode == 1) {
+		m_pDataGatherer = new DataGatherer();
+
+		OutputDebugString("Data Gatherering Mode Active.\n");
+		OutputDebugString("Data Gatherering Mode Active.\n");
+		OutputDebugString("Data Gatherering Mode Active.\n");
+		OutputDebugString("Data Gatherering Mode Active.\n");
+	}
+
+	OnCreateOrRestore();
 }
 
  
@@ -145,49 +197,6 @@ D3DProxyDevice::~D3DProxyDevice()
 	}
 }
 
-
-/* 
-	This method must be called on the proxy device before the device is returned to the calling application
-
-	Subclasses which override this method must call through to super method.
-	Anything that needs to be done before the device is used by the actual application should happen here.
- */
-void D3DProxyDevice::Init(ProxyHelper::ProxyConfig& cfg)
-{
-	OutputDebugString("D3D ProxyDev Init\n");
-
-	if (worldScaleCalculationMode)
-		cfg.separationAdjustment = 0.0f;
-
-	config = cfg;
-
-	eyeShutter = 1;
-	saveDebugFile = false;
-	trackerInitialized = false;
-
-	char buf[64];
-	LPCSTR psz = NULL;
-	sprintf_s(buf, "type: %d, aspect: %f\n", config.game_type, config.aspect_multiplier);
-	psz = buf;
-	OutputDebugString(psz);
-
-	m_spShaderViewAdjustment->HMDInfo()->UpdateScale(config.horizontalGameFov);
-	
-	m_spShaderViewAdjustment->Load(config);
-	m_pGameHandler->Load(config, m_spShaderViewAdjustment);
-	stereoView = StereoViewFactory::Get(config, m_spShaderViewAdjustment->HMDInfo());
-
-	if (cfg.debugMode == 1) {
-		m_pDataGatherer = new DataGatherer();
-
-		OutputDebugString("Data Gatherering Mode Active.\n");
-		OutputDebugString("Data Gatherering Mode Active.\n");
-		OutputDebugString("Data Gatherering Mode Active.\n");
-		OutputDebugString("Data Gatherering Mode Active.\n");
-	}
-
-	OnCreateOrRestore();
-}
 
 
 /*
@@ -676,20 +685,6 @@ void D3DProxyDevice::HandleControls()
 	
 	
 
-	if(saveDebugFile)
-	{
-		debugFile.close();
-	}
-	saveDebugFile = false;
-
-	/*if(KEY_DOWN(VK_F12) && keyWaitCount <= 0)
-	{
-		// uncomment to save text debug file
-		//saveDebugFile = true;
-		keyWaitCount = 200;
-		anyKeyPressed = true;
-	}*/
-
 
 
 	if(doSaveNext && saveWaitCount < 0)
@@ -769,10 +764,6 @@ HRESULT WINAPI D3DProxyDevice::TestCooperativeLevel()
 HRESULT WINAPI D3DProxyDevice::BeginScene()
 {
 	if (m_isFirstBeginSceneOfFrame) {
-		if(saveDebugFile)
-		{
-			debugFile.open("d3d9_debug.txt", std::ios::out);
-		}
 
 	
 		HandleControls();
@@ -1047,7 +1038,7 @@ HRESULT WINAPI D3DProxyDevice::CreateVertexShader(CONST DWORD* pFunction,IDirect
 	HRESULT creationResult = BaseDirect3DDevice9::CreateVertexShader(pFunction, &pActualVShader);
 
 	if (SUCCEEDED(creationResult)) {
-		D3D9ProxyVertexShader* pWrappedVertexShader = new D3D9ProxyVertexShader(pActualVShader, this, m_pGameHandler->GetShaderModificationRepository());
+		D3D9ProxyVertexShader* pWrappedVertexShader = new D3D9ProxyVertexShader(pActualVShader, this, m_ShaderModificationRepository);
 		*ppShader = pWrappedVertexShader;
 
 		if (m_pDataGatherer) {
