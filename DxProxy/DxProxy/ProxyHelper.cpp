@@ -154,6 +154,7 @@ bool ProxyHelper::LoadConfig(ProxyConfig& config)
 		config.stereo_mode = xml_config.attribute("stereo_mode").as_int();
 		config.aspect_multiplier = xml_config.attribute("aspect_multiplier").as_float();
 		config.tracker_mode = xml_config.attribute("tracker_mode").as_int();
+		config.debugMode = xml_config.attribute("debugMode").as_int(0);
 
 		fileFound = true;
 	}

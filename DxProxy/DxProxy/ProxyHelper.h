@@ -55,7 +55,8 @@ public:
 			horizontalGameFov(110.0f),
 			ipd(IPD_DEFAULT),
 			hudScale(1.0f),
-			hudDistance(1.0f)
+			hudDistance(1.0f),
+			debugMode(0) // 0 == off
 		{}
 
 
@@ -79,6 +80,8 @@ public:
 
 		float hudScale;
 		float hudDistance;
+
+		int debugMode;
 	};
 
 
