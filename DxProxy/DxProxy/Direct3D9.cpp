@@ -138,8 +138,17 @@ HRESULT WINAPI BaseDirect3D9::CreateDevice(UINT Adapter, D3DDEVTYPE DeviceType, 
 	DWORD BehaviorFlags, D3DPRESENT_PARAMETERS* pPresentationParameters,
 	IDirect3DDevice9** ppReturnedDeviceInterface)
 {
+	// load configuration file
+	ProxyHelper helper = ProxyHelper();
+	ProxyHelper::ProxyConfig cfg;
+	bool stereoificatorCfgLoaded = helper.LoadConfig(cfg);
+
+	if (cfg.forceAdapterNumber >= GetAdapterCount()) {
+		OutputDebugString("[ERR] forceAdapterNumber outside of range of valid adapters. Using original Adapter instead.\n");
+	}
+
 	// Create real interface
-	HRESULT hResult = m_pD3D->CreateDevice(Adapter, DeviceType, hFocusWindow, BehaviorFlags,
+	HRESULT hResult = m_pD3D->CreateDevice( cfg.forceAdapterNumber >= GetAdapterCount() ? Adapter : cfg.forceAdapterNumber, DeviceType, hFocusWindow, BehaviorFlags,
 		pPresentationParameters, ppReturnedDeviceInterface);
 	if(FAILED(hResult))
 		return hResult;
@@ -150,10 +159,8 @@ HRESULT WINAPI BaseDirect3D9::CreateDevice(UINT Adapter, D3DDEVTYPE DeviceType, 
 	sprintf_s(buf, "Number of back buffers = %d\n", pPresentationParameters->BackBufferCount);
 	OutputDebugString(buf);
 
-	// load configuration file
-	ProxyHelper helper = ProxyHelper();
-	ProxyHelper::ProxyConfig cfg;
-	if(!helper.LoadConfig(cfg)) {
+	
+	if(!stereoificatorCfgLoaded) {
 		OutputDebugString("[ERR] Config loading failed, config could not be loaded. Returning normal D3DDevice. Stereoificator will not be active.\n");
 		return hResult;
 	}

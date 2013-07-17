@@ -56,7 +56,8 @@ public:
 			ipd(IPD_DEFAULT),
 			hudScale(1.0f),
 			hudDistance(1.0f),
-			debugMode(0) // 0 == off
+			debugMode(0), // 0 == off
+			forceAdapterNumber(0) // 0 == D3DADAPTER_DEFAULT
 		{}
 
 
@@ -82,6 +83,7 @@ public:
 		float hudDistance;
 
 		int debugMode;
+		UINT forceAdapterNumber;
 	};
 
 

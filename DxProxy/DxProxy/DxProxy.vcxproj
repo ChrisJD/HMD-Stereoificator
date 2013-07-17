@@ -222,6 +222,7 @@
       <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">xcopy "%(fullpath)" "$(SolutionDir)$(Configuration)\Stereoificator\cfg\" /Y</Command>
       <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">copying xml config from Release to $(Configuration)</Message>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(SolutionDir)$(Configuration)\Stereoificator\cfg\%(filename).xml</Outputs>
+      <SubType>Designer</SubType>
     </CustomBuild>
     <CustomBuild Include="..\..\Release\Stereoificator\cfg\profiles.xml">
       <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">xcopy "%(fullpath)" "$(SolutionDir)$(Configuration)\Stereoificator\cfg\" /Y</Command>
@@ -250,7 +251,7 @@
     <None Include="..\..\Release\Stereoificator\cfg\shader_rules\source.xml">
       <SubType>Designer</SubType>
     </None>
-	<None Include="..\..\Release\Stereoificator\cfg\shader_rules\theball.xml" />
+    <None Include="..\..\Release\Stereoificator\cfg\shader_rules\theball.xml" />
     <None Include="..\..\Release\Stereoificator\fx\HMDBarrel.fx" />
     <None Include="..\..\Release\Stereoificator\fx\SideBySide.fx" />
     <None Include="Exports.def" />
