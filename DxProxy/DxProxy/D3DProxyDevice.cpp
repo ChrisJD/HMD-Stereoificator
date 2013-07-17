@@ -177,7 +177,7 @@ void D3DProxyDevice::Init(ProxyHelper::ProxyConfig& cfg)
 	m_pGameHandler->Load(config, m_spShaderViewAdjustment);
 	stereoView = StereoViewFactory::Get(config, m_spShaderViewAdjustment->HMDInfo());
 
-	if (cfg.game_type == 11) {
+	if (cfg.debugMode == 1) {
 		m_pDataGatherer = new DataGatherer();
 
 		OutputDebugString("Data Gatherering Mode Active.\n");
