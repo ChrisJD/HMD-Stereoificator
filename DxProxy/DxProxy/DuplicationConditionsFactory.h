@@ -1,6 +1,6 @@
 /********************************************************************
-Vireio Perception: Open-Source Stereoscopic 3D Driver
-Copyright (C) 2012 Andres Hernandez
+HMD-Stereoificator
+Copyright (C) 2013 Chris Drain
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
@@ -16,8 +16,21 @@ You should have received a copy of the GNU Lesser General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ********************************************************************/
 
-#ifndef D3DPROXYDEVICEADV_H_INCLUDED
-#define D3DPROXYDEVICEADV_H_INCLUDED
 
+#ifndef DUPLICATIONCONDITIONSFACTORY_H_INCLUDED
+#define DUPLICATIONCONDITIONSFACTORY_H_INCLUDED
+
+#include <string>
+
+#include "DuplicationConditions.h"
+
+class DuplicationConditionsFactory
+{
+public:
+
+
+	// Caller is responsible for deleting the DuplicationConditions when they are done with it.
+	static DuplicationConditions* Create(std::string name);
+};
 
 #endif

@@ -26,7 +26,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <string>
 #include <memory>
 #include "StereoShaderConstant.h"
-#include "GameHandler.h"
+#include "DuplicationConditions.h"
 #include "ShaderRegisters.h"
 #include "MurmurHash3.h"
 #include "Limits.h"

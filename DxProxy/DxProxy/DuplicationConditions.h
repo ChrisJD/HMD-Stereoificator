@@ -16,8 +16,8 @@ You should have received a copy of the GNU Lesser General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ********************************************************************/
 
-#ifndef GAMEHANDLER_H_INCLUDED
-#define GAMEHANDLER_H_INCLUDED
+#ifndef DUPLICATIONCONDITIONS_H_INCLUDED
+#define DUPLICATIONCONDITIONS_H_INCLUDED
 
 #include <string>
 #include <vector>
@@ -25,13 +25,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <unordered_map>
 #include "d3d9.h"
 
-class ShaderModificationRepository;
 
-class GameHandler
+class DuplicationConditions
 {
 public:
-	GameHandler(); 
-	virtual ~GameHandler();	
+	DuplicationConditions(); 
+	virtual ~DuplicationConditions();	
+
 
 	bool ShouldDuplicateRenderTarget(UINT Width, UINT Height, D3DFORMAT Format, D3DMULTISAMPLE_TYPE MultiSample, DWORD MultisampleQuality,BOOL Lockable, bool isSwapChainBackBuffer);
 	bool ShouldDuplicateDepthStencilSurface(UINT Width,UINT Height,D3DFORMAT Format,D3DMULTISAMPLE_TYPE MultiSample,DWORD MultisampleQuality,BOOL Discard);

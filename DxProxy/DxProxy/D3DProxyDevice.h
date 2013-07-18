@@ -56,7 +56,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "Stereoificator.h"
 #include "StereoShaderConstant.h"
 #include "StereoBackBuffer.h"
-#include "GameHandler.h"
+#include "DuplicationConditions.h"
 #include "ShaderRegisters.h"
 #include "ViewAdjustment.h"
 #include "ShaderModificationRepository.h"
@@ -69,7 +69,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 class StereoView;
 class D3D9ProxySwapChain;
 class ShaderRegisters;
-class GameHandler;
+class ShaderModificationRepository;
 class DataGatherer;
 
 class D3DProxyDevice : public BaseDirect3DDevice9
@@ -257,7 +257,7 @@ private:
 	ShaderModificationRepository* m_ShaderModificationRepository;
 
 	std::shared_ptr<ShaderRegisters> m_spManagedShaderRegisters;
-	GameHandler* m_pGameHandler;
+	DuplicationConditions* m_pDuplicationConditions;
 
 	std::shared_ptr<ViewAdjustment> m_spShaderViewAdjustment;
 	

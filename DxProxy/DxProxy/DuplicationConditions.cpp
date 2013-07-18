@@ -16,17 +16,17 @@ You should have received a copy of the GNU Lesser General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ********************************************************************/
 
-#include "GameHandler.h"
+#include "DuplicationConditions.h"
 
 #define IS_RENDER_TARGET(d3dusage) ((d3dusage & D3DUSAGE_RENDERTARGET) > 0 ? true : false)
 #define IS_POOL_DEFAULT(d3dpool) ((d3dpool & D3DPOOL_DEFAULT) > 0 ? true : false)
 
 
-GameHandler::GameHandler()
+DuplicationConditions::DuplicationConditions()
 {	
 }
 
-GameHandler::~GameHandler()
+DuplicationConditions::~DuplicationConditions()
 {
 }
 
@@ -36,7 +36,7 @@ GameHandler::~GameHandler()
 // "Don't duplicate targets smaller than X pixels", where that rule could be enabled and the value changed in the cfg file for the game
 // Do something similar to shader modifications?
 // Extending class and overriding these methods would end up with a similar problem with duplicate code to original shader handling. Try and avoid (or at least find approach that avoids the duplication)
-bool GameHandler::ShouldDuplicateRenderTarget(UINT Width, UINT Height, D3DFORMAT Format, D3DMULTISAMPLE_TYPE MultiSample, DWORD MultisampleQuality,BOOL Lockable, bool isSwapChainBackBuffer)
+bool DuplicationConditions::ShouldDuplicateRenderTarget(UINT Width, UINT Height, D3DFORMAT Format, D3DMULTISAMPLE_TYPE MultiSample, DWORD MultisampleQuality,BOOL Lockable, bool isSwapChainBackBuffer)
 {
 	if (isSwapChainBackBuffer) {
 		return true;
@@ -49,7 +49,7 @@ bool GameHandler::ShouldDuplicateRenderTarget(UINT Width, UINT Height, D3DFORMAT
 	return Width != Height;
 }
 
-bool GameHandler::ShouldDuplicateDepthStencilSurface(UINT Width,UINT Height,D3DFORMAT Format,D3DMULTISAMPLE_TYPE MultiSample,DWORD MultisampleQuality,BOOL Discard)
+bool DuplicationConditions::ShouldDuplicateDepthStencilSurface(UINT Width,UINT Height,D3DFORMAT Format,D3DMULTISAMPLE_TYPE MultiSample,DWORD MultisampleQuality,BOOL Discard)
 {
 	//TODO implementation
 	//return MultiSample == 4;
@@ -57,7 +57,7 @@ bool GameHandler::ShouldDuplicateDepthStencilSurface(UINT Width,UINT Height,D3DF
 	return Width != Height;
 }
 
-bool GameHandler::ShouldDuplicateTexture(UINT Width,UINT Height,UINT Levels,DWORD Usage, D3DFORMAT Format,D3DPOOL Pool)
+bool DuplicationConditions::ShouldDuplicateTexture(UINT Width,UINT Height,UINT Levels,DWORD Usage, D3DFORMAT Format,D3DPOOL Pool)
 {
 	//TODO implementation
 	// IF render target then check render target rules?
@@ -65,7 +65,7 @@ bool GameHandler::ShouldDuplicateTexture(UINT Width,UINT Height,UINT Levels,DWOR
 	return IS_RENDER_TARGET(Usage) && (Width != Height);
 }
 
-bool GameHandler::ShouldDuplicateCubeTexture(UINT EdgeLength, UINT Levels, DWORD Usage, D3DFORMAT Format, D3DPOOL Pool)
+bool DuplicationConditions::ShouldDuplicateCubeTexture(UINT EdgeLength, UINT Levels, DWORD Usage, D3DFORMAT Format, D3DPOOL Pool)
 {
 	//TODO implementation
 	// IF render target then check render target rules?

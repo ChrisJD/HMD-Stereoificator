@@ -135,9 +135,9 @@ D3DProxyDevice::D3DProxyDevice(IDirect3DDevice9* pDevice, BaseDirect3D9* pCreate
 
 	m_spShaderViewAdjustment->Load(config);
 
-	//TODO create gamehandler
-	//m_pGameHandler->Load(config, m_spShaderViewAdjustment);
-	m_pGameHandler = new GameHandler();
+	//TODO create DuplicationConditions
+	//m_pDuplicationConditions->Load(config, m_spShaderViewAdjustment);
+	m_pDuplicationConditions = new DuplicationConditions();
 	
 
 	//if (game profile has shader rules)
@@ -182,7 +182,7 @@ D3DProxyDevice::~D3DProxyDevice()
 
 	m_spShaderViewAdjustment.reset();
 
-	delete m_pGameHandler;
+	delete m_pDuplicationConditions;
 	m_spManagedShaderRegisters.reset();
 
 	// always do this last
@@ -834,7 +834,7 @@ HRESULT WINAPI D3DProxyDevice::CreateRenderTarget(UINT Width, UINT Height, D3DFO
 		if (m_pDataGatherer) {
 			m_pDataGatherer->OnCreateRT(Width, Height, Format, MultiSample, MultisampleQuality, isSwapChainBackBuffer);
 		}
-		if (m_pGameHandler->ShouldDuplicateRenderTarget(Width, Height, Format, MultiSample, MultisampleQuality, Lockable, isSwapChainBackBuffer))
+		if (m_pDuplicationConditions->ShouldDuplicateRenderTarget(Width, Height, Format, MultiSample, MultisampleQuality, Lockable, isSwapChainBackBuffer))
 		{
 			if (FAILED(BaseDirect3DDevice9::CreateRenderTarget(Width, Height, Format, MultiSample, MultisampleQuality, Lockable, &pRightRenderTarget, pSharedHandle))) {
 				OutputDebugString("Failed to create right eye render target while attempting to create stereo pair, falling back to mono\n");
@@ -891,7 +891,7 @@ HRESULT WINAPI D3DProxyDevice::CreateDepthStencilSurface(UINT Width,UINT Height,
 			m_pDataGatherer->OnCreateDepthStencilSurface(Width, Height, Format, MultiSample, MultisampleQuality, Discard);
 		}
 
-		if (m_pGameHandler->ShouldDuplicateDepthStencilSurface(Width, Height, Format, MultiSample, MultisampleQuality, Discard)) 
+		if (m_pDuplicationConditions->ShouldDuplicateDepthStencilSurface(Width, Height, Format, MultiSample, MultisampleQuality, Discard)) 
 		{
 			if (FAILED(BaseDirect3DDevice9::CreateDepthStencilSurface(Width, Height, Format, MultiSample, MultisampleQuality, Discard, &pDepthStencilSurfaceRight, pSharedHandle))) {
 				OutputDebugString("Failed to create right eye Depth Stencil Surface while attempting to create stereo pair, falling back to mono\n");
@@ -950,7 +950,7 @@ HRESULT WINAPI D3DProxyDevice::CreateTexture(UINT Width,UINT Height,UINT Levels,
 		}
 		
 		// Does this Texture need duplicating?
-		if (m_pGameHandler->ShouldDuplicateTexture(Width, Height, Levels, Usage, Format, Pool)) {
+		if (m_pDuplicationConditions->ShouldDuplicateTexture(Width, Height, Levels, Usage, Format, Pool)) {
 
 			if (FAILED(BaseDirect3DDevice9::CreateTexture(Width, Height, Levels, Usage, Format, Pool, &pRightTexture, pSharedHandle))) {
 				OutputDebugString("Failed to create right eye texture while attempting to create stereo pair, falling back to mono\n");
@@ -988,7 +988,7 @@ HRESULT WINAPI D3DProxyDevice::CreateCubeTexture(UINT EdgeLength, UINT Levels, D
 		}
 		
 		// Does this Texture need duplicating?
-		if (m_pGameHandler->ShouldDuplicateCubeTexture(EdgeLength, Levels, Usage, Format, Pool)) {
+		if (m_pDuplicationConditions->ShouldDuplicateCubeTexture(EdgeLength, Levels, Usage, Format, Pool)) {
 
 			if (FAILED(BaseDirect3DDevice9::CreateCubeTexture(EdgeLength, Levels, Usage, Format, Pool, &pRightCubeTexture, pSharedHandle))) {
 				OutputDebugString("Failed to create right eye texture while attempting to create stereo pair, falling back to mono\n");

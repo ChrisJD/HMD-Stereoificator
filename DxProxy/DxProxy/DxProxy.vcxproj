@@ -115,8 +115,6 @@
     <ClCompile Include="D3D9ProxyVolumeTexture.cpp" />
     <ClCompile Include="D3D9ProxyStateBlock.cpp" />
     <ClCompile Include="D3DProxyDevice.cpp" />
-    <ClCompile Include="D3DProxyDeviceAdv.cpp" />
-    <ClCompile Include="D3DProxyDeviceEgo.cpp" />
     <ClCompile Include="D3D9ProxySurface.cpp" />
     <ClCompile Include="Direct3D9.cpp" />
     <ClCompile Include="Direct3DCubeTexture9.cpp" />
@@ -135,7 +133,8 @@
     <ClCompile Include="Direct3DVolumeTexture9.cpp" />
     <ClCompile Include="FreeSpaceTracker.cpp" />
     <ClCompile Include="FreeTrackTracker.cpp" />
-    <ClCompile Include="GameHandler.cpp" />
+    <ClCompile Include="DuplicationConditions.cpp" />
+    <ClCompile Include="DuplicationConditionsFactory.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="MotionTracker.cpp" />
     <ClCompile Include="MotionTrackerFactory.cpp" />
@@ -163,7 +162,8 @@
     <ClInclude Include="D3D9ProxyVolumeTexture.h" />
     <ClInclude Include="D3D9ProxyStateBlock.h" />
     <ClInclude Include="DataGatherer.h" />
-    <ClInclude Include="GameHandler.h" />
+    <ClInclude Include="DuplicationConditions.h" />
+    <ClInclude Include="DuplicationConditionsFactory.h" />
     <ClInclude Include="HMDisplayInfo.h" />
     <ClInclude Include="LimitedRangeValue.h" />
     <ClInclude Include="MatrixDoNothing.h" />
@@ -182,8 +182,6 @@
     <ClInclude Include="ShaderRegisters.h" />
     <ClInclude Include="StereoBackbuffer.h" />
     <ClInclude Include="D3DProxyDevice.h" />
-    <ClInclude Include="D3DProxyDeviceAdv.h" />
-    <ClInclude Include="D3DProxyDeviceEgo.h" />
     <ClInclude Include="D3D9ProxySurface.h" />
     <ClInclude Include="Direct3D9.h" />
     <ClInclude Include="Direct3DCubeTexture9.h" />
@@ -252,6 +250,9 @@
       <SubType>Designer</SubType>
     </None>
     <None Include="..\..\Release\Stereoificator\cfg\shader_rules\theball.xml" />
+    <None Include="..\..\Release\Stereoificator\cfg\shader_rules\unreal.xml">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="..\..\Release\Stereoificator\fx\HMDBarrel.fx" />
     <None Include="..\..\Release\Stereoificator\fx\SideBySide.fx" />
     <None Include="Exports.def" />

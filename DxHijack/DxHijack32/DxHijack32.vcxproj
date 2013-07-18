@@ -119,8 +119,6 @@
     <ClCompile Include="..\..\DxProxy\DxProxy\D3D9ProxyVolume.cpp" />
     <ClCompile Include="..\..\DxProxy\DxProxy\D3D9ProxyVolumeTexture.cpp" />
     <ClCompile Include="..\..\DxProxy\DxProxy\D3DProxyDevice.cpp" />
-    <ClCompile Include="..\..\DxProxy\DxProxy\D3DProxyDeviceAdv.cpp" />
-    <ClCompile Include="..\..\DxProxy\DxProxy\D3DProxyDeviceEgo.cpp" />
     <ClCompile Include="..\..\DxProxy\DxProxy\DataGatherer.cpp" />
     <ClCompile Include="..\..\DxProxy\DxProxy\Direct3D9.cpp" />
     <ClCompile Include="..\..\DxProxy\DxProxy\Direct3DCubeTexture9.cpp" />
@@ -137,9 +135,10 @@
     <ClCompile Include="..\..\DxProxy\DxProxy\Direct3DVertexShader9.cpp" />
     <ClCompile Include="..\..\DxProxy\DxProxy\Direct3DVolume9.cpp" />
     <ClCompile Include="..\..\DxProxy\DxProxy\Direct3DVolumeTexture9.cpp" />
+    <ClCompile Include="..\..\DxProxy\DxProxy\DuplicationConditions.cpp" />
+    <ClCompile Include="..\..\DxProxy\DxProxy\DuplicationConditionsFactory.cpp" />
     <ClCompile Include="..\..\DxProxy\DxProxy\FreeSpaceTracker.cpp" />
     <ClCompile Include="..\..\DxProxy\DxProxy\FreeTrackTracker.cpp" />
-    <ClCompile Include="..\..\DxProxy\DxProxy\GameHandler.cpp" />
     <ClCompile Include="..\..\DxProxy\DxProxy\MotionTracker.cpp" />
     <ClCompile Include="..\..\DxProxy\DxProxy\MotionTrackerFactory.cpp" />
     <ClCompile Include="..\..\DxProxy\DxProxy\MurmurHash3.cpp" />
@@ -171,8 +170,6 @@
     <ClInclude Include="..\..\DxProxy\DxProxy\D3D9ProxyVolume.h" />
     <ClInclude Include="..\..\DxProxy\DxProxy\D3D9ProxyVolumeTexture.h" />
     <ClInclude Include="..\..\DxProxy\DxProxy\D3DProxyDevice.h" />
-    <ClInclude Include="..\..\DxProxy\DxProxy\D3DProxyDeviceAdv.h" />
-    <ClInclude Include="..\..\DxProxy\DxProxy\D3DProxyDeviceEgo.h" />
     <ClInclude Include="..\..\DxProxy\DxProxy\DataGatherer.h" />
     <ClInclude Include="..\..\DxProxy\DxProxy\Direct3D9.h" />
     <ClInclude Include="..\..\DxProxy\DxProxy\Direct3DCubeTexture9.h" />
@@ -188,8 +185,9 @@
     <ClInclude Include="..\..\DxProxy\DxProxy\Direct3DVertexShader9.h" />
     <ClInclude Include="..\..\DxProxy\DxProxy\Direct3DVolume9.h" />
     <ClInclude Include="..\..\DxProxy\DxProxy\Direct3DVolumeTexture9.h" />
+    <ClInclude Include="..\..\DxProxy\DxProxy\DuplicationConditions.h" />
+    <ClInclude Include="..\..\DxProxy\DxProxy\DuplicationConditionsFactory.h" />
     <ClInclude Include="..\..\DxProxy\DxProxy\FreeSpaceTracker.h" />
-    <ClInclude Include="..\..\DxProxy\DxProxy\GameHandler.h" />
     <ClInclude Include="..\..\DxProxy\DxProxy\LimitedRangeValue.h" />
     <ClInclude Include="..\..\DxProxy\DxProxy\MatrixSimpleTranslate.h" />
     <ClInclude Include="..\..\DxProxy\DxProxy\MatrixSimpleTranslateColMajor.h" />

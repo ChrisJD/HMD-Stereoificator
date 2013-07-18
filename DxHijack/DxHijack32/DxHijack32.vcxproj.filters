@@ -42,12 +42,6 @@
     <ClCompile Include="..\..\DxProxy\DxProxy\StereoView.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\DxProxy\DxProxy\D3DProxyDeviceAdv.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\DxProxy\DxProxy\D3DProxyDeviceEgo.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\DxProxy\DxProxy\pugixml.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -147,13 +141,16 @@
     <ClCompile Include="..\..\DxProxy\DxProxy\ShaderRegisters.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\DxProxy\DxProxy\GameHandler.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\DxProxy\DxProxy\ViewAdjustment.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\DxProxy\DxProxy\Stereoificator.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DxProxy\DxProxy\DuplicationConditions.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DxProxy\DxProxy\DuplicationConditionsFactory.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -188,12 +185,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\DxProxy\DxProxy\StereoView.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\DxProxy\DxProxy\D3DProxyDeviceAdv.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\DxProxy\DxProxy\D3DProxyDeviceEgo.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\DxProxy\DxProxy\pugixml.hpp">
@@ -301,9 +292,6 @@
     <ClInclude Include="..\..\DxProxy\DxProxy\Vec4SimpleTranslate.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\DxProxy\DxProxy\GameHandler.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\DxProxy\DxProxy\MurmurHash3.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -326,6 +314,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\DxProxy\DxProxy\stereoificator.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DxProxy\DxProxy\DuplicationConditions.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DxProxy\DxProxy\DuplicationConditionsFactory.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
