@@ -20,11 +20,28 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "DuplicationConditionsFactory.h"
 
 
-DuplicationConditions* DuplicationConditionsFactory::Create(std::string name)
+DuplicationConditions* DuplicationConditionsFactory::Create(DuplicationConditionNames name)
 {
 	DuplicationConditions* handler = NULL;
 
+	switch (name) 
+	{
+	case DC_SOURCE_DEFAULT:
+		handler = new DCSourceDefault();
+		break;
 
+	case DC_UE3_DEFAULT:
+
+		//break;
+
+	case DC_EGO_DEFAULT:
+
+		//break;
+
+	default:
+		handler = new DuplicationConditions();
+		break;
+	}
 
 	return handler;
 }

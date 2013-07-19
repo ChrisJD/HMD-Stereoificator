@@ -153,6 +153,9 @@
     <ClCompile Include="..\..\DxProxy\DxProxy\DuplicationConditionsFactory.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\DxProxy\DxProxy\DCSourceDefault.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="hijackdll.def">
@@ -320,6 +323,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\DxProxy\DxProxy\DuplicationConditionsFactory.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DxProxy\DxProxy\DCSourceDefault.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

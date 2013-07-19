@@ -23,14 +23,21 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <string>
 
 #include "DuplicationConditions.h"
+#include "DCSourceDefault.h"
 
 class DuplicationConditionsFactory
 {
 public:
 
+	enum DuplicationConditionNames
+	{
+		DC_SOURCE_DEFAULT = 0,
+		DC_UE3_DEFAULT = 1,
+		DC_EGO_DEFAULT = 2
+	};
 
 	// Caller is responsible for deleting the DuplicationConditions when they are done with it.
-	static DuplicationConditions* Create(std::string name);
+	static DuplicationConditions* Create(DuplicationConditionNames name);
 };
 
 #endif

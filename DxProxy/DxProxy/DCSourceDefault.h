@@ -16,24 +16,19 @@ You should have received a copy of the GNU Lesser General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ********************************************************************/
 
-#ifndef DUPLICATIONCONDITIONS_H_INCLUDED
-#define DUPLICATIONCONDITIONS_H_INCLUDED
+#ifndef DCSOURCEDEFAULT_H_INCLUDED
+#define DCSOURCEDEFAULT_H_INCLUDED
 
-#include <string>
-#include <vector>
-#include <memory>
-#include <unordered_map>
+
 #include "d3d9.h"
+#include "DuplicationConditions.h"
 
 
-#define IS_RENDER_TARGET(d3dusage) ((d3dusage & D3DUSAGE_RENDERTARGET) > 0 ? true : false)
-#define IS_POOL_DEFAULT(d3dpool) ((d3dpool & D3DPOOL_DEFAULT) > 0 ? true : false)
-
-class DuplicationConditions
+class DCSourceDefault : public DuplicationConditions
 {
 public:
-	DuplicationConditions(); 
-	virtual ~DuplicationConditions();	
+	DCSourceDefault(); 
+	virtual ~DCSourceDefault();	
 
 
 	virtual bool ShouldDuplicateRenderTarget(UINT Width, UINT Height, D3DFORMAT Format, D3DMULTISAMPLE_TYPE MultiSample, DWORD MultisampleQuality,BOOL Lockable, bool isSwapChainBackBuffer);

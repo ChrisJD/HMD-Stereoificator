@@ -116,6 +116,7 @@
     <ClCompile Include="D3D9ProxyStateBlock.cpp" />
     <ClCompile Include="D3DProxyDevice.cpp" />
     <ClCompile Include="D3D9ProxySurface.cpp" />
+    <ClCompile Include="DCSourceDefault.cpp" />
     <ClCompile Include="Direct3D9.cpp" />
     <ClCompile Include="Direct3DCubeTexture9.cpp" />
     <ClCompile Include="Direct3DIndexBuffer9.cpp" />
@@ -162,6 +163,7 @@
     <ClInclude Include="D3D9ProxyVolumeTexture.h" />
     <ClInclude Include="D3D9ProxyStateBlock.h" />
     <ClInclude Include="DataGatherer.h" />
+    <ClInclude Include="DCSourceDefault.h" />
     <ClInclude Include="DuplicationConditions.h" />
     <ClInclude Include="DuplicationConditionsFactory.h" />
     <ClInclude Include="HMDisplayInfo.h" />

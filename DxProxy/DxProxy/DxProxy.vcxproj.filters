@@ -47,6 +47,9 @@
     <Filter Include="Direct3D9Stereoificator\Direct3DWrappers\Direct3DTextures">
       <UniqueIdentifier>{7c1b5925-d5df-4200-b704-5db49ccbcd35}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Direct3D9Stereoificator\DuplicationConditions">
+      <UniqueIdentifier>{d1cddac7-6eab-4324-8736-806c238f3a99}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
@@ -178,11 +181,14 @@
     <ClCompile Include="D3D9ProxyVolume.cpp">
       <Filter>Direct3D9Stereoificator\Direct3DWrappers</Filter>
     </ClCompile>
-    <ClCompile Include="DuplicationConditionsFactory.cpp">
-      <Filter>Direct3D9Stereoificator</Filter>
-    </ClCompile>
     <ClCompile Include="DuplicationConditions.cpp">
-      <Filter>Direct3D9Stereoificator</Filter>
+      <Filter>Direct3D9Stereoificator\DuplicationConditions</Filter>
+    </ClCompile>
+    <ClCompile Include="DuplicationConditionsFactory.cpp">
+      <Filter>Direct3D9Stereoificator\DuplicationConditions</Filter>
+    </ClCompile>
+    <ClCompile Include="DCSourceDefault.cpp">
+      <Filter>Direct3D9Stereoificator\DuplicationConditions</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -399,10 +405,13 @@
       <Filter>Direct3D9Stereoificator\Direct3DWrappers</Filter>
     </ClInclude>
     <ClInclude Include="DuplicationConditionsFactory.h">
-      <Filter>Direct3D9Stereoificator</Filter>
+      <Filter>Direct3D9Stereoificator\DuplicationConditions</Filter>
     </ClInclude>
     <ClInclude Include="DuplicationConditions.h">
-      <Filter>Direct3D9Stereoificator</Filter>
+      <Filter>Direct3D9Stereoificator\DuplicationConditions</Filter>
+    </ClInclude>
+    <ClInclude Include="DCSourceDefault.h">
+      <Filter>Direct3D9Stereoificator\DuplicationConditions</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
