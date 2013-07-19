@@ -41,14 +41,14 @@
     <Filter Include="hlsl">
       <UniqueIdentifier>{7704aea2-c0bf-4df4-916f-fcd03ddc979f}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Direct3D9Stereoificator\Direct3DWrappers">
-      <UniqueIdentifier>{4ef859f6-c511-4db2-b101-b5a4fca35325}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Direct3D9Stereoificator\Direct3DWrappers\Direct3DTextures">
-      <UniqueIdentifier>{7c1b5925-d5df-4200-b704-5db49ccbcd35}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Direct3D9Stereoificator\DuplicationConditions">
       <UniqueIdentifier>{d1cddac7-6eab-4324-8736-806c238f3a99}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Direct3D9Stereoificator\Direct3DProxies">
+      <UniqueIdentifier>{4ef859f6-c511-4db2-b101-b5a4fca35325}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Direct3D9Stereoificator\Direct3DProxies\Direct3DTextures">
+      <UniqueIdentifier>{7c1b5925-d5df-4200-b704-5db49ccbcd35}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -89,7 +89,7 @@
       <Filter>Stereo</Filter>
     </ClCompile>
     <ClCompile Include="D3DProxyDevice.cpp">
-      <Filter>Direct3D9Stereoificator\Direct3DWrappers</Filter>
+      <Filter>Direct3D9Stereoificator\Direct3DProxies</Filter>
     </ClCompile>
     <ClCompile Include="Direct3D9.cpp">
       <Filter>Direct3D9</Filter>
@@ -104,7 +104,7 @@
       <Filter>Direct3D9</Filter>
     </ClCompile>
     <ClCompile Include="D3D9ProxyTexture.cpp">
-      <Filter>Direct3D9Stereoificator\Direct3DWrappers\Direct3DTextures</Filter>
+      <Filter>Direct3D9Stereoificator\Direct3DProxies\Direct3DTextures</Filter>
     </ClCompile>
     <ClCompile Include="Direct3DCubeTexture9.cpp">
       <Filter>Direct3D9</Filter>
@@ -116,10 +116,10 @@
       <Filter>Direct3D9</Filter>
     </ClCompile>
     <ClCompile Include="D3D9ProxyCubeTexture.cpp">
-      <Filter>Direct3D9Stereoificator\Direct3DWrappers\Direct3DTextures</Filter>
+      <Filter>Direct3D9Stereoificator\Direct3DProxies\Direct3DTextures</Filter>
     </ClCompile>
     <ClCompile Include="D3D9ProxyVolumeTexture.cpp">
-      <Filter>Direct3D9Stereoificator\Direct3DWrappers\Direct3DTextures</Filter>
+      <Filter>Direct3D9Stereoificator\Direct3DProxies\Direct3DTextures</Filter>
     </ClCompile>
     <ClCompile Include="Direct3DVertexShader9.cpp">
       <Filter>Direct3D9</Filter>
@@ -167,19 +167,19 @@
       <Filter>Direct3D9Stereoificator</Filter>
     </ClCompile>
     <ClCompile Include="D3D9ProxyStateBlock.cpp">
-      <Filter>Direct3D9Stereoificator\Direct3DWrappers</Filter>
+      <Filter>Direct3D9Stereoificator\Direct3DProxies</Filter>
     </ClCompile>
     <ClCompile Include="D3D9ProxySurface.cpp">
-      <Filter>Direct3D9Stereoificator\Direct3DWrappers</Filter>
+      <Filter>Direct3D9Stereoificator\Direct3DProxies</Filter>
     </ClCompile>
     <ClCompile Include="D3D9ProxySwapChain.cpp">
-      <Filter>Direct3D9Stereoificator\Direct3DWrappers</Filter>
+      <Filter>Direct3D9Stereoificator\Direct3DProxies</Filter>
     </ClCompile>
     <ClCompile Include="D3D9ProxyVertexShader.cpp">
-      <Filter>Direct3D9Stereoificator\Direct3DWrappers</Filter>
+      <Filter>Direct3D9Stereoificator\Direct3DProxies</Filter>
     </ClCompile>
     <ClCompile Include="D3D9ProxyVolume.cpp">
-      <Filter>Direct3D9Stereoificator\Direct3DWrappers</Filter>
+      <Filter>Direct3D9Stereoificator\Direct3DProxies</Filter>
     </ClCompile>
     <ClCompile Include="DuplicationConditions.cpp">
       <Filter>Direct3D9Stereoificator\DuplicationConditions</Filter>
@@ -276,7 +276,7 @@
       <Filter>Stereo</Filter>
     </ClInclude>
     <ClInclude Include="D3DProxyDevice.h">
-      <Filter>Direct3D9Stereoificator\Direct3DWrappers</Filter>
+      <Filter>Direct3D9Stereoificator\Direct3DProxies</Filter>
     </ClInclude>
     <ClInclude Include="Direct3D9.h">
       <Filter>Direct3D9</Filter>
@@ -291,7 +291,7 @@
       <Filter>Direct3D9</Filter>
     </ClInclude>
     <ClInclude Include="D3D9ProxyTexture.h">
-      <Filter>Direct3D9Stereoificator\Direct3DWrappers\Direct3DTextures</Filter>
+      <Filter>Direct3D9Stereoificator\Direct3DProxies\Direct3DTextures</Filter>
     </ClInclude>
     <ClInclude Include="IStereoCapableWrapper.h">
       <Filter>Direct3D9Stereoificator</Filter>
@@ -306,10 +306,10 @@
       <Filter>Direct3D9</Filter>
     </ClInclude>
     <ClInclude Include="D3D9ProxyCubeTexture.h">
-      <Filter>Direct3D9Stereoificator\Direct3DWrappers\Direct3DTextures</Filter>
+      <Filter>Direct3D9Stereoificator\Direct3DProxies\Direct3DTextures</Filter>
     </ClInclude>
     <ClInclude Include="D3D9ProxyVolumeTexture.h">
-      <Filter>Direct3D9Stereoificator\Direct3DWrappers\Direct3DTextures</Filter>
+      <Filter>Direct3D9Stereoificator\Direct3DProxies\Direct3DTextures</Filter>
     </ClInclude>
     <ClInclude Include="Direct3DVertexShader9.h">
       <Filter>Direct3D9</Filter>
@@ -396,19 +396,19 @@
       <Filter>Direct3D9Stereoificator</Filter>
     </ClInclude>
     <ClInclude Include="D3D9ProxyVolume.h">
-      <Filter>Direct3D9Stereoificator\Direct3DWrappers</Filter>
+      <Filter>Direct3D9Stereoificator\Direct3DProxies</Filter>
     </ClInclude>
     <ClInclude Include="D3D9ProxyStateBlock.h">
-      <Filter>Direct3D9Stereoificator\Direct3DWrappers</Filter>
+      <Filter>Direct3D9Stereoificator\Direct3DProxies</Filter>
     </ClInclude>
     <ClInclude Include="D3D9ProxySurface.h">
-      <Filter>Direct3D9Stereoificator\Direct3DWrappers</Filter>
+      <Filter>Direct3D9Stereoificator\Direct3DProxies</Filter>
     </ClInclude>
     <ClInclude Include="D3D9ProxySwapChain.h">
-      <Filter>Direct3D9Stereoificator\Direct3DWrappers</Filter>
+      <Filter>Direct3D9Stereoificator\Direct3DProxies</Filter>
     </ClInclude>
     <ClInclude Include="D3D9ProxyVertexShader.h">
-      <Filter>Direct3D9Stereoificator\Direct3DWrappers</Filter>
+      <Filter>Direct3D9Stereoificator\Direct3DProxies</Filter>
     </ClInclude>
     <ClInclude Include="DuplicationConditionsFactory.h">
       <Filter>Direct3D9Stereoificator\DuplicationConditions</Filter>

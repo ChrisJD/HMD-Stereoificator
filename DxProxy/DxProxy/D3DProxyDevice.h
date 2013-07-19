@@ -57,6 +57,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "StereoShaderConstant.h"
 #include "StereoBackBuffer.h"
 #include "DuplicationConditions.h"
+#include "DuplicationConditionsFactory.h"
 #include "ShaderRegisters.h"
 #include "ViewAdjustment.h"
 #include "ShaderModificationRepository.h"

@@ -135,9 +135,8 @@ D3DProxyDevice::D3DProxyDevice(IDirect3DDevice9* pDevice, BaseDirect3D9* pCreate
 
 	m_spShaderViewAdjustment->Load(config);
 
-	//TODO create DuplicationConditions
-	//m_pDuplicationConditions->Load(config, m_spShaderViewAdjustment);
-	m_pDuplicationConditions = new DuplicationConditions();
+	
+	m_pDuplicationConditions = DuplicationConditionsFactory::Create((DuplicationConditionsFactory::DuplicationConditionNames)config.duplicationRules);
 	
 
 	//if (game profile has shader rules)
