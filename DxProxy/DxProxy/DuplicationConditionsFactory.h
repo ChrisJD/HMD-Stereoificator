@@ -24,6 +24,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "DuplicationConditions.h"
 #include "DCSourceDefault.h"
+#include "DCUE3Default.h"
+#include "DCEgoDefault.h"
 
 class DuplicationConditionsFactory
 {

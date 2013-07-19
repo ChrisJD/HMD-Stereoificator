@@ -190,6 +190,12 @@
     <ClCompile Include="DCSourceDefault.cpp">
       <Filter>Direct3D9Stereoificator\DuplicationConditions</Filter>
     </ClCompile>
+    <ClCompile Include="DCUE3Default.cpp">
+      <Filter>Direct3D9Stereoificator\DuplicationConditions</Filter>
+    </ClCompile>
+    <ClCompile Include="DCEgoDefault.cpp">
+      <Filter>Direct3D9Stereoificator\DuplicationConditions</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="Exports.def">
@@ -411,6 +417,12 @@
       <Filter>Direct3D9Stereoificator\DuplicationConditions</Filter>
     </ClInclude>
     <ClInclude Include="DCSourceDefault.h">
+      <Filter>Direct3D9Stereoificator\DuplicationConditions</Filter>
+    </ClInclude>
+    <ClInclude Include="DCEgoDefault.h">
+      <Filter>Direct3D9Stereoificator\DuplicationConditions</Filter>
+    </ClInclude>
+    <ClInclude Include="DCUE3Default.h">
       <Filter>Direct3D9Stereoificator\DuplicationConditions</Filter>
     </ClInclude>
   </ItemGroup>

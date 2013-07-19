@@ -16,32 +16,25 @@ You should have received a copy of the GNU Lesser General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ********************************************************************/
 
+#ifndef DCEGODEFAULT_H_INCLUDED
+#define DCEGODEFAULT_H_INCLUDED
 
-#include "DuplicationConditionsFactory.h"
+
+#include "d3d9.h"
+#include "DuplicationConditions.h"
 
 
-DuplicationConditions* DuplicationConditionsFactory::Create(DuplicationConditionNames name)
+class DCEgoDefault : public DuplicationConditions
 {
-	DuplicationConditions* handler = NULL;
+public:
+	DCEgoDefault(); 
+	virtual ~DCEgoDefault();	
 
-	switch (name) 
-	{
-	case DC_SOURCE_DEFAULT:
-		handler = new DCSourceDefault();
-		break;
 
-	case DC_UE3_DEFAULT:
-		handler = new DCUE3Default();
-		break;
+	virtual bool ShouldDuplicateRenderTarget(UINT Width, UINT Height, D3DFORMAT Format, D3DMULTISAMPLE_TYPE MultiSample, DWORD MultisampleQuality,BOOL Lockable, bool isSwapChainBackBuffer);
+	virtual bool ShouldDuplicateDepthStencilSurface(UINT Width,UINT Height,D3DFORMAT Format,D3DMULTISAMPLE_TYPE MultiSample,DWORD MultisampleQuality,BOOL Discard);
+	virtual bool ShouldDuplicateTexture(UINT Width,UINT Height,UINT Levels,DWORD Usage,D3DFORMAT Format,D3DPOOL Pool);
+	virtual bool ShouldDuplicateCubeTexture(UINT EdgeLength, UINT Levels, DWORD Usage, D3DFORMAT Format, D3DPOOL Pool);
+};
 
-	case DC_EGO_DEFAULT:
-		handler = new DCEgoDefault();
-		break;
-
-	default:
-		handler = new DuplicationConditions();
-		break;
-	}
-
-	return handler;
-}
+#endif
