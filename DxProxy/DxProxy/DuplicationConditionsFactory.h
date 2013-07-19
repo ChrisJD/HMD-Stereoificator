@@ -33,9 +33,10 @@ public:
 
 	enum DuplicationConditionNames
 	{
-		DC_SOURCE_DEFAULT = 0,
-		DC_UE3_DEFAULT = 1,
-		DC_EGO_DEFAULT = 2
+		DC_EVERYTHING = 0,
+		DC_SOURCE_DEFAULT = 1,
+		DC_UE3_DEFAULT = 2,
+		DC_EGO_DEFAULT = 3
 	};
 
 	// Caller is responsible for deleting the DuplicationConditions when they are done with it.

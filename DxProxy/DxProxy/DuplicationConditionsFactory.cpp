@@ -38,6 +38,7 @@ DuplicationConditions* DuplicationConditionsFactory::Create(DuplicationCondition
 		handler = new DCEgoDefault();
 		break;
 
+	case DC_EVERYTHING:
 	default:
 		handler = new DuplicationConditions();
 		break;

@@ -57,7 +57,8 @@ public:
 			hudScale(1.0f),
 			hudDistance(1.0f),
 			debugMode(0), // 0 == off
-			forceAdapterNumber(0) // 0 == D3DADAPTER_DEFAULT
+			forceAdapterNumber(0), // 0 == D3DADAPTER_DEFAULT
+			duplicationRules(0) 
 		{}
 
 
@@ -75,6 +76,7 @@ public:
 		float worldScaleFactor; // mm * worldScaleFactor = mm in game units
 		bool rollEnabled;
 		std::string shaderRulePath; // full path of shader rules for this game
+		int duplicationRules;
 		float horizontalGameFov; // The horizontal FoV in degrees that the game is set to render
 
 		float ipd; // in mm

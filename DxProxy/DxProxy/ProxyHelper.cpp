@@ -212,6 +212,7 @@ bool ProxyHelper::LoadConfig(ProxyConfig& config)
 		OutputDebugString("\n");
 
 		config.rollEnabled = gameProfile.attribute("rollEnabled").as_bool(false);
+		config.duplicationRules = gameProfile.attribute("duplicationRules").as_int(0);
 		config.worldScaleFactor = gameProfile.attribute("worldScaleFactor").as_float(1.0f);
 		
 		// get file name
