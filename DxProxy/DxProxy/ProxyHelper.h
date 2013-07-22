@@ -86,6 +86,7 @@ public:
 
 		int debugMode;
 		int forceAdapterNumber;
+		int hudDistanceMode;
 	};
 
 

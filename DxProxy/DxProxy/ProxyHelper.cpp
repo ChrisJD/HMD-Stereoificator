@@ -213,6 +213,7 @@ bool ProxyHelper::LoadConfig(ProxyConfig& config)
 		config.rollEnabled = gameProfile.attribute("rollEnabled").as_bool(false);
 		config.duplicationRules = gameProfile.attribute("duplicationRules").as_int(0);
 		config.worldScaleFactor = gameProfile.attribute("worldScaleFactor").as_float(1.0f);
+		config.hudDistanceMode = gameProfile.attribute("hudDistanceMode").as_int(0);
 		
 		// get file name
 		std::string shaderRulesFileName = gameProfile.attribute("shaderModRules").as_string("");
@@ -537,7 +538,6 @@ bool ProxyHelper::SaveUserConfig(ProxyConfig& cfg)
 			{
 				if( cfg.gameName.compare(settingsEntry.attribute("game_name").as_string()) == 0)
 				{
-
 					settingsEntry.attribute("separationAdjustment") = cfg.separationAdjustment;
 					settingsEntry.attribute("swap_eyes") = cfg.swap_eyes;
 					settingsEntry.attribute("yaw_multiplier") = cfg.yaw_multiplier;
@@ -545,8 +545,20 @@ bool ProxyHelper::SaveUserConfig(ProxyConfig& cfg)
 					settingsEntry.attribute("roll_multiplier") = cfg.roll_multiplier;
 					settingsEntry.attribute("horizontalFoV") = cfg.horizontalGameFov;
 
+
+					
+					if (!settingsEntry.attribute("hudScale")) {
+						settingsEntry.append_attribute("hudScale");
+					}
+					
 					settingsEntry.attribute("hudScale") = cfg.hudScale;
-					settingsEntry.attribute("hudDistance")= cfg.hudDistance;
+					
+					
+					if (!settingsEntry.attribute("hudDistance")) {
+						settingsEntry.append_attribute("hudDistance");
+					}
+					
+					settingsEntry.attribute("hudDistance") = cfg.hudDistance;
 
 					OutputDebugString("Saving the user settings to users.xml!!!\n");
 					userProfiles.save_file(profilePath);
