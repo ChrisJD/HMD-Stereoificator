@@ -54,7 +54,7 @@ int OculusTracker::init()
 
 int OculusTracker::getOrientation(float* yaw, float* pitch, float* roll) 
 {
-	OutputDebugString("OculusTracker getOrient\n");
+	//OutputDebugString("OculusTracker getOrient\n");
 
 	if(SFusion.IsAttachedToSensor() == false)
 		return 1;												// error no sensor
@@ -76,7 +76,7 @@ bool OculusTracker::isAvailable()
 
 void OculusTracker::updateOrientation()
 {
-	OutputDebugString("OculusTracker updateOrientation\n");
+	//OutputDebugString("OculusTracker updateOrientation\n");
 
 	if(getOrientation(&yaw, &pitch, &roll) == 0)
 	{
@@ -93,7 +93,7 @@ void OculusTracker::updateOrientation()
 		mouseData.mi.dx = (long)(deltaYaw*multiplierYaw);
 		mouseData.mi.dy = (long)(deltaPitch*multiplierPitch);
 		
-		OutputDebugString("Motion Tracker SendInput\n");
+		//OutputDebugString("Motion Tracker SendInput\n");
 		SendInput(1, &mouseData, sizeof(INPUT));
 
 		currentYaw = yaw;
