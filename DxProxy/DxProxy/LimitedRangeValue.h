@@ -82,7 +82,7 @@ public:
 	void  ResetToDefault()	{ SetValue(m_defaultValue); }
 	float Max()				{ return m_maxValue; }
 	float Min()				{ return m_minValue; }
-	
+	float Range()			{ return m_maxValue - m_minValue; }
 	
 
 private:
