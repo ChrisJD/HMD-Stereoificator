@@ -2,11 +2,9 @@
 <shaderConfig>
   <rules>
     <rule id="1" constantType="MatrixC" modToApply="3" constantName ="ViewProjectionMatrix" partialName="true"/>
-    <rule id="2" constantType="MatrixC" modToApply="6" constantName ="ProjectionMatrix" />
   </rules>
 
   <defaultRuleIDs>
     <ruleID id="1" />
-    <ruleID id="2" />
   </defaultRuleIDs>
 </shaderConfig>

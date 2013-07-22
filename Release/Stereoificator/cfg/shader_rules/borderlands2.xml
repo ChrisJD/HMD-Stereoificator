@@ -10,6 +10,8 @@
     <ruleID id="2" />
   </defaultRuleIDs>
 
+  <!-- These are shaders that we don't want to be modified by the default rules. These 3 are all using Transform matricies
+      but they aren't used for HUD elements... that I have identified, one or more of them handle the toon style outlining. -->
   <shaderSpecificRuleIDs shaderHash="1584633529" />
   <shaderSpecificRuleIDs shaderHash="4029041433" />
   <shaderSpecificRuleIDs shaderHash="4182198511" />
