@@ -43,6 +43,9 @@ bool DCSourceDefault::ShouldDuplicateTexture(UINT Width,UINT Height,UINT Levels,
 {
 	return IS_RENDER_TARGET(Usage) && (Width != Height);
 }
+// As this is shadows work but reflections are broken.
+// reflection and shadows are both done to identical 1024x1024 texture render targets. So we have to duplicate them all and control whether they are drawn to as 
+// stereo or mono based on... render state before draw?
 
 bool DCSourceDefault::ShouldDuplicateCubeTexture(UINT EdgeLength, UINT Levels, DWORD Usage, D3DFORMAT Format, D3DPOOL Pool)
 {

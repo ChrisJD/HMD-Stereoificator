@@ -1279,7 +1279,7 @@ void D3DProxyDevice::BeforeDrawing()
 					pSurface->GetDesc(&desc);
 
 					if (IS_RENDER_TARGET(desc.Usage)) { 
-						sstm << "RenderTarget" << "," << desc.Width << "," << desc.Height << "," << desc.Format << "," << desc.MultiSampleType << "," << desc.MultiSampleQuality << "," /*<< (isSwapChainBackBuffer ? "yes" : "no")*/ << ","  "LevelCount" << "," <<  /* Discard N/A */"," /*EdgeLength*/<< std::endl;
+						sstm << "RenderTarget" << "," << desc.Width << "," << desc.Height << "," << desc.Format << "," << desc.MultiSampleType << "," << desc.MultiSampleQuality << "," /*<< (isSwapChainBackBuffer ? "yes" : "no")*/ << ","  << "," <<  /* Discard N/A */"," /*EdgeLength*/<< std::endl;
 						sstm << (pSurface->ContainsStereoData() ? "Constains Stereo data" : "Contains mono data") << (pSurface->IsStereo() ? "Is Stereo" : "Is mono") << std::endl;
 					}
 				}
