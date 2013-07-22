@@ -31,21 +31,23 @@ bool DCEgoDefault::ShouldDuplicateRenderTarget(UINT Width, UINT Height, D3DFORMA
 		return true;
 	}
 
-	return Width != Height;
+	return (Width != Height) && (Width >= 1680);  
 }
 
 bool DCEgoDefault::ShouldDuplicateDepthStencilSurface(UINT Width,UINT Height,D3DFORMAT Format,D3DMULTISAMPLE_TYPE MultiSample,DWORD MultisampleQuality,BOOL Discard)
 {
-	return Width != Height;
+	return (Width != Height) && (Width >= 1680); 
 }
 
 bool DCEgoDefault::ShouldDuplicateTexture(UINT Width,UINT Height,UINT Levels,DWORD Usage, D3DFORMAT Format,D3DPOOL Pool)
 {
-	return IS_RENDER_TARGET(Usage) && (Width != Height);
+	return IS_RENDER_TARGET(Usage) && ((Width != Height) && (Width >= 1680) && (Format != 21)); 
 }
 
 bool DCEgoDefault::ShouldDuplicateCubeTexture(UINT EdgeLength, UINT Levels, DWORD Usage, D3DFORMAT Format, D3DPOOL Pool)
 {
-	return false;
+	return IS_RENDER_TARGET(Usage);
 }
 
+//with all except cube on (Width != Height) = shadows broken
+// Shadows are done with a (Width != Height) surface which is at (Width >= 1680) && (Height >= 1050)
