@@ -1195,6 +1195,27 @@ void D3DProxyDevice::BeforeDrawing()
 				}
 			}
 		}
+
+
+		if (m_pActiveStereoDepthStencil) {
+
+			switch (m_currentRenderingSide) 
+			{
+			case stereoificator::Left:
+			case stereoificator::Right:
+				m_pActiveStereoDepthStencil->WritingInStereo(true);
+				break;
+
+			case stereoificator::Center:
+				m_pActiveStereoDepthStencil->WritingInStereo(false);
+				break;
+
+			default:
+				OutputDebugString("BeforeDrawing - Unknown rendering position - depth stencil");
+				DebugBreak();
+				break;
+			}
+		}
 	}
 
 	m_spManagedShaderRegisters->ApplyAllDirty(m_currentRenderingSide);
