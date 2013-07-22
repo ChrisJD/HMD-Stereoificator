@@ -1,10 +1,17 @@
 <?xml version="1.0"?>
 <shaderConfig>
   <rules>
-    <rule id="1" constantType="MatrixC" modToApply="1" startReg="0"/>
+    <rule id="1" constantType="MatrixC" modToApply="1" constantName ="ViewProjectionMatrix" />
+    <rule id="2" constantType="MatrixC" modToApply="8" constantName ="Transform" />
   </rules>
 
   <defaultRuleIDs>
     <ruleID id="1" />
+    <ruleID id="2" />
   </defaultRuleIDs>
+
+  <shaderSpecificRuleIDs shaderHash="1584633529" />
+  <shaderSpecificRuleIDs shaderHash="4029041433" />
+  <shaderSpecificRuleIDs shaderHash="4182198511" />
+  
 </shaderConfig>
