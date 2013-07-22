@@ -21,7 +21,7 @@
       <game game_name="DiRT 3" horizontalFoV="110" separationAdjustment="0" swap_eyes="true" yaw_multiplier="25" pitch_multiplier="25" roll_multiplier="1" />
       <game game_name="F1 2010" horizontalFoV="110" separationAdjustment="0" swap_eyes="true" yaw_multiplier="25" pitch_multiplier="25" roll_multiplier="1" />
       <game game_name="Borderlands" horizontalFoV="110" separationAdjustment="0" swap_eyes="true" yaw_multiplier="25" pitch_multiplier="25" roll_multiplier="1" />
-      <game game_name="Borderlands 2" horizontalFoV="110" separationAdjustment="0" swap_eyes="true" yaw_multiplier="25" pitch_multiplier="25" roll_multiplier="1" />
+      <game game_name="Borderlands 2" horizontalFoV="110" separationAdjustment="0" swap_eyes="true" yaw_multiplier="4.54" pitch_multiplier="4.54" roll_multiplier="1" hudScale="0.4" hudDistance="0.0072" />
       <game game_name="Halflife 2 and Portal" horizontalFoV="110" separationAdjustment="0" swap_eyes="true" yaw_multiplier="25" pitch_multiplier="25" roll_multiplier="1" hudScale="3.1" hudDistance="1" />
       <game game_name="Left 4 Dead" horizontalFoV="110" separationAdjustment="0" swap_eyes="true" yaw_multiplier="25" pitch_multiplier="25" roll_multiplier="1" hudScale="3.1" hudDistance="1" />
       <game game_name="Left 4 Dead 2" horizontalFoV="110" separationAdjustment="0" swap_eyes="true" yaw_multiplier="25" pitch_multiplier="25" roll_multiplier="1" hudScale="3.1" hudDistance="1" />

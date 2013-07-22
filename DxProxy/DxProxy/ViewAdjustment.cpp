@@ -23,7 +23,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ViewAdjustment::ViewAdjustment(std::shared_ptr<HMDisplayInfo> displayInfo, float metersToWorldUnits, bool enableRoll) :
 	hmdInfo(displayInfo),
 	rollEnabled(enableRoll),
-	m_basicAdustments()
+	m_basicAdustments(),
+	hudDistanceMode(HDM_DISTANCE)
 {
 	ipd = IPD_DEFAULT;
 	float maxSeparationAdjusment = 4 * (IPD_DEFAULT / 2.0f); // Max is arbitrarily 4 * default ipd separation.
@@ -51,10 +52,19 @@ ViewAdjustment::~ViewAdjustment()
 
 void ViewAdjustment::Load(ProxyHelper::ProxyConfig& cfg) 
 {
+	hudDistanceMode = (HUDDistanceModes)cfg.hudDistanceMode;
+
+	if (cfg.hudDistanceMode == HDM_SEPARATION_ADJUSTMENT) {
+
+		m_basicAdustments[HUD_DISTANCE].SetNewLimits(0.0f, -0.5f, 0.5f);
+	}
+	
+	m_basicAdustments[HUD_DISTANCE].SetValue(cfg.hudDistance);
+
+
 	rollEnabled = cfg.rollEnabled;
 	m_basicAdustments[WORLD_SCALE].SetValue(cfg.worldScaleFactor);
 	m_basicAdustments[SEPARATION_ADJUSTMENT].SetValue(cfg.separationAdjustment);
-	m_basicAdustments[HUD_DISTANCE].SetValue(cfg.hudDistance);
 	m_basicAdustments[HUD_SCALE].SetValue(cfg.hudScale);
 	ipd = cfg.ipd;
 
@@ -133,9 +143,12 @@ void ViewAdjustment::ComputeViewTransforms()
 		D3DXMatrixMultiply(&transformRight, &rollMatrix, &transformRight);
 	}
 
+	// Left/Right camera adjustment, unproject, move camera to left/right eye position then reproject using left/right projection.
 	matViewProjTransformLeft = matProjectionInv * transformLeft * projectLeft;
 	matViewProjTransformRight = matProjectionInv * transformRight * projectRight;
 
+
+	
 	D3DXMATRIX hudDistance;
 	D3DXMatrixTranslation(&hudDistance, 0, 0, m_basicAdustments[HUD_DISTANCE].Value());
 
@@ -143,11 +156,15 @@ void ViewAdjustment::ComputeViewTransforms()
 	float scalarHUDScale = m_basicAdustments[HUD_SCALE].Value();
 	D3DXMatrixScaling(&hudScale, scalarHUDScale, scalarHUDScale, 1);
 
+	// Reproject ortho projected hud elements using perspective. These matricies will be useless if hud mode is separation adjustment of diatanec rather than actual distance
 	orthoToPersViewProjTransformLeft  = matProjectionInv * hudScale * transformLeft  * hudDistance * projectLeft;
 	orthoToPersViewProjTransformRight = matProjectionInv * hudScale * transformRight * hudDistance * projectRight;
 
-	D3DXMatrixTranslation(&transformHUDLeft, hmdInfo->lensXCenterOffset * LEFT_CONSTANT * m_basicAdustments[HUD_DISTANCE].Value(), 0, 0);
-	D3DXMatrixTranslation(&transformHUDRight, hmdInfo->lensXCenterOffset * RIGHT_CONSTANT * m_basicAdustments[HUD_DISTANCE].Value(), 0, 0);
+
+	//TODO cleanup handling of distance based HUD vs separation adjusted HUD.
+	// Center HUD with optical axis of lens. Then adjust based on using distance as separation.
+	D3DXMatrixTranslation(&transformHUDLeft, (hmdInfo->lensXCenterOffset * LEFT_CONSTANT) + (m_basicAdustments[HUD_DISTANCE].Value() * LEFT_CONSTANT), 0, 0);
+	D3DXMatrixTranslation(&transformHUDRight, (hmdInfo->lensXCenterOffset * RIGHT_CONSTANT) + (m_basicAdustments[HUD_DISTANCE].Value() * RIGHT_CONSTANT), 0, 0);
 
 	transformHUDLeft = hudScale * transformHUDLeft;
 	transformHUDRight = hudScale * transformHUDRight;
@@ -193,6 +210,16 @@ D3DXMATRIX ViewAdjustment::RightOrthoReproject()
 	return orthoToPersViewProjTransformRight;
 }
 
+D3DXMATRIX ViewAdjustment::TransformHUDLeft()
+{
+	return transformHUDLeft;
+}
+
+D3DXMATRIX ViewAdjustment::TransformHUDRight()
+{
+	return transformHUDRight;
+}
+
 D3DXMATRIX ViewAdjustment::Projection()
 {
 	return matProjection;
@@ -207,6 +234,20 @@ D3DXMATRIX ViewAdjustment::ProjectionInverse()
 
 float ViewAdjustment::ChangeBasicAdjustment(BasicAdjustments adjustment, float toAdd)
 {
+	//TODO fix this. Don't want extra changes based on which adjustment is being altered. 
+	// Come up with a better way of scaling/ajusting input rate dependant on HUD distance mode or something. (use separate values rather than same value for different purposes is probably best)
+
+	if (hudDistanceMode == HDM_SEPARATION_ADJUSTMENT) {
+		if (adjustment == HUD_DISTANCE)
+			toAdd *= 0.01f;
+		else if (adjustment == HUD_SCALE)
+			toAdd *= 0.1f;
+	}
+	else if (hudDistanceMode == HDM_DISTANCE) {
+		if (adjustment == HUD_SCALE)
+			toAdd *= BasicAdjustmentValue(ViewAdjustment::HUD_DISTANCE);
+	}
+
 	return m_basicAdustments[adjustment].AddToValue(toAdd);
 }
 

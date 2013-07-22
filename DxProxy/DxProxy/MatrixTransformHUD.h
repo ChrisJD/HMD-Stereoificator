@@ -32,8 +32,8 @@ public:
 
 	virtual void DoMatrixModification(D3DXMATRIX in, D3DXMATRIX& outLeft, D3DXMATRIX& outright)
 	{
-		outLeft = in * m_spAdjustmentMatricies->transformHUDLeft;
-		outright = in * m_spAdjustmentMatricies->transformHUDRight;
+		outLeft = in * m_spAdjustmentMatricies->TransformHUDLeft();
+		outright = in * m_spAdjustmentMatricies->TransformHUDRight();
 	};
 };
 

@@ -52,6 +52,12 @@ public:
 		HUD_SCALE
 	};
 
+	enum HUDDistanceModes
+	{
+		HDM_DISTANCE = 0,
+		HDM_SEPARATION_ADJUSTMENT = 1
+	};
+
 	void Load(ProxyHelper::ProxyConfig& cfg);
 	void Save(ProxyHelper::ProxyConfig& cfg);
 
@@ -74,6 +80,9 @@ public:
 	D3DXMATRIX LeftOrthoReproject();
 	D3DXMATRIX RightOrthoReproject();
 
+	D3DXMATRIX TransformHUDLeft();
+	D3DXMATRIX TransformHUDRight();
+
 	D3DXMATRIX Projection();
 	D3DXMATRIX ProjectionInverse();
 
@@ -92,8 +101,7 @@ public:
 	std::shared_ptr<HMDisplayInfo> HMDInfo();
 	
 	
-	D3DXMATRIX transformHUDLeft;
-	D3DXMATRIX transformHUDRight;
+	
 
 
 	void RecalculateAll();
@@ -101,7 +109,7 @@ private:
 
 	std::unordered_map<BasicAdjustments, LimitedRangeValue> m_basicAdustments;
 
-	
+	HUDDistanceModes hudDistanceMode;
 	
 	
 	// Projection Matrix variables
@@ -135,6 +143,9 @@ private:
 	D3DXMATRIX orthoToPersViewProjTransformLeft;
 	D3DXMATRIX orthoToPersViewProjTransformRight;
 
+	// Use to transform a scaleform UI by adjusting separation and scale
+	D3DXMATRIX transformHUDLeft;
+	D3DXMATRIX transformHUDRight;
 	
 
 	std::shared_ptr<HMDisplayInfo> hmdInfo;
