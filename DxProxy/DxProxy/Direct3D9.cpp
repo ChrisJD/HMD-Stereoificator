@@ -143,12 +143,12 @@ HRESULT WINAPI BaseDirect3D9::CreateDevice(UINT Adapter, D3DDEVTYPE DeviceType, 
 	ProxyHelper::ProxyConfig cfg;
 	bool stereoificatorCfgLoaded = helper.LoadConfig(cfg);
 
-	if (cfg.forceAdapterNumber >= GetAdapterCount()) {
+	if (cfg.forceAdapterNumber >= (int)GetAdapterCount()) {
 		OutputDebugString("[ERR] forceAdapterNumber outside of range of valid adapters. Using original Adapter instead.\n");
 	}
 
 	// Create real interface
-	HRESULT hResult = m_pD3D->CreateDevice( (cfg.forceAdapterNumber >= GetAdapterCount() || (cfg.forceAdapterNumber < 0)) ? Adapter : cfg.forceAdapterNumber, DeviceType, hFocusWindow, BehaviorFlags,
+	HRESULT hResult = m_pD3D->CreateDevice( (cfg.forceAdapterNumber >= (int)GetAdapterCount() || (cfg.forceAdapterNumber < 0)) ? Adapter : cfg.forceAdapterNumber, DeviceType, hFocusWindow, BehaviorFlags,
 		pPresentationParameters, ppReturnedDeviceInterface);
 	if(FAILED(hResult))
 		return hResult;
