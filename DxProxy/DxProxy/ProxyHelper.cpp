@@ -155,8 +155,7 @@ bool ProxyHelper::LoadConfig(ProxyConfig& config)
 		config.aspect_multiplier = xml_config.attribute("aspect_multiplier").as_float();
 		config.tracker_mode = xml_config.attribute("tracker_mode").as_int();
 		config.debugMode = xml_config.attribute("debugMode").as_int(0);
-		int forceAdpaterNumTmp = xml_config.attribute("forceAdapterNumber").as_int(0);
-		config.forceAdapterNumber = forceAdpaterNumTmp < 0 ? 0 : (UINT)forceAdpaterNumTmp;
+		int forceAdpaterNumTmp = xml_config.attribute("forceAdapterNumber").as_int(-1);
 
 		fileFound = true;
 	}

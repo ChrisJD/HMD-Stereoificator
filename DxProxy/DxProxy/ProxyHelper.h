@@ -85,7 +85,7 @@ public:
 		float hudDistance;
 
 		int debugMode;
-		UINT forceAdapterNumber;
+		int forceAdapterNumber;
 	};
 
 

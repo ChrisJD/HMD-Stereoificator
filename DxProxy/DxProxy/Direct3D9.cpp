@@ -148,7 +148,7 @@ HRESULT WINAPI BaseDirect3D9::CreateDevice(UINT Adapter, D3DDEVTYPE DeviceType, 
 	}
 
 	// Create real interface
-	HRESULT hResult = m_pD3D->CreateDevice( cfg.forceAdapterNumber >= GetAdapterCount() ? Adapter : cfg.forceAdapterNumber, DeviceType, hFocusWindow, BehaviorFlags,
+	HRESULT hResult = m_pD3D->CreateDevice( (cfg.forceAdapterNumber >= GetAdapterCount() || (cfg.forceAdapterNumber < 0)) ? Adapter : cfg.forceAdapterNumber, DeviceType, hFocusWindow, BehaviorFlags,
 		pPresentationParameters, ppReturnedDeviceInterface);
 	if(FAILED(hResult))
 		return hResult;
