@@ -198,6 +198,7 @@
     <ClInclude Include="..\..\DxProxy\DxProxy\MatrixSimpleTranslate.h" />
     <ClInclude Include="..\..\DxProxy\DxProxy\MatrixSimpleTranslateColMajor.h" />
     <ClInclude Include="..\..\DxProxy\DxProxy\MatrixSimpleTranslateColMajorIgnoreOrtho.h" />
+    <ClInclude Include="..\..\DxProxy\DxProxy\MatrixTransformHUD.h" />
     <ClInclude Include="..\..\DxProxy\DxProxy\MotionTracker.h" />
     <ClInclude Include="..\..\DxProxy\DxProxy\MotionTrackerFactory.h" />
     <ClInclude Include="..\..\DxProxy\DxProxy\MurmurHash3.h" />

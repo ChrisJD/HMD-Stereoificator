@@ -92,7 +92,8 @@ public:
 	std::shared_ptr<HMDisplayInfo> HMDInfo();
 	
 	
-
+	D3DXMATRIX transformHUDLeft;
+	D3DXMATRIX transformHUDRight;
 
 
 	void RecalculateAll();

@@ -425,6 +425,9 @@
     <ClInclude Include="DCUE3Default.h">
       <Filter>Direct3D9Stereoificator\DuplicationConditions</Filter>
     </ClInclude>
+    <ClInclude Include="MatrixTransformHUD.h">
+      <Filter>Direct3D9Stereoificator\ShaderConstantModification</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="..\..\Release\Stereoificator\cfg\config.xml">

@@ -340,5 +340,8 @@
     <ClInclude Include="..\..\DxProxy\DxProxy\DCUE3Default.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\DxProxy\DxProxy\MatrixTransformHUD.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

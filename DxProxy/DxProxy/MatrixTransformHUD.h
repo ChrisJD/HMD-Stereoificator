@@ -16,8 +16,8 @@ You should have received a copy of the GNU Lesser General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ********************************************************************/
 
-#ifndef MATRIXSIMPLEPLUSORTHOREPROJECT_H_INCLUDED
-#define MATRIXSIMPLEPLUSORTHOREPROJECT_H_INCLUDED
+#ifndef MATRIXTRANSFORMHUD_H_INCLUDED
+#define MATRIXTRANSFORMHUD_H_INCLUDED
 
 
 #include "d3d9.h"
@@ -25,21 +25,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "ShaderConstantModification.h"
 #include "ShaderMatrixModification.h"
 
-class MatrixSimplePlusOrthoReproject : public ShaderMatrixModification
+class MatrixTransformHUD : public ShaderMatrixModification
 {
 public:
-	MatrixSimplePlusOrthoReproject(UINT modID, std::shared_ptr<ViewAdjustment> adjustmentMatricies, bool transpose) : ShaderMatrixModification(modID, adjustmentMatricies, transpose) {};
+	MatrixTransformHUD(UINT modID, std::shared_ptr<ViewAdjustment> adjustmentMatricies, bool transpose) : ShaderMatrixModification(modID, adjustmentMatricies, transpose) {};
 
 	virtual void DoMatrixModification(D3DXMATRIX in, D3DXMATRIX& outLeft, D3DXMATRIX& outright)
 	{
-		if (stereoificator::AlmostSame(in[15], 1.0f, 0.00001f)) {
-
-			outLeft = in * m_spAdjustmentMatricies->LeftOrthoReproject();
-			outright = in * m_spAdjustmentMatricies->RightOrthoReproject();
-		}
-		else {
-			ShaderMatrixModification::DoMatrixModification(in, outLeft, outright);
-		}
+		outLeft = in * m_spAdjustmentMatricies->transformHUDLeft;
+		outright = in * m_spAdjustmentMatricies->transformHUDRight;
 	};
 };
 

@@ -32,7 +32,7 @@ ViewAdjustment::ViewAdjustment(std::shared_ptr<HMDisplayInfo> displayInfo, float
 	m_basicAdustments.insert(std::pair<BasicAdjustments, LimitedRangeValue>(SEPARATION_ADJUSTMENT, LimitedRangeValue(0.0f, minSeparationAdjusment, maxSeparationAdjusment))); // meters
 	m_basicAdustments.insert(std::pair<BasicAdjustments, LimitedRangeValue>(WORLD_SCALE, LimitedRangeValue(metersToWorldUnits, 0.0001f, 1000000.0f))); // multiply a value in meters by this to get world units
 	m_basicAdustments.insert(std::pair<BasicAdjustments, LimitedRangeValue>(HUD_DISTANCE, LimitedRangeValue(1.0f, 0.1f, 100.0f))); // "meters" not actually meters, needs a scaling factor, probably per game, different from world factor (for hl2 the scale factor would seem to need to be be about 2 - not implemented at the moment though)
-	m_basicAdustments.insert(std::pair<BasicAdjustments, LimitedRangeValue>(HUD_SCALE, LimitedRangeValue(3.1f, 0.1f, 100000.0f))); 
+	m_basicAdustments.insert(std::pair<BasicAdjustments, LimitedRangeValue>(HUD_SCALE, LimitedRangeValue(1.0f, 0.1f, 100000.0f))); 
 
 
 	n = 0.1f;
@@ -146,6 +146,11 @@ void ViewAdjustment::ComputeViewTransforms()
 	orthoToPersViewProjTransformLeft  = matProjectionInv * hudScale * transformLeft  * hudDistance * projectLeft;
 	orthoToPersViewProjTransformRight = matProjectionInv * hudScale * transformRight * hudDistance * projectRight;
 
+	D3DXMatrixTranslation(&transformHUDLeft, hmdInfo->lensXCenterOffset * LEFT_CONSTANT * m_basicAdustments[HUD_DISTANCE].Value(), 0, 0);
+	D3DXMatrixTranslation(&transformHUDRight, hmdInfo->lensXCenterOffset * RIGHT_CONSTANT * m_basicAdustments[HUD_DISTANCE].Value(), 0, 0);
+
+	transformHUDLeft = hudScale * transformHUDLeft;
+	transformHUDRight = hudScale * transformHUDRight;
 }
 
 D3DXMATRIX ViewAdjustment::LeftViewTransform()

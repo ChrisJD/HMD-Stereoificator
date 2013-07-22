@@ -177,6 +177,7 @@
     <ClInclude Include="MatrixShiftProjection.h" />
     <ClInclude Include="MatrixSimplePlusOrthoReproject.h" />
     <ClInclude Include="MatrixSimplePlusOrthoShift.h" />
+    <ClInclude Include="MatrixTransformHUD.h" />
     <ClInclude Include="ShaderMatrixModification.h" />
     <ClInclude Include="MatrixIgnoreOrtho.h" />
     <ClInclude Include="ViewAdjustment.h" />
@@ -240,7 +241,9 @@
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(SolutionDir)$(Configuration)\Stereoificator\cfg\%(filename).xml;%(Outputs)</Outputs>
       <SubType>Designer</SubType>
     </CustomBuild>
-    <None Include="..\..\Release\Stereoificator\cfg\shader_rules\borderlands2.xml" />
+    <None Include="..\..\Release\Stereoificator\cfg\shader_rules\borderlands2.xml">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="..\..\Release\Stereoificator\cfg\shader_rules\ego.xml">
       <SubType>Designer</SubType>
     </None>
