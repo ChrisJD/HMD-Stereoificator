@@ -10,5 +10,6 @@
     <ruleID id="2" />
   </defaultRuleIDs>
 
-
+<!-- 2731857126 - Draws HUD text but also does something fullscreen, moving shifts the entire screen -->
+<!-- 2772721874 - Draws HUD textures and light haze/fog in lightcones from ceiling lights (and some other lights) -->
 </shaderConfig>

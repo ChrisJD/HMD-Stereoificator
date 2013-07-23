@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+<shaderConfig>
+  <rules>
+    <rule id="1" constantType="MatrixC" modToApply="3" constantName ="ViewProjectionMatrix" partialName="true"/>
+    <rule id="2" constantType="MatrixC" modToApply="8" constantName ="Transform" />
+  </rules>
+
+  <defaultRuleIDs>
+    <ruleID id="1" />
+  </defaultRuleIDs>
+
+  
+  <!-- HUD/Menu rules START -->
+  <shaderSpecificRuleIDs shaderHash="1406444256" >
+    <ruleID id="2" />
+  </shaderSpecificRuleIDs>
+  
+  <shaderSpecificRuleIDs shaderHash="3366904279" >
+    <ruleID id="2" />
+  </shaderSpecificRuleIDs>
+
+  <!-- These two have some issues with textures being clipped -->
+  <shaderSpecificRuleIDs shaderHash="1322022251" >
+    <ruleID id="2" />
+  </shaderSpecificRuleIDs>
+  
+  <shaderSpecificRuleIDs shaderHash="1895490199" >
+    <ruleID id="2" />
+  </shaderSpecificRuleIDs>
+  <!-- HUD/Menu rules END -->
+  
+  <!-- 4074249374 is the cross-hair and mouse cursor, BUT it is also the cell shading outline effect. So modifying the whole
+      shader isn't possible, need to identify when the mouse and cross-hair are being drawn and only modify VS at that time (maybe)-->
+</shaderConfig>
