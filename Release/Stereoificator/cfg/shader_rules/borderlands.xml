@@ -30,5 +30,5 @@
   <!-- HUD/Menu rules END -->
   
   <!-- 4074249374 is the cross-hair and mouse cursor, BUT it is also the cell shading outline effect. So modifying the whole
-      shader isn't possible, need to identify when the mouse and cross-hair are being drawn and only modify VS at that time (maybe)-->
+      shader isn't possible, need to identify when the mouse and cross-hair are being drawn and only modify VShader at that time (maybe)-->
 </shaderConfig>
