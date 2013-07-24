@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<shaderConfig>
+  <rules>
+    <rule id="1" constantType="MatrixC" modToApply="3" constantName ="ViewProjectionMatrix" />
+  </rules>
+
+  <defaultRuleIDs>
+    <ruleID id="1" />
+  </defaultRuleIDs>
+  
+  <!-- HUD / Menus - One Transform to change for all of these elements. Background in menus ends up in the wrong place but hud is readable.
+    Unfortunatey this also creates black boxes at the top and bottom of the view  that are exteremely obtrusive.-->
+
+</shaderConfig>

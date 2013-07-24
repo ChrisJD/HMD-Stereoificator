@@ -2,7 +2,7 @@
 <profiles>
 	<profile game_name="AaAaAA!!!" game_exe="main.exe" rollEnabled="true" worldScaleFactor="50" duplicationRules="0" />
 	<profile game_name="inMomentum" game_exe="IMGame.exe" shaderModRules="unreal.xml" rollEnabled="true" worldScaleFactor="5" duplicationRules="0" />
-	<profile game_name="Mirrors Edge" game_exe="MirrorsEdge.exe" shaderModRules="unreal.xml" rollEnabled="true" worldScaleFactor="5" duplicationRules="0" />
+	<profile game_name="Mirrors Edge" game_exe="MirrorsEdge.exe" shaderModRules="mirrorsedge.xml" rollEnabled="true" worldScaleFactor="5" duplicationRules="0" hudDistanceMode="1"/>
 	<profile game_name="GRID" game_exe="GRID.exe" shaderModRules="ego.xml" rollEnabled="false" worldScaleFactor="2" duplicationRules="0" />
 	<profile game_name="DiRT 2" game_exe="dirt2_game.exe" shaderModRules="ego.xml" rollEnabled="false" worldScaleFactor="2.5" duplicationRules="0" />
 	<profile game_name="DiRT 3" game_exe="dirt3_game.exe" shaderModRules="ego.xml" rollEnabled="false" worldScaleFactor="2.5" duplicationRules="0" />

@@ -249,6 +249,7 @@
       <SubType>Designer</SubType>
     </None>
     <None Include="..\..\Release\Stereoificator\cfg\shader_rules\example.xml" />
+    <None Include="..\..\Release\Stereoificator\cfg\shader_rules\mirrorsedge.xml" />
     <None Include="..\..\Release\Stereoificator\cfg\shader_rules\omd2.xml">
       <SubType>Designer</SubType>
     </None>

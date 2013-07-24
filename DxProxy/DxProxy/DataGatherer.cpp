@@ -218,13 +218,12 @@ uint32_t DataGatherer::PreviousShaderHash()
 		return m_currentHash;
 	}
 	
-
-	// Move to previous hash. If that puts us at the start go to the end
-	--m_vshadersInUseIterator;
+	// Move to previous hash. 
 	if (m_vshadersInUseIterator == m_vshadersInUse.begin()) {
 		m_vshadersInUseIterator = m_vshadersInUse.end();
 		OutputDebugString("Wrap around\n");
 	}
+	--m_vshadersInUseIterator;
 
 	m_currentHash = *m_vshadersInUseIterator;
 

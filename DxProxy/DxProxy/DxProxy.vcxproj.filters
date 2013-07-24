@@ -237,6 +237,9 @@
     <None Include="..\..\Release\Stereoificator\cfg\shader_rules\borderlands.xml">
       <Filter>cfg\shader_rules</Filter>
     </None>
+    <None Include="..\..\Release\Stereoificator\cfg\shader_rules\mirrorsedge.xml">
+      <Filter>cfg\shader_rules</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Main.h">
