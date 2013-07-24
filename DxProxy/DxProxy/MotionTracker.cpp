@@ -19,25 +19,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "MotionTracker.h"
 
 MotionTracker::MotionTracker()
-{
-	OutputDebugString("Motion Tracker Created\n");
-	init();
-}
-
-MotionTracker::~MotionTracker()
-{
-}
-
-int MotionTracker::init()
-{
-	OutputDebugString("Motion Tracker Init\n");
-
+{	
 	currentYaw = 0.0f;
 	currentPitch = 0.0f;
 	currentRoll = 0.0f;
 
-	deltaYaw = 0.0f;
-	deltaPitch = 0.0f;
+	leftoverYaw = 0.0f;
+	leftoverPitch = 0.0f;
 
 	multiplierYaw = 25.0f;
 	multiplierPitch = 25.0f;
@@ -51,12 +39,21 @@ int MotionTracker::init()
 	mouseData.mi.time = 0;
 	mouseData.mi.dwExtraInfo = 0;
 
-	return 0;
+	
+	OutputDebugString("Motion Tracker Created\n");
 }
 
-int MotionTracker::getOrientation(float* yaw, float* pitch, float* roll) 
+MotionTracker::~MotionTracker()
 {
-	//OutputDebugString("Motion Tracker getOrient\n");
+}
+
+
+int MotionTracker::getOrientationFromDevice(float* yaw, float* pitch, float* roll) 
+{
+	*yaw = 0.0f;
+	*pitch = 0.0f;
+	*roll = 0.0f;
+
 	return -1;
 }
 
@@ -67,34 +64,56 @@ bool MotionTracker::isAvailable()
 
 void MotionTracker::updateOrientation()
 {
-	//OutputDebugString("Motion Tracker updateOrientation\n");
-	if(getOrientation(&yaw, &pitch, &roll) == 0)
+	float newYaw, newPitch, newRoll;
+
+	if(getOrientationFromDevice(&newYaw, &newPitch, &newRoll) == 0)
 	{
-		//OutputDebugString("Motion Tracker getOrientation == 0\n");
-		if(!isEqual(currentYaw, 0.0f) && !isEqual(currentPitch, 0.0f))
-		{
-			yaw = fmodf(RADIANS_TO_DEGREES(yaw) + 360.0f, 360.0f)*multiplierYaw;
-			pitch = -fmodf(RADIANS_TO_DEGREES(pitch) + 360.0f, 360.0f)*multiplierPitch;
+		newYaw = fmodf(newYaw, 360.0f);
+		newPitch = -fmodf(newPitch, 360.0f);
 
-			deltaYaw += yaw - currentYaw;
-			deltaPitch += pitch - currentPitch;
-
-			if(fabs(deltaYaw) > 100.0f) deltaYaw = 0.0f;
-			if(fabs(deltaPitch) > 100.0f) deltaPitch = 0.0f;
-			
-			mouseData.mi.dx = (long)(deltaYaw);
-			mouseData.mi.dy = (long)(deltaPitch);
-			// Keep fractional difference in the delta so it's added to the next update.
-			deltaYaw -= (float)mouseData.mi.dx;
-			deltaPitch -= (float)mouseData.mi.dy;
 		
-			//OutputDebugString("Motion Tracker SendInput\n");
-			SendInput(1, &mouseData, sizeof(INPUT));
-		}
+		float yawChange = newYaw - currentYaw + leftoverYaw;
+		/// http://stackoverflow.com/questions/1878907/the-smallest-difference-between-2-angles
+		/// Change in angle as shortest signed angle
+		yawChange = fmodf((yawChange + 180.0f), 360.0f);
+		if (yawChange < 0)
+			yawChange = 360.0f - yawChange; // Handling negative numbers as fmodf not the correct type of modulus
+		yawChange -= 180.0f;
+		/// End Change in angle as shortest signed angle 
 
-		currentYaw = yaw;
-		currentPitch = pitch;
-		currentRoll = roll*multiplierRoll;
+		yawChange *= multiplierYaw;
+		leftoverYaw = fmodf(yawChange, 1.0f); // left over that will remain after multiplier is applied and we have rounded to a whole number (mouse dx/dy are longs)
+		mouseData.mi.dx = round(yawChange - leftoverYaw); // amount to move (the leftover would be lost anyway so subtract it so we know exactly what is gonig on with rounding)
+		leftoverYaw /= multiplierYaw; // The left over to carry to the next update needs to be un-multiplied so divide by multiplier to get back to 
+
+
+		float pitchChange = newPitch - currentPitch + leftoverPitch;
+		pitchChange = fmodf((pitchChange + 180.0f), 360.0f);
+		if (pitchChange < 0)
+			pitchChange = 360.0f - pitchChange;
+		pitchChange -= 180.0f;
+
+		pitchChange *= multiplierPitch;
+		leftoverPitch = fmodf(pitchChange, 1.0f);
+		mouseData.mi.dy = round(pitchChange - leftoverPitch);
+		leftoverPitch /= multiplierPitch;
+		
+		
+
+
+		//mouseData.mi.dx = (long) yawChange;
+		//mouseData.mi.dy = (long) pitchChange;
+
+		// Keep fractional difference so it's added to the next update.
+		//leftoverYaw = ((float) mouseData.mi.dx) / multiplierYaw;
+		//leftoverPitch = ((float) mouseData.mi.dy) / multiplierPitch;
+		
+		//OutputDebugString("Motion Tracker SendInput\n");
+		SendInput(1, &mouseData, sizeof(INPUT));
+
+		currentYaw = newYaw;
+		currentPitch = newPitch;
+		currentRoll = (float)( newRoll * (PI/180.0) * multiplierRoll);			// convert from deg to radians then apply mutiplier
 	}
 }
 

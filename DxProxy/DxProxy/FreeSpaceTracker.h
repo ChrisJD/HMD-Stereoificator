@@ -24,11 +24,17 @@ class FreeSpaceTracker : public MotionTracker
 public:
 	FreeSpaceTracker(void);
 	~FreeSpaceTracker(void);
-	int getOrientation(float* yaw, float* pitch, float* roll);
-	bool isAvailable();
+	
+	virtual bool isAvailable();
+
 	int init();
 	void reset();
 	void destroy();
+
+	
+protected:
+	virtual int getOrientationFromDevice(float* yaw, float* pitch, float* roll);
+
 private:
 	int connect(void);
 	void close(void);

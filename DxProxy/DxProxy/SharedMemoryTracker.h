@@ -39,17 +39,18 @@ struct TrackData
 class SharedMemoryTracker : public MotionTracker
 {
 public:
-	SharedMemoryTracker(void);
-	~SharedMemoryTracker(void);
+	SharedMemoryTracker();
+	~SharedMemoryTracker();
 
-	int getOrientation(float* yaw, float* pitch, float* roll);
-	bool isAvailable();
-	void updateOrientation();
-	int init();
+	virtual bool isAvailable();
+
+protected:
+	virtual int getOrientationFromDevice(float* yaw, float* pitch, float* roll);
 
 private:
 	HANDLE hMapFile;
 	TrackData* pTrackBuf;
+	bool sharedMemoryAvailable;
 
 	bool openSharedMemory();
 };

@@ -147,7 +147,7 @@ void FreeSpaceTracker::destroy()
 	close();
 }
 
-int FreeSpaceTracker::getOrientation(float* yaw, float* pitch, float* roll) 
+int FreeSpaceTracker::getOrientationFromDevice(float* yaw, float* pitch, float* roll) 
 {
 	//OutputDebugString("Free Tracker getOrient\n");
 
@@ -197,9 +197,12 @@ int FreeSpaceTracker::getOrientation(float* yaw, float* pitch, float* roll)
 			float m23 = (2.0f * y * z) + (2.0f * w * x);
 			float m33 = (2.0f * w * w) + (2.0f * z * z) - 1.0f;
 
-			*roll = atan2f(m23, m33);
-			*pitch = asinf(-m13);
-			*yaw = atan2f(m12, m11);
+			*roll = RADIANS_TO_DEGREES(atan2f(m23, m33));
+			*pitch = RADIANS_TO_DEGREES(asinf(-m13));
+			*yaw = RADIANS_TO_DEGREES(atan2f(m12, m11));
+
+
+
 			return 0;   
         }
 

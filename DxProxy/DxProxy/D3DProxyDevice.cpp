@@ -706,11 +706,11 @@ void D3DProxyDevice::HandleControls()
 
 void D3DProxyDevice::HandleTracking()
 {
-	if(!trackingOn){
-		tracker->currentRoll = 0;
+	if (!trackingOn) {
 		return;
 	}
-	if(!trackerInitialized)
+
+	if (!trackerInitialized)
 	{
 		OutputDebugString("Try to init Tracker\n");
 		tracker = MotionTrackerFactory::Get(config);
@@ -718,7 +718,7 @@ void D3DProxyDevice::HandleTracking()
 		trackerInitialized = true;
 	}
 
-	if(trackerInitialized && tracker->isAvailable())
+	if (trackerInitialized && tracker->isAvailable())
 	{
 		tracker->updateOrientation();
 	}
@@ -776,7 +776,7 @@ HRESULT WINAPI D3DProxyDevice::BeginScene()
 		// How much latency does mouse enulation cause? Probably want direct roll manipulation and mouse emulation to occur with same delay
 		// if possible?
 		if (trackerInitialized && tracker->isAvailable() && m_spShaderViewAdjustment->RollEnabled()) {
-			m_spShaderViewAdjustment->UpdateRoll(tracker->currentRoll);
+			m_spShaderViewAdjustment->UpdateRoll(tracker->getRoll());
 		}
 
 		m_spShaderViewAdjustment->ComputeViewTransforms();

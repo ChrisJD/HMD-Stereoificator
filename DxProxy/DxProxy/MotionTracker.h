@@ -31,27 +31,17 @@ public:
 	MotionTracker(void);
 	virtual ~MotionTracker(void);
 
-	virtual int init();
-	virtual int getOrientation(float* yaw, float* pitch, float* roll);
-	virtual void updateOrientation();
+	
 	virtual bool isAvailable();
-	virtual void setMultipliers(float yaw, float pitch, float roll);
 
-	bool isEqual(float a, float b){ return abs(a-b) < 0.001; };
+	void updateOrientation();
+	void setMultipliers(float yaw, float pitch, float roll);
 
-	float yaw, pitch, roll;
-	float currentYaw;
-	float currentPitch;
-	float currentRoll;
-	float deltaYaw;
-	float deltaPitch;
+	float getYaw() { return currentYaw; };
+	float getPitch() { return currentPitch; };
+	float getRoll() { return currentRoll; };
 
-	float multiplierYaw;
-	float multiplierPitch;
-	float multiplierRoll;
-	INPUT mouseData;
-
-	static enum TrackerTypes
+	enum TrackerTypes
 	{
 		DISABLED = 0,
 		HILLCREST = 10,
@@ -59,6 +49,29 @@ public:
 		SHAREDMEMTRACK = 30,
 		OCULUSTRACK = 40
 	};
+
+protected:
+	// All angles returned should be in degrees. Returns 0 if successful
+	virtual int getOrientationFromDevice(float* yaw, float* pitch, float* roll);
+
+
+	bool isEqual(float a, float b){ return abs(a-b) < 0.001; };
+	long round(float x) { return (long)(floor(x + 0.5)); }
+
+	
+	float currentYaw;
+	float currentPitch;
+	float currentRoll;
+
+	float leftoverYaw;
+	float leftoverPitch;
+
+	float multiplierYaw;
+	float multiplierPitch;
+	float multiplierRoll;
+	INPUT mouseData;
+
+	
 };
 
 #endif

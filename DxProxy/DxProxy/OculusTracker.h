@@ -33,12 +33,14 @@ public:
 	OculusTracker(void);
 	virtual ~OculusTracker(void);
 
-	int getOrientation(float* yaw, float* pitch, float* roll);
-	bool isAvailable();
-	void updateOrientation();
-	int init();
+	
+	virtual bool isAvailable();
+
+protected:
+	virtual int getOrientationFromDevice(float* yaw, float* pitch, float* roll);
 
 private:
+	
     Ptr<DeviceManager> pManager;
     Ptr<HMDDevice>     pHMD;
     Ptr<SensorDevice>  pSensor;

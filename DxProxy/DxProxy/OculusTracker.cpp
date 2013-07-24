@@ -20,24 +20,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 OculusTracker::OculusTracker()
 {
-	OutputDebugString("Motion Tracker Created\n");
 	pManager = NULL;
 	pHMD = NULL;
 	pSensor = NULL;
-	init();
-}
-
-OculusTracker::~OculusTracker()
-{
-	pSensor.Clear();
-	pManager.Clear();
-	System::Destroy();  // shutdown LibOVR
-}
-
-int OculusTracker::init()
-{
-	OutputDebugString("OculusTracker Init\n");
-
+	
 	System::Init(); // start LibOVR
 
 	pManager = *DeviceManager::Create();
@@ -49,10 +35,18 @@ int OculusTracker::init()
 	if (pSensor)
 		SFusion.AttachToSensor(pSensor);
 
-	return 0;
+	OutputDebugString("OculusTracker Created\n");
 }
 
-int OculusTracker::getOrientation(float* yaw, float* pitch, float* roll) 
+OculusTracker::~OculusTracker()
+{
+	pSensor.Clear();
+	pManager.Clear();
+	System::Destroy();  // shutdown LibOVR
+}
+
+
+int OculusTracker::getOrientationFromDevice(float* yaw, float* pitch, float* roll) 
 {
 	//OutputDebugString("OculusTracker getOrient\n");
 
@@ -72,35 +66,4 @@ int OculusTracker::getOrientation(float* yaw, float* pitch, float* roll)
 bool OculusTracker::isAvailable()
 {
 	return SFusion.IsAttachedToSensor();
-}
-
-void OculusTracker::updateOrientation()
-{
-	//OutputDebugString("OculusTracker updateOrientation\n");
-
-	if(getOrientation(&yaw, &pitch, &roll) == 0)
-	{
-		yaw = fmodf(yaw + 360.0f, 360.0f);
-		pitch = -fmodf(pitch + 360.0f, 360.0f);
-
-		deltaYaw += yaw - currentYaw;
-		deltaPitch += pitch - currentPitch;
-
-		// hack to avoid errors while translating over 360/0 
-		if(fabs(deltaYaw) > 4.0f) deltaYaw = 0.0f;
-		if(fabs(deltaPitch) > 4.0f) deltaPitch = 0.0f;
-
-		mouseData.mi.dx = (long)(deltaYaw*multiplierYaw);
-		mouseData.mi.dy = (long)(deltaPitch*multiplierPitch);
-		// Keep fractional difference in the delta so it's added to the next update.
-		deltaYaw -= ((float)mouseData.mi.dx)/multiplierYaw;
-		deltaPitch -= ((float)mouseData.mi.dy)/multiplierPitch;
-		
-		//OutputDebugString("Motion Tracker SendInput\n");
-		SendInput(1, &mouseData, sizeof(INPUT));
-
-		currentYaw = yaw;
-		currentPitch = pitch;
-		currentRoll = (float)( roll * (PI/180.0) * multiplierRoll);			// convert from deg to radians then apply mutiplier
-	}
 }

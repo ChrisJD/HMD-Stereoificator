@@ -35,7 +35,7 @@ However, I haven't actually included it in this repository yet.
 
 FreeTrackTracker::FreeTrackTracker(void):MotionTracker()
 {
-	OutputDebugString("[FREETRACK] FreeTrack Tracker Created\n");
+	OutputDebugString("FreeTrack Tracker Created\n");
 	init();
 }
 
@@ -73,7 +73,7 @@ void FreeTrackTracker::destroy()
 	FreeLibrary(hinstLib);
 }
 
-int FreeTrackTracker::getOrientation(float* yaw, float* pitch, float* roll) 
+int FreeTrackTracker::getOrientationFromDevice(float* yaw, float* pitch, float* roll) 
 {
 	if (getData(pData)) {
 		lastRoll = data.roll;

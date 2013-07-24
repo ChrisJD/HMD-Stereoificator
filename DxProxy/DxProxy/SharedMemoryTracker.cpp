@@ -24,29 +24,22 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 TCHAR szName[]=TEXT("VireioSMTrack");
 
-SharedMemoryTracker::SharedMemoryTracker(void):MotionTracker()
+SharedMemoryTracker::SharedMemoryTracker():MotionTracker()
 {
 	OutputDebugString("Socket Tracker Created\n");
 	hMapFile = NULL;
 	pTrackBuf = NULL;
-	init();
+	sharedMemoryAvailable = openSharedMemory();
 }
 
-SharedMemoryTracker::~SharedMemoryTracker(void)
+SharedMemoryTracker::~SharedMemoryTracker()
 {
 	UnmapViewOfFile(pTrackBuf);
 	CloseHandle(hMapFile);
 }
 
-int SharedMemoryTracker::init()
-{
-	OutputDebugString("Socket Tracker Init\n");
-	openSharedMemory();
-	return 0;
-}
 
-
-int SharedMemoryTracker::getOrientation(float* yaw, float* pitch, float* roll) 
+int SharedMemoryTracker::getOrientationFromDevice(float* yaw, float* pitch, float* roll) 
 {
 	OutputDebugString("Socket Tracker getOrient\n");
 
@@ -63,49 +56,18 @@ int SharedMemoryTracker::getOrientation(float* yaw, float* pitch, float* roll)
 
 bool SharedMemoryTracker::isAvailable()
 {
-	return true;
+	return sharedMemoryAvailable;
 }
 
-void SharedMemoryTracker::updateOrientation()
-{
-	OutputDebugString("Motion Tracker updateOrientation\n");
-
-	if(getOrientation(&yaw, &pitch, &roll) == 0)
-	{
-		yaw = fmodf(yaw + 360.0f, 360.0f);
-		pitch = -fmodf(pitch + 360.0f, 360.0f);
-
-		deltaYaw += yaw - currentYaw;
-		deltaPitch += pitch - currentPitch;
-
-		// hack to avoid errors while translating over 360/0
-		if(fabs(deltaYaw) > 4.0f) deltaYaw = 0.0f;
-		if(fabs(deltaPitch) > 4.0f) deltaPitch = 0.0f;
-
-		mouseData.mi.dx = (long)(deltaYaw*multiplierYaw);
-		mouseData.mi.dy = (long)(deltaPitch*multiplierPitch);
-		// Keep fractional difference in the delta so it's added to the next update.
-		deltaYaw -= ((float)mouseData.mi.dx)/multiplierYaw;
-		deltaPitch -= ((float)mouseData.mi.dy)/multiplierPitch;
-		
-		OutputDebugString("Motion Tracker SendInput\n");
-		SendInput(1, &mouseData, sizeof(INPUT));
-
-		currentYaw = yaw;
-		currentPitch = pitch;
-		currentRoll = (float)( roll * (PI/180.0) * multiplierRoll);			// convert from deg to radians then apply mutiplier
-	}
-}
 
 bool SharedMemoryTracker::openSharedMemory()
 {
-		hMapFile = CreateFileMapping(
-		INVALID_HANDLE_VALUE,	// use paging file
-		NULL,					// default security
-		PAGE_READWRITE,			// read/write access
-		0,						// maximum object size (high-order DWORD)
-		sizeof(TrackData),		// maximum object size (low-order DWORD)
-		szName);				// name of mapping object
+	hMapFile = CreateFileMapping(	INVALID_HANDLE_VALUE,	// use paging file
+									NULL,					// default security
+									PAGE_READWRITE,			// read/write access
+									0,						// maximum object size (high-order DWORD)
+									sizeof(TrackData),		// maximum object size (low-order DWORD)
+									szName);				// name of mapping object
 
 	if (hMapFile == NULL)										// Could not create file mapping object
 		return false;
@@ -119,8 +81,8 @@ bool SharedMemoryTracker::openSharedMemory()
 	if (pTrackBuf == NULL)										// Could not map view of file
 	{
 		CloseHandle(hMapFile);
-		return 1;
+		return false;
 	}
 
-	return 0;
+	return true;
 }
