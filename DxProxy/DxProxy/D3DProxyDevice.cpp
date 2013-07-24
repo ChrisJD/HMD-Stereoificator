@@ -694,14 +694,12 @@ void D3DProxyDevice::HandleControls()
 	if(doSaveNext && saveWaitCount < 0)
 	{
 		doSaveNext = false;
-		ProxyHelper* helper = new ProxyHelper();
 
 		config.swap_eyes = stereoView->swapEyes;
 		m_spShaderViewAdjustment->Save(config);
-
-		helper->SaveConfig(config);
 		
-		delete helper;
+		ProxyHelper helper;
+		helper.SaveConfig(config);
 	}
 
 }
