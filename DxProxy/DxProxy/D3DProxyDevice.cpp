@@ -450,6 +450,7 @@ void D3DProxyDevice::HandleControls()
 		if(KEY_DOWN(VK_NUMPAD0))
 		{
 			std::stringstream sstm;
+			sstm << "Yaw: " << tracker->getYaw() << ", Pitch: " << tracker->getPitch() << ", Roll: " << tracker->getRoll() << std::endl;
 			sstm << "HUD Scale: " << m_spShaderViewAdjustment->BasicAdjustmentValue(ViewAdjustment::HUD_SCALE) << std::endl;
 			sstm << "HUD Distance: " << m_spShaderViewAdjustment->BasicAdjustmentValue(ViewAdjustment::HUD_DISTANCE) << std::endl;
 			if (m_pDataGatherer) {
@@ -495,6 +496,7 @@ void D3DProxyDevice::HandleControls()
 
 				anyKeyPressed = true;
 			}
+
 
 			if(KEY_DOWN(VK_NUMPAD9))
 			{

@@ -132,8 +132,8 @@ void ViewAdjustment::UpdateRoll(float roll)
 
 void ViewAdjustment::ComputeViewTransforms()
 {
-	D3DXMatrixTranslation(&transformLeft, SeparationInWorldUnits() * LEFT_CONSTANT, 0, 0);
-	D3DXMatrixTranslation(&transformRight, SeparationInWorldUnits() * RIGHT_CONSTANT, 0, 0);
+	D3DXMatrixTranslation(&transformLeft, SeparationInWorldUnits() * LEFT_CONSTANT, 0, 0); //-SeparationInWorldUnits() * 2.0f, -SeparationInWorldUnits() * 2.0f); playing with head on a stick model in B2
+	D3DXMatrixTranslation(&transformRight, SeparationInWorldUnits() * RIGHT_CONSTANT, 0, 0); //-SeparationInWorldUnits() * 2.0f, -SeparationInWorldUnits() * 2.0f);
 
 	D3DXMATRIX rollTransform;
 	D3DXMatrixIdentity(&rollTransform);
