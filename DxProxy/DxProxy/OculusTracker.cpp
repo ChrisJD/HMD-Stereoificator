@@ -86,7 +86,7 @@ void OculusTracker::updateOrientation()
 		deltaYaw += yaw - currentYaw;
 		deltaPitch += pitch - currentPitch;
 
-		// hack to avoid errors while translating over 360/0
+		// hack to avoid errors while translating over 360/0 
 		if(fabs(deltaYaw) > 4.0f) deltaYaw = 0.0f;
 		if(fabs(deltaPitch) > 4.0f) deltaPitch = 0.0f;
 
