@@ -70,14 +70,14 @@ void MotionTracker::updateOrientation()
 	{
 		newYaw = fmodf(newYaw, 360.0f);
 		newPitch = -fmodf(newPitch, 360.0f);
-
-		
+				
 		float yawChange = newYaw - currentYaw + leftoverYaw;
 		/// http://stackoverflow.com/questions/1878907/the-smallest-difference-between-2-angles
 		/// Change in angle as shortest signed angle
 		yawChange = fmodf((yawChange + 180.0f), 360.0f);
-		if (yawChange < 0)
-			yawChange = 360.0f - yawChange; // Handling negative numbers as fmodf not the correct type of modulus
+		if (yawChange < 0) {
+			yawChange = 360.0f + yawChange; // Handling negative numbers as fmodf not the correct type of modulus
+		}
 		yawChange -= 180.0f;
 		/// End Change in angle as shortest signed angle 
 
@@ -85,12 +85,12 @@ void MotionTracker::updateOrientation()
 		leftoverYaw = fmodf(yawChange, 1.0f); // left over that will remain after multiplier is applied and we have rounded to a whole number (mouse dx/dy are longs)
 		mouseData.mi.dx = round(yawChange - leftoverYaw); // amount to move (the leftover would be lost anyway so subtract it so we know exactly what is gonig on with rounding)
 		leftoverYaw /= multiplierYaw; // The left over to carry to the next update needs to be un-multiplied so divide by multiplier to get back to 
-
+		
 
 		float pitchChange = newPitch - currentPitch + leftoverPitch;
 		pitchChange = fmodf((pitchChange + 180.0f), 360.0f);
 		if (pitchChange < 0)
-			pitchChange = 360.0f - pitchChange;
+			pitchChange = 360.0f + pitchChange;
 		pitchChange -= 180.0f;
 
 		pitchChange *= multiplierPitch;
@@ -98,17 +98,7 @@ void MotionTracker::updateOrientation()
 		mouseData.mi.dy = round(pitchChange - leftoverPitch);
 		leftoverPitch /= multiplierPitch;
 		
-		
 
-
-		//mouseData.mi.dx = (long) yawChange;
-		//mouseData.mi.dy = (long) pitchChange;
-
-		// Keep fractional difference so it's added to the next update.
-		//leftoverYaw = ((float) mouseData.mi.dx) / multiplierYaw;
-		//leftoverPitch = ((float) mouseData.mi.dy) / multiplierPitch;
-		
-		//OutputDebugString("Motion Tracker SendInput\n");
 		SendInput(1, &mouseData, sizeof(INPUT));
 
 		currentYaw = newYaw;
