@@ -5,6 +5,7 @@ ALPHA quality software. Expect many bugs and problems. There are many things tha
 
 *** DO NOT USE ONLINE with any game that has cheat prevention (VAC, Punkbuster, any mmo, etc) since the driver could be detected as a hack which may get you banned. ***
 
+Nothing about this is plug and play, make sure you read the documentation. I repeat this software is NOT plug and play.
 See: https://github.com/ChrisJD/HMD-Stereoificator/wiki for the most up-to-date documentation.
 
 
@@ -20,8 +21,8 @@ A lot of the manual configuration of settings has been rendered unnecessary by u
 HOT-KEYS:
 ---------------------------------
 F2 / F3 : Adjust Separation. Hold shift to adjust 10x faster, hold ctrl to adjust 10x slower.
-F4 / F5 : Adjust HUD distance from player (Currently Source based games only)
-Ctrl-F4 / Ctrl-F5 - Adjust HUD Scale (Currently Source based games only) 
+F4 / F5 : Adjust HUD distance from player (only in some games)
+Ctrl-F4 / Ctrl-F5 - Adjust HUD Scale (only in some games) 
 
 F6 : Swap Eyes.
 
@@ -32,36 +33,4 @@ SHIFT + F8 / F9 : Adjust Pitch rate.
 CONTROL + F8 / F9 : Adjust Roll rate.
 
 
-
-
-Experimental Game support. (Hint, it's all experimental)
-Be sure to read the Wiki (https://github.com/ChrisJD/HMD-Stereoificator/wiki) for full configuration instructions.
----------------------------------
-If it isn't possbile for you to get the game world looking reasonable adjusting the settings please provide as descriptive a description of the problem as possible. Especially with regards to GRID, I have a feeling the car internals are getting scaled differently to the world but I can't pin down what's wrong looking at it on a monitor.
-
-EGO Engine:
-
-F1 2010
-Dirt 2	
-Dirt 3
-GRID
-
-UT3/UDK Engine:
-
-Mirror's Edge
-The Ball
-Borderlands
-Borderlands 2
-
-Source Engine (bug fixes for these are very low priority given how good valves support of vr in source has been, flashlights in l4d are far worse than Vireio):
-
-Half-Life 2 	
-Left4Dead	
-Left4Dead 2	
-Dear Esther	
-Portal
-Portal 2
-
-Other:
-
-AaaaAAAAA!!!!!	
+Supported Games (all experimental) https://github.com/ChrisJD/HMD-Stereoificator/wiki/Game-Configuration

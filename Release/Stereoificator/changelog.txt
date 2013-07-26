@@ -1,9 +1,27 @@
 Stereoificator Change Log.
 
+**Remember that if a game needs the d3d9.dll copied into its directory then you have to do that again if you install a new version of Stereoificator.**
+
+
+v0.02.0000a
+
+-Can copy over v0.01.0005a replacing old files. If you are using a version older than v0.01.0005a delete it before using this version.
+-Fixed a lot of the shadow and lighting issues in the Left 4 Dead games (and broke water reflections in the process, which is why the changes haven't been applied to any other source games).
+-Rift arrived! So I've gone through and setup default sensitivity settings that produce 1:1 tracking. The wiki documentation (https://github.com/ChrisJD/HMD-Stereoificator/wiki/Game-Configuration) has been updated with the game settings you should use with the updated profiles.
+-HUDs in Borderlands and Borderlands 2 are now scaleable so that they can be seen properly, they can also have their separation adjusted to provide apparent depth. Adjust separation with F4/F5 and scaling with ctrl-F4/ctrl-F5.
+-Fixed the dead zone in the tracking if you moved your head too slowly (how any one was using it with this I don't know, drove me crazy in 5 minutes).
+-Fixed the issue with the tracking that was limiting maximum turn speed.
+-Experimental support for forcing games to display on the Rift. This is disabled by default as it needs some work to make it a bit more user friendly. For instructions on how to use this feature see "forceAdapterNumber" in https://github.com/ChrisJD/HMD-Stereoificator/wiki/Config
+-Some debug stuff that hasn't been documented yet. Will be documented here (https://github.com/ChrisJD/HMD-Stereoificator/wiki/Debug-mode).
+-Fixed crash if Oculus Tracker selected but Rift not connected.
+-Changed auto-save behaviour to be time based rather than elapsed frame based (saves settings 3 seconds after last change made using controls rather than the 500 frames it was using).
+-A lot of 'under the hood' fixes and changes.
+-Added a couple of contributed profiles. https://github.com/ChrisJD/HMD-Stereoificator/wiki/Game-Configuration
+
+
 v0.01.0005a
 
 -Clean install needed, don't install over an existing install as xml layouts have changed significantly.
--Remember that if a game needs the d3d9.dll copied into its directory then you have to do that again if you install a new version of Stereoificator.
 -Moved a lot of the cfg options from profiles.xml into users.xml. users.xml will be generated the first time Stereoificator is run, it also shouldn't need to be overwritten in the future so user settings shouldn't get lost with each new version (no promises). Only a single user is currently supported.
 -Shift-F6 resets all user settings for the game you are playing to defaults.
 -HUD reprojection in Source (making the HUD float in 3D space). Adjust distance with F4/F5 and size with ctrl-F4/ctrl-F5. (Doesn't handle player names over characters in the l4d games properly.)
@@ -12,7 +30,6 @@ v0.01.0005a
 -Dishonored profile from: http://www.reddit.com/r/oculus/comments/1h3jcm/hmd_stereoificator_a_fork_of_vireio/cauq2e4
 -Changed default yaw and pitch multipliers for Dear Esther based on the same post.
 -Documentation updated to reflect changes https://github.com/ChrisJD/HMD-Stereoificator/wiki
-
 
 Controls added in this build:
 

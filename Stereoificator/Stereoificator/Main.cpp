@@ -185,7 +185,7 @@ public:
 		RegisterClass(&window_class);   
 		window_handle = CreateWindowEx(WS_EX_WINDOWEDGE | WS_EX_CLIENTEDGE,    
 			window_class_name,    
-			"HMD Stereoificator v0.01.0005a", 
+			"HMD Stereoificator v0.02.0000a", 
 			WS_OVERLAPPEDWINDOW & ~(WS_THICKFRAME | WS_MAXIMIZEBOX), 
 			//WS_OVERLAPPEDWINDOW | WS_CLIPCHILDREN | WS_CLIPSIBLINGS,   
 			(screen_width-482)/2, (screen_height-180)/2, 
