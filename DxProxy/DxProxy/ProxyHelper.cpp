@@ -383,129 +383,120 @@ bool ProxyHelper::SaveConfig2(int mode)
 }
 
 
-// currently only one user supported. More is realtively low priority because of the work involved in updating the gui
-bool ProxyHelper::LoadUserConfig(ProxyConfig& config, bool forceDefault)
+pugi::xml_attribute ProxyHelper::GetAttributeWithFallback(pugi::xml_node specificNode, pugi::xml_node defaultNode, pugi::char_t* attributeName)
 {
-	// get the user_profile
-	bool settingsFound = false;
-	char usersPath[512];
+	xml_attribute result;
 
-	if (forceDefault || !CheckUsersXml()) {
-		GetPath(usersPath, "cfg\\defaults.users.xml");
-		OutputDebugString(usersPath);
-		OutputDebugString("\n");
-	}
-	else {
-
-		GetPath(usersPath, "cfg\\users.xml");
-		OutputDebugString(usersPath);
-		OutputDebugString("\n");
+	if (specificNode) {
+		result = specificNode.attribute(attributeName);
 	}
 
-
-	xml_document docUsers;
-	xml_parse_result resultUsers;
-	xml_node gameSettings;
-
-	if (!forceDefault) {
-	
-		OutputDebugString("Attempting to load from users.xml\n");
-
-		resultUsers = docUsers.load_file(usersPath);	
-
-		if(resultUsers.status == status_ok)
-		{
-			xml_node user_profile = docUsers.child("users").child("user");
-
-			config.ipd = user_profile.attribute("ipd").as_float(IPD_DEFAULT);
-			stereoificator::clamp(&config.ipd, 0.01f, 0.1f); // 10mm to 100mm
-
-
-			gameSettings = user_profile.child("gamesettings");
-			for (xml_node settingsEntry = gameSettings.child("game"); settingsEntry; settingsEntry = settingsEntry.next_sibling("game"))
-			{
-				if( config.gameName.compare(settingsEntry.attribute("game_name").as_string()) == 0)
-				{
-					UserConfigFromNode(config, settingsEntry);
-
-					settingsFound = true;
-					OutputDebugString("User settings loaded from users.xml\n");
-					break;
-				}
-			}
-		}
+	if (!result && defaultNode) {
+		result = defaultNode.attribute(attributeName);
 	}
 
-
-	if (!settingsFound) {
-			
-		char defaultUsersPath[512];
-
-		OutputDebugString("Attempting to load from defaults.users.xml\n");
-		GetPath(defaultUsersPath, "cfg\\defaults.users.xml");
-		OutputDebugString(defaultUsersPath);
-		OutputDebugString("\n");
-
-		xml_document docDefaultUsers;
-		xml_parse_result resultDefaultUsers = docDefaultUsers.load_file(defaultUsersPath);	
-
-		if(resultDefaultUsers.status == status_ok)
-		{
-			xml_node defaultUserProfile = docDefaultUsers.child("users").child("user");
-			xml_node defaultGameSettings = defaultUserProfile.child("gamesettings");
-
-			for (xml_node settingsEntry = defaultGameSettings.child("game"); settingsEntry; settingsEntry = settingsEntry.next_sibling("game"))
-			{
-				if( config.gameName.compare(settingsEntry.attribute("game_name").as_string()) == 0)
-				{						
-					UserConfigFromNode(config, settingsEntry);
-					settingsFound = true;
-					OutputDebugString("User settings loaded from defaults.users.xml\n");
-
-					// If defaults being loaded as a fallback from normal load and If this entry doesn't exist in the existing users.xml, Copy the settings to users.xml and save it
-					if (!forceDefault && (gameSettings.type() != node_null) && (resultUsers.status == status_ok)) {
-						
-						gameSettings.append_copy(settingsEntry);
-						docUsers.save_file(usersPath);
-						OutputDebugString("User settings defaults copied to users.xml\n");
-					}
-				}
-			}
-		}
-	}
-
-
-	if (!settingsFound) {
-		OutputDebugString("Error loading user settings for game.\n");
-
-		// If we are trying to force a reset to defaults we fallback to using these hardcoded defaults
-		if (forceDefault) {
-			config.separationAdjustment = 0.0f;
-			config.swap_eyes = true;
-			config.yaw_multiplier = 25.0f;
-			config.pitch_multiplier = 25.0f;
-			config.roll_multiplier = 1.0f;
-			config.horizontalGameFov = 110.0f;
-
-			config.hudScale = 1.0f;
-			config.hudDistance= 1.0f;
-		}
-	}
-
-	return settingsFound;
+	return result;
 }
 
-void ProxyHelper::UserConfigFromNode(ProxyConfig& config, pugi::xml_node& userSettingsNode)
+bool ProxyHelper::GetUserAndGameNodes(pugi::char_t* userConfigPath, std::string gameName, pugi::xml_document& document, pugi::xml_node& user,  pugi::xml_node& game) 
 {
-	config.separationAdjustment = userSettingsNode.attribute("separationAdjustment").as_float(0.0f);
-	config.swap_eyes = userSettingsNode.attribute("swap_eyes").as_bool(true);
-	config.yaw_multiplier = userSettingsNode.attribute("yaw_multiplier").as_float(25.0f);
-	config.pitch_multiplier = userSettingsNode.attribute("pitch_multiplier").as_float(25.0f);
-	config.roll_multiplier = userSettingsNode.attribute("roll_multiplier").as_float(1.0f);
-	config.horizontalGameFov = userSettingsNode.attribute("horizontalFoV").as_float(110.0f);
+	bool fileParsedOK = false;
+	xml_parse_result resultUsers = document.load_file(userConfigPath);	
 
-	config.hudScale = userSettingsNode.attribute("hudScale").as_float(1.0f);
-	config.hudDistance= userSettingsNode.attribute("hudDistance").as_float(1.0f);
+	if(resultUsers.status == status_ok)
+	{
+		fileParsedOK = true;
+		user = document.child("users").child("user");
+
+		xml_node gameSettings = user.child("gamesettings");
+		for (xml_node settingsEntry = gameSettings.child("game"); settingsEntry; settingsEntry = settingsEntry.next_sibling("game"))
+		{
+			if(gameName.compare(settingsEntry.attribute("game_name").as_string()) == 0)
+			{
+				game = settingsEntry;
+				break;
+			}
+		}
+	}
+
+	return fileParsedOK;
+}
+
+
+// currently only one user supported. More is realtively low priority
+bool ProxyHelper::LoadUserConfig(ProxyConfig& config, bool forceDefault)
+{
+	bool usersFileParsedOK = false;
+
+	char usersPath[512];
+	char defaultUsersPath[512];
+
+	CheckUsersXml();
+
+	GetPath(defaultUsersPath, "cfg\\defaults.users.xml");
+	OutputDebugString(defaultUsersPath);
+	OutputDebugString("\n");
+	
+	GetPath(usersPath, "cfg\\users.xml");
+	OutputDebugString(usersPath);
+	OutputDebugString("\n");
+	
+
+	// Load the relevant nodes if they can be found
+	xml_document docUsers;
+	xml_node user;
+	xml_node userProfileForGame;
+
+	// if we are forcing defaults to load then don't load user specific settings
+	if (!forceDefault) {
+		OutputDebugString("Attempting to load from users.xml\n");
+
+		usersFileParsedOK = GetUserAndGameNodes(usersPath, config.gameName, docUsers, user, userProfileForGame);
+		
+		if (userProfileForGame)
+			OutputDebugString("User settings available.\n");
+	}
+	
+	// Load the relevant default nodes if they can be found
+	// Defaults are loaded in case any values are missing from normal user profile. If there are missing values we can attempt to load them from defaults.
+	xml_document docDefaultUsers;
+	xml_node defaultUser;
+	xml_node defaultUserProfileForGame;
+		
+	OutputDebugString("Attempting to load from users.defaults.xml\n");
+
+	GetUserAndGameNodes(defaultUsersPath, config.gameName, docDefaultUsers, defaultUser, defaultUserProfileForGame);
+		
+	if (userProfileForGame)
+		OutputDebugString("Default user settings available.\n");
+
+
+	// Load settings using user specific if available or defaults or hardcoded defaults if niether file can be loaded.
+	config.ipd = GetAttributeWithFallback(user, defaultUser, "ipd").as_float(IPD_DEFAULT);
+	UserConfigFromNode(config, userProfileForGame, defaultUserProfileForGame);
+
+	if (!userProfileForGame && !defaultUserProfileForGame) {
+		OutputDebugString("Error loading user settings for game. Hardcoded fallback values in use.\n");
+	}
+
+	// Not tracking whether settings were loaded from specific or defaults or mix. Easiest solution as to whether 
+	// the specific settings need resaving to reflect any mixed loading or not is to always try and save.
+	SaveUserConfig(config);
+
+	return true;
+}
+
+void ProxyHelper::UserConfigFromNode(ProxyConfig& config, pugi::xml_node& userSettingsNode, pugi::xml_node& defaultUserSettingsNode)
+{
+	config.separationAdjustment = GetAttributeWithFallback(userSettingsNode, defaultUserSettingsNode, "separationAdjustment").as_float(0.0f);
+	config.swap_eyes = GetAttributeWithFallback(userSettingsNode, defaultUserSettingsNode, "swap_eyes").as_bool(true);
+	config.yaw_multiplier = GetAttributeWithFallback(userSettingsNode, defaultUserSettingsNode, "yaw_multiplier").as_float(25.0f);
+	config.pitch_multiplier = GetAttributeWithFallback(userSettingsNode, defaultUserSettingsNode, "pitch_multiplier").as_float(25.0f);
+	config.roll_multiplier = GetAttributeWithFallback(userSettingsNode, defaultUserSettingsNode, "roll_multiplier").as_float(1.0f);
+	config.horizontalGameFov = GetAttributeWithFallback(userSettingsNode, defaultUserSettingsNode, "horizontalFoV").as_float(110.0f);
+
+	config.hudScale = GetAttributeWithFallback(userSettingsNode, defaultUserSettingsNode, "hudScale").as_float(1.0f);
+	config.hudDistance= GetAttributeWithFallback(userSettingsNode, defaultUserSettingsNode, "hudDistance").as_float(1.0f);
 		
 	if(config.yaw_multiplier <= 0.0f) config.yaw_multiplier = 25.0f;
 	if(config.pitch_multiplier <= 0.0f) config.pitch_multiplier = 25.0f;
@@ -546,7 +537,9 @@ bool ProxyHelper::SaveUserConfig(ProxyConfig& cfg)
 					settingsEntry.attribute("horizontalFoV") = cfg.horizontalGameFov;
 
 
-					
+					// force save of these values as they may have been loaded from defaults an not exist in an older user profile
+					// TODO better handling of this in general. Adding new values results in a need for behavious like this at the moment
+					// and this results in saving of values that might not be needed by a specific games profile.
 					if (!settingsEntry.attribute("hudScale")) {
 						settingsEntry.append_attribute("hudScale");
 					}

@@ -57,7 +57,7 @@ public:
 			hudScale(1.0f),
 			hudDistance(1.0f),
 			debugMode(0), // 0 == off
-			forceAdapterNumber(0), // 0 == D3DADAPTER_DEFAULT
+			forceAdapterNumber(-1), // -1 == disabled
 			duplicationRules(0) 
 		{}
 
@@ -114,7 +114,15 @@ public:
 	bool LoadUserConfig(ProxyConfig& config, bool forceDefault = false);
 
 private:
-	void UserConfigFromNode(ProxyConfig& cfg, pugi::xml_node& userSettingsNode);
+	// Loads user config from specified userSettings node. Uses defaultUserSettingsNode as a fallback if userSettings doesn't conain a value for an attribute. (and hardcoded fallback if neither are available)
+	void UserConfigFromNode(ProxyConfig& cfg, pugi::xml_node& userSettingsNode, pugi::xml_node& defaultUserSettingsNode);
+
+	// Loads attribute from specified node. Uses defaultNode as a fallback if specificNode doesn't contain the specified attribute.
+	pugi::xml_attribute GetAttributeWithFallback(pugi::xml_node specificNode, pugi::xml_node defaultNode, pugi::char_t* attributeName);
+
+	// Loads user and game nodes from a user config file for the specified game name.
+	// Returns true if document was parsed successfully. This value does not reflect whether the user or game nodes are valid.
+	bool GetUserAndGameNodes(pugi::char_t* userConfigPath, std::string gameName, pugi::xml_document& document, pugi::xml_node& user, pugi::xml_node& game);
 
 	bool SaveUserConfig(ProxyConfig& cfg);
 
