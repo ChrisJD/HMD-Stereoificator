@@ -55,6 +55,7 @@ D3DProxyDevice::D3DProxyDevice(IDirect3DDevice9* pDevice, BaseDirect3D9* pCreate
 	m_activeVertexBuffers(),
 	m_activeSwapChains(),
 	m_keyRepeatRate(0.15f), // 150ms
+	m_saveDelay(3.0f), // 1000ms
 	m_pDataGatherer(nullptr),
 	m_pRedPixelShader(nullptr),
 	m_redShaderIsActive(false),
@@ -109,7 +110,8 @@ D3DProxyDevice::D3DProxyDevice(IDirect3DDevice9* pDevice, BaseDirect3D9* pCreate
 	trackingOn = true;
 	SHOCT_mode = 0;
 
-	keyWait = false;
+	m_keyWait = false;
+	m_waitingToSave = false;
 
 	// should be false for published builds
 	// TODO Allow this to be turned on and off in cfg file along with vertex shader dumping and other debug/maintenance features.
@@ -434,6 +436,7 @@ void D3DProxyDevice::HandleControls()
 	//float keySpeed2 = 0.0005f;
 	float mouseSpeed = 0.25f;
 	float rollSpeed = 0.01f;
+	bool startSaveWait = false;
 
 	
 	if (worldScaleCalculationMode)
@@ -441,11 +444,8 @@ void D3DProxyDevice::HandleControls()
 
 
 
-	static int saveWaitCount = 0; 
-	saveWaitCount--;
-	static bool doSaveNext = false;
 
-	if (!keyWait) {
+	if (!m_keyWait) {
 		
 		if(KEY_DOWN(VK_NUMPAD0))
 		{
@@ -543,8 +543,7 @@ void D3DProxyDevice::HandleControls()
 			else
 				m_spShaderViewAdjustment->ChangeBasicAdjustment(ViewAdjustment::SEPARATION_ADJUSTMENT, -seperationChange);
 			
-			saveWaitCount = 500;
-			doSaveNext = true;
+			startSaveWait = true;
 			anyKeyPressed = true;
 		}
 
@@ -563,8 +562,7 @@ void D3DProxyDevice::HandleControls()
 			else
 				m_spShaderViewAdjustment->ChangeBasicAdjustment(ViewAdjustment::SEPARATION_ADJUSTMENT, seperationChange);
 			
-			saveWaitCount = 500;
-			doSaveNext = true;
+			startSaveWait = true;
 			anyKeyPressed = true;
 		}
 
@@ -583,8 +581,7 @@ void D3DProxyDevice::HandleControls()
 
 			m_spShaderViewAdjustment->RecalculateAll();
 			
-			saveWaitCount = 500;
-			doSaveNext = true;
+			startSaveWait = true;
 			anyKeyPressed = true;
 		}
 
@@ -601,8 +598,7 @@ void D3DProxyDevice::HandleControls()
 			
 			
 			
-			saveWaitCount = 500;
-			doSaveNext = true;
+			startSaveWait = true;
 			anyKeyPressed = true;
 		}
 
@@ -622,8 +618,7 @@ void D3DProxyDevice::HandleControls()
 			}
 			
 			
-			saveWaitCount = 500;
-			doSaveNext = true;
+			startSaveWait = true;
 			anyKeyPressed = true;
 		}
 
@@ -647,8 +642,7 @@ void D3DProxyDevice::HandleControls()
 				tracker->setMultipliers(config.yaw_multiplier, config.pitch_multiplier, config.roll_multiplier);
 			}
 
-			saveWaitCount = 500;
-			doSaveNext = true;
+			startSaveWait = true;
 			anyKeyPressed = true;
 		}
 		if(KEY_DOWN(VK_F9))
@@ -670,36 +664,44 @@ void D3DProxyDevice::HandleControls()
 			{
 				tracker->setMultipliers(config.yaw_multiplier, config.pitch_multiplier, config.roll_multiplier);
 			}
-			saveWaitCount = 500;
-			doSaveNext = true;
+			
+			startSaveWait = true;
 			anyKeyPressed = true;
 		}
 		
 		if (anyKeyPressed) {
-			startTime = clock();
-			keyWait = true;
+			m_startTime = clock();
+			m_keyWait = true;
+		}
+
+		if(startSaveWait)
+		{
+			m_saveDelayStartTime = clock();
+			m_waitingToSave = true;
 		}
 	}
 	else {
-		float elapseTimeSinceLastHandledKey = (float)(clock() - startTime) / CLOCKS_PER_SEC;
+		float elapseTimeSinceLastHandledKey = (float)(clock() - m_startTime) / CLOCKS_PER_SEC;
 		if (elapseTimeSinceLastHandledKey >= m_keyRepeatRate) {
-			keyWait = false;
+			m_keyWait = false;
 		}		
 	}
 	
-	
 
 
-
-	if(doSaveNext && saveWaitCount < 0)
-	{
-		doSaveNext = false;
-
-		config.swap_eyes = stereoView->swapEyes;
-		m_spShaderViewAdjustment->Save(config);
+	if (m_waitingToSave) {
 		
-		ProxyHelper helper;
-		helper.SaveConfig(config);
+		float elapseTimeSinceStartedWaitingToSave = (float)(clock() - m_saveDelayStartTime) / CLOCKS_PER_SEC;
+		if (elapseTimeSinceStartedWaitingToSave >= m_saveDelay) {
+
+			config.swap_eyes = stereoView->swapEyes;
+			m_spShaderViewAdjustment->Save(config);
+		
+			ProxyHelper helper;
+			helper.SaveConfig(config);
+
+			m_waitingToSave = false;
+		}
 	}
 
 }

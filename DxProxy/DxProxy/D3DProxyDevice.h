@@ -306,9 +306,13 @@ private:
 
 
 	const float m_keyRepeatRate;
-	clock_t startTime;
-	bool keyWait;
+	clock_t m_startTime;
+	bool m_keyWait;
 
+	const float m_saveDelay;
+	clock_t m_saveDelayStartTime;
+	bool m_waitingToSave;
+	
 	 
 	DataGatherer* m_pDataGatherer;
 
