@@ -30,17 +30,24 @@ OculusTracker::OculusTracker()
 
 	pHMD = *pManager->EnumerateDevices<HMDDevice>().CreateDevice();
 
-	pSensor = *pHMD->GetSensor();
+	if (pHMD) {
+		pSensor = *pHMD->GetSensor();
 	
-	if (pSensor)
-		SFusion.AttachToSensor(pSensor);
+		if (pSensor)
+			SFusion.AttachToSensor(pSensor);
 
-	OutputDebugString("OculusTracker Created\n");
+		OutputDebugString("OculusTracker Created\n");
+	}
+	else {
+		OutputDebugString("OculusTracker Not created, is the Rift's USB cable connected and the dev box powered?\n");
+	}
 }
 
 OculusTracker::~OculusTracker()
 {
-	pSensor.Clear();
+	if (pSensor)
+		pSensor.Clear();
+	
 	pManager.Clear();
 	System::Destroy();  // shutdown LibOVR
 }
