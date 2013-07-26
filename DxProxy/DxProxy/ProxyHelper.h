@@ -122,7 +122,7 @@ private:
 
 	// Loads user and game nodes from a user config file for the specified game name.
 	// Returns true if document was parsed successfully. This value does not reflect whether the user or game nodes are valid.
-	bool GetUserAndGameNodes(pugi::char_t* userConfigPath, std::string gameName, pugi::xml_document& document, pugi::xml_node& user, pugi::xml_node& game);
+	bool GetUserAndGameNodes(pugi::char_t* userConfigPath, std::string gameName, pugi::xml_document* document, pugi::xml_node& user, pugi::xml_node& game);
 
 	bool SaveUserConfig(ProxyConfig& cfg);
 

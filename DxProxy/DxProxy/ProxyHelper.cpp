@@ -398,15 +398,15 @@ pugi::xml_attribute ProxyHelper::GetAttributeWithFallback(pugi::xml_node specifi
 	return result;
 }
 
-bool ProxyHelper::GetUserAndGameNodes(pugi::char_t* userConfigPath, std::string gameName, pugi::xml_document& document, pugi::xml_node& user,  pugi::xml_node& game) 
+bool ProxyHelper::GetUserAndGameNodes(pugi::char_t* userConfigPath, std::string gameName, pugi::xml_document* document, pugi::xml_node& user,  pugi::xml_node& game) 
 {
 	bool fileParsedOK = false;
-	xml_parse_result resultUsers = document.load_file(userConfigPath);	
+	xml_parse_result resultUsers = document->load_file(userConfigPath);	
 
 	if(resultUsers.status == status_ok)
 	{
 		fileParsedOK = true;
-		user = document.child("users").child("user");
+		user = document->child("users").child("user");
 
 		xml_node gameSettings = user.child("gamesettings");
 		for (xml_node settingsEntry = gameSettings.child("game"); settingsEntry; settingsEntry = settingsEntry.next_sibling("game"))
@@ -451,7 +451,7 @@ bool ProxyHelper::LoadUserConfig(ProxyConfig& config, bool forceDefault)
 	if (!forceDefault) {
 		OutputDebugString("Attempting to load from users.xml\n");
 
-		usersFileParsedOK = GetUserAndGameNodes(usersPath, config.gameName, docUsers, user, userProfileForGame);
+		usersFileParsedOK = GetUserAndGameNodes(usersPath, config.gameName, &docUsers, user, userProfileForGame);
 		
 		if (userProfileForGame)
 			OutputDebugString("User settings available.\n");
@@ -465,9 +465,9 @@ bool ProxyHelper::LoadUserConfig(ProxyConfig& config, bool forceDefault)
 		
 	OutputDebugString("Attempting to load from users.defaults.xml\n");
 
-	GetUserAndGameNodes(defaultUsersPath, config.gameName, docDefaultUsers, defaultUser, defaultUserProfileForGame);
+	GetUserAndGameNodes(defaultUsersPath, config.gameName, &docDefaultUsers, defaultUser, defaultUserProfileForGame);
 		
-	if (userProfileForGame)
+	if (defaultUserProfileForGame)
 		OutputDebugString("Default user settings available.\n");
 
 
@@ -524,42 +524,65 @@ bool ProxyHelper::SaveUserConfig(ProxyConfig& cfg)
 
 			user_profile.attribute("ipd") = cfg.ipd;
 
+			// Find existing entry for this config if there is one (may not be if profile loaded from defaults).
 			xml_node gameSettings = user_profile.child("gamesettings");
-			for (xml_node settingsEntry = gameSettings.child("game"); settingsEntry; settingsEntry = settingsEntry.next_sibling("game"))
+			xml_node settingsEntry;
+			for (settingsEntry = gameSettings.child("game"); settingsEntry; settingsEntry = settingsEntry.next_sibling("game"))
 			{
 				if( cfg.gameName.compare(settingsEntry.attribute("game_name").as_string()) == 0)
 				{
-					settingsEntry.attribute("separationAdjustment") = cfg.separationAdjustment;
-					settingsEntry.attribute("swap_eyes") = cfg.swap_eyes;
-					settingsEntry.attribute("yaw_multiplier") = cfg.yaw_multiplier;
-					settingsEntry.attribute("pitch_multiplier") = cfg.pitch_multiplier;
-					settingsEntry.attribute("roll_multiplier") = cfg.roll_multiplier;
-					settingsEntry.attribute("horizontalFoV") = cfg.horizontalGameFov;
-
-
-					// force save of these values as they may have been loaded from defaults an not exist in an older user profile
-					// TODO better handling of this in general. Adding new values results in a need for behavious like this at the moment
-					// and this results in saving of values that might not be needed by a specific games profile.
-					if (!settingsEntry.attribute("hudScale")) {
-						settingsEntry.append_attribute("hudScale");
-					}
-					
-					settingsEntry.attribute("hudScale") = cfg.hudScale;
-					
-					
-					if (!settingsEntry.attribute("hudDistance")) {
-						settingsEntry.append_attribute("hudDistance");
-					}
-					
-					settingsEntry.attribute("hudDistance") = cfg.hudDistance;
-
-					OutputDebugString("Saving the user settings to users.xml!!!\n");
-					userProfiles.save_file(profilePath);
-					profileSaved = true;
-
+					//settings found
 					break;
 				}
 			}
+
+			if (!settingsEntry) {
+				// entry not found, create new
+				settingsEntry = gameSettings.append_child("game");
+
+				if (!settingsEntry) {
+					OutputDebugString("Failed to create new game entry in gamesettings of users.xml");
+				}
+
+				settingsEntry.append_attribute("game_name") = cfg.gameName.c_str();
+				settingsEntry.append_attribute("horizontalFoV");
+				settingsEntry.append_attribute("separationAdjustment");
+				settingsEntry.append_attribute("swap_eyes");
+				settingsEntry.append_attribute("yaw_multiplier");
+				settingsEntry.append_attribute("pitch_multiplier");
+				settingsEntry.append_attribute("roll_multiplier");
+				settingsEntry.append_attribute("hudScale");
+				settingsEntry.append_attribute("hudDistance");
+			}
+
+			if (settingsEntry) {
+				settingsEntry.attribute("separationAdjustment") = cfg.separationAdjustment;
+				settingsEntry.attribute("swap_eyes") = cfg.swap_eyes;
+				settingsEntry.attribute("yaw_multiplier") = cfg.yaw_multiplier;
+				settingsEntry.attribute("pitch_multiplier") = cfg.pitch_multiplier;
+				settingsEntry.attribute("roll_multiplier") = cfg.roll_multiplier;
+				settingsEntry.attribute("horizontalFoV") = cfg.horizontalGameFov;
+
+
+				// force save of these values as they may have been loaded from defaults an not exist in an older user profile
+				// TODO better handling of this in general. Adding new values results in a need for behavious like this at the moment
+				// and this results in saving of values that might not be needed by a specific games profile.
+				if (!settingsEntry.attribute("hudScale")) {
+					settingsEntry.append_attribute("hudScale");
+				}
+					
+				settingsEntry.attribute("hudScale") = cfg.hudScale;
+					
+					
+				if (!settingsEntry.attribute("hudDistance")) {
+					settingsEntry.append_attribute("hudDistance");
+				}
+					
+				settingsEntry.attribute("hudDistance") = cfg.hudDistance;
+			}
+
+			OutputDebugString("Saving the user settings to users.xml.\n");
+			profileSaved = userProfiles.save_file(profilePath);
 		}
 	}
 
