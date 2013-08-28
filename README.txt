@@ -1,4 +1,4 @@
-Get current binary downloads from: http://www.chrisdrain.com/hmd-stereoificator/
+Get current binary downloads from: http://stereoificator.com/
 
 ---------------------------------
 ////    HMD-Stereoificator, a fork of VIREIO PERCEPTION    ////
