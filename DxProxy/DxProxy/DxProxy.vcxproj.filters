@@ -1,10 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Main">
-      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
-      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
-    </Filter>
     <Filter Include="Proxy">
       <UniqueIdentifier>{80cc0ca4-7c65-4467-9166-d0e377de5737}</UniqueIdentifier>
     </Filter>
@@ -50,11 +46,11 @@
     <Filter Include="Direct3D9Stereoificator\Direct3DProxies\Direct3DTextures">
       <UniqueIdentifier>{7c1b5925-d5df-4200-b704-5db49ccbcd35}</UniqueIdentifier>
     </Filter>
+    <Filter Include="General">
+      <UniqueIdentifier>{1fa9bbb9-6388-4c87-a8e5-bca3f6a83917}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Main.cpp">
-      <Filter>Main</Filter>
-    </ClCompile>
     <ClCompile Include="ProxyHelper.cpp">
       <Filter>Proxy</Filter>
     </ClCompile>
@@ -196,11 +192,11 @@
     <ClCompile Include="DCEgoDefault.cpp">
       <Filter>Direct3D9Stereoificator\DuplicationConditions</Filter>
     </ClCompile>
+    <ClCompile Include="Main.cpp">
+      <Filter>General</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Exports.def">
-      <Filter>Main</Filter>
-    </None>
     <None Include="..\..\Release\Stereoificator\cfg\shader_rules\borderlands2.xml">
       <Filter>cfg\shader_rules</Filter>
     </None>
@@ -240,11 +236,11 @@
     <None Include="..\..\Release\Stereoificator\cfg\shader_rules\mirrorsedge.xml">
       <Filter>cfg\shader_rules</Filter>
     </None>
+    <None Include="Exports.def">
+      <Filter>General</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Main.h">
-      <Filter>Main</Filter>
-    </ClInclude>
     <ClInclude Include="ProxyHelper.h">
       <Filter>Proxy</Filter>
     </ClInclude>
@@ -433,6 +429,12 @@
     </ClInclude>
     <ClInclude Include="MatrixTransformHUD.h">
       <Filter>Direct3D9Stereoificator\ShaderConstantModification</Filter>
+    </ClInclude>
+    <ClInclude Include="Main.h">
+      <Filter>General</Filter>
+    </ClInclude>
+    <ClInclude Include="stereificator_log.h">
+      <Filter>General</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

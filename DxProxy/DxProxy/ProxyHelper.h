@@ -31,7 +31,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "pugixml.hpp"
 #include "Stereoificator.h"
 
-class ProxyHelper
+class __declspec(dllexport) ProxyHelper
 {
 public:
 	ProxyHelper();
