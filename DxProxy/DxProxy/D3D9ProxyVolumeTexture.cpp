@@ -23,7 +23,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 D3D9ProxyVolumeTexture::D3D9ProxyVolumeTexture(IDirect3DVolumeTexture9* pActualVolumeTexture, BaseDirect3DDevice9* pOwningDevice) :
 	BaseDirect3DVolumeTexture9(pActualVolumeTexture),
 	m_wrappedVolumeLevels(),
-	m_pOwningDevice(pOwningDevice)
+	m_pOwningDevice(pOwningDevice),
+	log(LogName::D3D9Log)
 {
 	assert (pOwningDevice != NULL);
 
@@ -104,18 +105,16 @@ HRESULT WINAPI D3D9ProxyVolumeTexture::GetVolumeLevel(UINT Level, IDirect3DVolum
 				// Failure to insert should not be possible. In this case we could still return the wrapped surface,
 				// however, if we did and it was requested again a new wrapped instance will be returned and things would explode
 				// at some point. Better to fail fast.
-				OutputDebugString(__FUNCTION__);
-				OutputDebugString("\n");
-				OutputDebugString("Unable to store surface level.\n");
+				LOG_CRIT(log, __FUNCTION__);
+				LOG_CRIT(log, "Unable to store surface level.");
 				assert(false);
 
 				finalResult = D3DERR_INVALIDCALL;
 			}
 		}
 		else { 
-			OutputDebugString(__FUNCTION__);
-			OutputDebugString("\n");
-			OutputDebugString("Error fetching actual surface level.\n");
+			LOG_ERROR(log, __FUNCTION__);
+			LOG_ERROR(log, "Error fetching actual surface level.");
 			finalResult = result;
 		}
 	}

@@ -19,6 +19,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef D3DPROXYSWAPCHAIN_H_INCLUDED
 #define D3DPROXYSWAPCHAIN_H_INCLUDED
 
+#include "global.h"
 #include <d3d9.h>
 #include <vector>
 #include "Direct3DSwapChain9.h"
@@ -47,6 +48,10 @@ private:
 	D3D9ProxySurface* m_pWrappedFrontBufferData;
 
 	std::vector<D3D9ProxySurface*> m_backBuffers;
+
+	Log::Logger log;
+
+
 };
 
 #endif

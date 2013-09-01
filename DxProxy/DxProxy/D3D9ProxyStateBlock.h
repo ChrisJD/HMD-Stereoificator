@@ -19,6 +19,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef D3D9PROXYSTATEBLOCK_H_INCLUDED
 #define D3D9PROXYSTATEBLOCK_H_INCLUDED
 
+#include "global.h"
 #include <d3d9.h>
 #include <d3dx9.h>
 #include "D3DProxyDevice.h"
@@ -118,6 +119,9 @@ public:
 	void EndStateBlock(IDirect3DStateBlock9* pActualStateBlock);
 
 private:
+
+	Log::Logger log;
+
 	void CaptureSelectedFromProxyDevice();
 	void Capture(CaptureableState toCap);
 

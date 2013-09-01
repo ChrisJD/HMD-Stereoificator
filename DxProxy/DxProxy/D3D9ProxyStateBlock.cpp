@@ -31,7 +31,8 @@ D3D9ProxyStateBlock::D3D9ProxyStateBlock(IDirect3DStateBlock9* pActualStateBlock
 	m_selectedVertexStreams(),
 	m_storedSelectedRegistersF(),
 	m_storedAllRegistersF(),
-	m_selectedVertexConstantRegistersF()
+	m_selectedVertexConstantRegistersF(),
+	log(LogName::D3D9Log)
 {
 	assert (pOwningDevice != NULL);
 
@@ -85,7 +86,7 @@ D3D9ProxyStateBlock::D3D9ProxyStateBlock(IDirect3DStateBlock9* pActualStateBlock
 
 		default:
 		{
-			OutputDebugString("Unhandled stateblock capture mode\n");
+			LOG_WARN(log, "Unhandled stateblock capture mode.");
 			break;
 		}
 	}
@@ -127,7 +128,7 @@ D3D9ProxyStateBlock::CaptureSides D3D9ProxyStateBlock::CapSideFrom(stereoificato
 		break;
 
 	default:
-		OutputDebugString("D3D9ProxyStateBlock() - Unhandled render position");
+		LOG_WARN(log, "D3D9ProxyStateBlock() - Unhandled render position.");
 		result = SidesMixed;
 		break;
 	}
@@ -288,7 +289,7 @@ void D3D9ProxyStateBlock::CaptureSelectedFromProxyDevice()
 						inserted.first->second->AddRef();
 					}
 					else { // insertfailed
-						//OutputDebugString("Texture sampler capture to StateBlock failed");
+						//LOG_WARN(log, "Texture sampler capture to StateBlock failed.");
 						//TODO aaaaa why does this get spammed
 					}
 				}
@@ -308,7 +309,7 @@ void D3D9ProxyStateBlock::CaptureSelectedFromProxyDevice()
 						inserted.first->second->AddRef();
 					}
 					else { // insertfailed
-						OutputDebugString("Vertex buffer capture to StateBlock failed");
+						LOG_WARN(log, "Vertex buffer capture to StateBlock failed");
 					}
 				}
 
@@ -334,7 +335,7 @@ void D3D9ProxyStateBlock::CaptureSelectedFromProxyDevice()
 
 		default:
 		{
-			OutputDebugString("Unhandled stateblock capture mode\n");
+			LOG_WARN(log, "Unhandled stateblock capture mode.");
 			break;
 		}
 	}
@@ -408,7 +409,7 @@ void D3D9ProxyStateBlock::Capture(CaptureableState toCap)
 
 		default:
 		{
-			OutputDebugString("SelectAndCaptureState: Unknown CaptureableState in ProxyStateBlock\n");
+			LOG_WARN(log, "SelectAndCaptureState: Unknown CaptureableState in ProxyStateBlock");
 			break;
 		}
 	}
@@ -504,7 +505,7 @@ void D3D9ProxyStateBlock::Apply(CaptureableState toApply, bool reApplyStereo)
 
 		default:
 		{
-			OutputDebugString("SelectAndCaptureState: Unknown CaptureableState in ProxyStateBlock\n");
+			LOG_WARN(log, "SelectAndCaptureState: Unknown CaptureableState in ProxyStateBlock.");
 			break;
 		}
 	}

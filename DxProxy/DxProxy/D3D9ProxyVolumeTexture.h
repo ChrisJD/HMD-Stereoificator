@@ -19,6 +19,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef D3D9PROXYVOLUMETEXTURE_H_INCLUDED
 #define D3D9PROXYVOLUMETEXTURE_H_INCLUDED
 
+#include "global.h"
 #include <d3d9.h>
 #include <unordered_map>
 #include "Direct3DVolumeTexture9.h"
@@ -52,6 +53,12 @@ protected:
 	/* Wrapped Volume levels */
 	std::unordered_map<UINT, D3D9ProxyVolume*> m_wrappedVolumeLevels; 
 	BaseDirect3DDevice9* const m_pOwningDevice;
+
+
+private:
+	Log::Logger log;
+
+
 };
 
 #endif

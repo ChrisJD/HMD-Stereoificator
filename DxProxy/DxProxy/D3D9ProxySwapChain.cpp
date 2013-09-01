@@ -21,7 +21,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 D3D9ProxySwapChain::D3D9ProxySwapChain(IDirect3DSwapChain9* pActualSwapChain, D3DProxyDevice* pWrappedOwningDevice, bool isAdditionalChain) : 
 		BaseDirect3DSwapChain9(pActualSwapChain, pWrappedOwningDevice, isAdditionalChain),
-		m_backBuffers()
+		m_backBuffers(),
+		log(LogName::D3D9Log)
 {
 	// Get creation parameters for backbuffers.
 	D3DPRESENT_PARAMETERS params;
@@ -51,9 +52,7 @@ D3D9ProxySwapChain::D3D9ProxySwapChain(IDirect3DSwapChain9* pActualSwapChain, D3
 void releaseCheckO(char* object, int newRefCount)
 {
 	if (newRefCount > 0) {
-		char buf[128];
-		sprintf_s(buf, "Error: %s count = %d\n", object, newRefCount);
-		OutputDebugString(buf);
+		LOG_DEBUG(log, "Release ref count for '" << object << "' = " << newRefCount);
 	}
 }
 
@@ -78,10 +77,7 @@ D3D9ProxySwapChain::~D3D9ProxySwapChain()
 
 HRESULT WINAPI D3D9ProxySwapChain::Present(CONST RECT* pSourceRect, CONST RECT* pDestRect, HWND hDestWindowOverride, CONST RGNDATA* pDirtyRegion, DWORD dwFlags)
 {
-#ifdef _DEBUG
-	OutputDebugString(__FUNCTION__);
-	OutputDebugString("\n");
-#endif;
+	LOG_DEBUG(log, __FUNCTION__);
 
 	// Test only, StereoView needs to be properly integrated as part of SwapChain.
 	// This test allowed deus ex menus and videos to work correctly. Lots of model rendering issues in game though
@@ -98,7 +94,7 @@ HRESULT WINAPI D3D9ProxySwapChain::Present(CONST RECT* pSourceRect, CONST RECT* 
 		pWrappedBackBuffer->Release();
 	}
 	catch (std::out_of_range) {
-		OutputDebugString("Present: No primary swap chain found. (Present probably called before device has been reset)");
+		LOG_ERROR(log, "Present: No primary swap chain found. (Present probably called before device has been reset).");
 	}
 
 
@@ -119,13 +115,13 @@ HRESULT WINAPI D3D9ProxySwapChain::GetFrontBufferData(IDirect3DSurface9* pDestSu
 		if (SUCCEEDED(result) && pWrappedDestSurface->getActualRight()) {
 
 			if (FAILED(m_pActualSwapChain->GetFrontBufferData(pWrappedDestSurface->getActualRight()))) {
-				OutputDebugString("SwapChain::GetFrontBufferData; right problem - left ok\n");
+				LOG_WARN(log, "SwapChain::GetFrontBufferData; right problem - left ok.");
 			}
 		}
 	}
 	
 	// TODO Might be able to use a frame delayed backbuffer (copy last back buffer?) to get proper left/right images. Much pondering required, and some testing
-	OutputDebugString("SwapChain::GetFrontBufferData; Caution Will Robinson. The result of this method at the moment is wrapped surfaces containing what the user would see on a monitor. Example: A side-by-side warped image for the rift in the left and right surfaces of the output surface.\n");
+	LOG_WARN(log, "SwapChain::GetFrontBufferData; Caution Will Robinson. The result of this method at the moment is wrapped surfaces containing what the user would see on a monitor. Example: A side-by-side warped image for the rift in the left and right surfaces of the output surface.");
 	return result;
 }
 
