@@ -271,7 +271,7 @@ std::map<UINT, StereoShaderConstant<float>> ShaderModificationRepository::GetMod
 		}
 	}
 
-	_SAFE_RELEASE(pConstantTable);
+	SAFE_RELEASE(pConstantTable);
 	if (pData) delete[] pData;
 
 	return result;

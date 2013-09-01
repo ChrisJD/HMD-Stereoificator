@@ -16,12 +16,17 @@ You should have received a copy of the GNU Lesser General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ********************************************************************/
 
-#ifndef STEREOIFICATOR_LOG_H_INCLUDED
-#define STEREOIFICATOR_LOG_H_INCLUDED
+#ifndef GLOBAL_H_INCLUDED
+#define GLOBAL_H_INCLUDED
 
 
-#define GLOG_NO_ABBREVIATED_SEVERITIES
-#include <glog/logging.h>
+#define SAFE_RELEASE(x) if(x) { x->Release(); x = NULL; } 
+
+#include "src/LoggerCpp.h"
+
+
+//extern const char* SteroificatorD3D9Log;
+//extern Log::Logger logs;
 
 
 

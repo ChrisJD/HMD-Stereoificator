@@ -129,7 +129,7 @@ void DataGatherer::OnCreateVertexShader(D3D9ProxyVertexShader* pWrappedShader)
 		// else shader already recorded
 	}
 
-	_SAFE_RELEASE(pConstantTable);
+	SAFE_RELEASE(pConstantTable);
 	if (pData) delete[] pData;
 }
 

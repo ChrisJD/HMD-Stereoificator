@@ -90,7 +90,7 @@ std::vector<float> ShaderRegisters::GetAllConstantRegistersF()
 
 void ShaderRegisters::SetFromStateBlockData(std::map<UINT, D3DXVECTOR4> * storedRegisters, D3D9ProxyVertexShader* storedShader)
 {
-	_SAFE_RELEASE(m_pActiveVertexShader);
+	SAFE_RELEASE(m_pActiveVertexShader);
 	m_pActiveVertexShader = storedShader;
 	if (m_pActiveVertexShader)
 		m_pActiveVertexShader->AddRef();
@@ -148,7 +148,7 @@ void ShaderRegisters::SetFromStateBlockData(std::vector<float> * storedRegisters
 	// Data should match registers that are already on device (unless it's stereo in which case it might not, that is handled next)
 	m_dirtyRegistersF.clear();
 
-	_SAFE_RELEASE(m_pActiveVertexShader);
+	SAFE_RELEASE(m_pActiveVertexShader);
 	m_pActiveVertexShader = storedShader;
 	if (m_pActiveVertexShader)
 		m_pActiveVertexShader->AddRef();
@@ -334,7 +334,7 @@ void ShaderRegisters::ActiveVertexShaderChanged(D3D9ProxyVertexShader* pNewVerte
 
 	}
 	
-	_SAFE_RELEASE(m_pActiveVertexShader);
+	SAFE_RELEASE(m_pActiveVertexShader);
 	m_pActiveVertexShader = pNewVertexShader;
 	if (m_pActiveVertexShader)
 		m_pActiveVertexShader->AddRef();

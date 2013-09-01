@@ -195,6 +195,9 @@
     <ClCompile Include="Main.cpp">
       <Filter>General</Filter>
     </ClCompile>
+    <ClCompile Include="global.cpp">
+      <Filter>General</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Release\Stereoificator\cfg\shader_rules\borderlands2.xml">
@@ -433,7 +436,7 @@
     <ClInclude Include="Main.h">
       <Filter>General</Filter>
     </ClInclude>
-    <ClInclude Include="stereificator_log.h">
+    <ClInclude Include="global.h">
       <Filter>General</Filter>
     </ClInclude>
   </ItemGroup>

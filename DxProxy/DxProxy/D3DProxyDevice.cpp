@@ -69,6 +69,8 @@ D3DProxyDevice::D3DProxyDevice(IDirect3DDevice9* pDevice, BaseDirect3D9* pCreate
 	m_spShaderViewAdjustment = std::make_shared<ViewAdjustment>(defaultInfo, 1.0f, false);
 
 
+
+
 	// Check the maximum number of supported render targets
 	D3DCAPS9 capabilities;
 	BaseDirect3DDevice9::GetDeviceCaps(&capabilities);
@@ -287,7 +289,7 @@ void D3DProxyDevice::OnCreateOrRestore()
 			if (FAILED(CreatePixelShader((DWORD*)memblock, &pPShader))) {
 
 				OutputDebugString("MakeItRed, Create shader failed.\n");
-				_SAFE_RELEASE(pPShader);
+				SAFE_RELEASE(pPShader);
 			}
 			else {
 				m_pRedPixelShader = static_cast<BaseDirect3DPixelShader9*>(pPShader);
@@ -318,13 +320,13 @@ void D3DProxyDevice::OnCreateOrRestore()
 void D3DProxyDevice::ReleaseEverything()
 {
 	// Fonts and any othe D3DX interfaces should be released first.
-	_SAFE_RELEASE(hudFont);
-	_SAFE_RELEASE(m_pRedPixelShader);
+	SAFE_RELEASE(hudFont);
+	SAFE_RELEASE(m_pRedPixelShader);
 
 	
 	m_spManagedShaderRegisters->ReleaseResources();
 
-	_SAFE_RELEASE(m_pCapturingStateTo);
+	SAFE_RELEASE(m_pCapturingStateTo);
 
 	// one of these will still have a count of 1 until the backbuffer is released
 	for(std::vector<D3D9ProxySurface*>::size_type i = 0; i != m_activeRenderTargets.size(); i++) 
@@ -354,11 +356,11 @@ void D3DProxyDevice::ReleaseEverything()
 	}
 
 
-	_SAFE_RELEASE(m_pActiveStereoDepthStencil);
-	_SAFE_RELEASE(m_pActiveIndicies);
-	_SAFE_RELEASE(m_pActivePixelShader);
-	_SAFE_RELEASE(m_pActiveVertexShader);
-	_SAFE_RELEASE(m_pActiveVertexDeclaration);
+	SAFE_RELEASE(m_pActiveStereoDepthStencil);
+	SAFE_RELEASE(m_pActiveIndicies);
+	SAFE_RELEASE(m_pActivePixelShader);
+	SAFE_RELEASE(m_pActiveVertexShader);
+	SAFE_RELEASE(m_pActiveVertexDeclaration);
 }
 
 

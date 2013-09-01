@@ -23,6 +23,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <d3d9.h>
 #include <stdio.h>
 
+
 // Function pointer trypedefs
 typedef IDirect3D9* (WINAPI *LPDirect3DCreate9)(UINT nSDKVersion);
 
@@ -34,10 +35,14 @@ typedef BOOL (WINAPI *LPD3DPERF_QueryRepeatFrame)( void );
 typedef void (WINAPI *LPD3DPERF_SetOptions)( DWORD dwOptions );
 typedef DWORD (WINAPI *LPD3DPERF_GetStatus)( void );
 
+
+
+
 // Globals from d3d9.dll
 HMODULE g_hDll = NULL;
 LPDirect3DCreate9 g_pfnDirect3DCreate9 = NULL;
 
+// TODO Do the perf methods really need to be hooked?
 LPD3DPERF_BeginEvent g_pfnD3DPERF_BeginEvent = NULL;
 LPD3DPERF_EndEvent g_pfnD3DPERF_EndEvent = NULL;
 LPD3DPERF_SetMarker g_pfnD3DPERF_SetMarker = NULL;
@@ -80,10 +85,44 @@ static bool LoadDll()
 	return true;
 }
 
+
+
+
 IDirect3D9* WINAPI Direct3DCreate9(UINT nSDKVersion)
 {
-	// Log
-	Log("Direct3DCreate9(%d)\n", nSDKVersion);
+	// Log setup
+	Log::Logger logs("Stereoificator.D3D9");
+
+	Log::Config::Vector configList;
+    Log::Config::addOutput(configList, "OutputFile");
+    Log::Config::setOption(configList, "filename",          "Stereoificator.D3D9.log");
+    Log::Config::setOption(configList, "filename_old",      "Stereoificator.D3D9.previous.log");
+    Log::Config::setOption(configList, "max_startup_size",  "0");				// always start new file at startup
+    Log::Config::setOption(configList, "max_size",          "100000");			// 10MB
+	
+	Log::Config::addOutput(configList, "OutputDebug"); //TODO remove me
+
+#ifdef _DEBUG
+	Log::Config::addOutput(configList, "OutputConsole");
+	Log::Config::addOutput(configList, "OutputDebug");
+	logs.setLevel(Log::Log::eDebug);
+#else
+	logs.setLevel(Log::Log::eInfo);
+#endif
+	
+	try
+    {
+        // Configure the Log Manager (create the Output objects)
+        Log::Manager::configure(configList);
+    }
+    catch (std::exception& e)
+    {
+        std::cerr << e.what();
+		OutputDebugString("Log Configure Failed");
+    }
+
+	logs.notice() << "Direct3DCreate9" <<  nSDKVersion;
+	
 
 	// Load DLL
 	if(!LoadDll())
@@ -133,26 +172,4 @@ void WINAPI D3DPERF_SetOptions( DWORD dwOptions )
 DWORD WINAPI D3DPERF_GetStatus( void )
 {
 	return g_pfnD3DPERF_GetStatus();
-}
-
-void Log(const char* szFormat, ...)
-{
-	char szBuff[1024];
-	va_list arg;
-	va_start(arg, szFormat);
-	_vsnprintf(szBuff, sizeof(szBuff), szFormat, arg);
-	va_end(arg);
-
-	static FILE* pFile = NULL;
-	if(!pFile)
-		pFile = fopen("C:/D3D9Proxy.log", "w");
-
-	OutputDebugString(szBuff);
-	OutputDebugString("\n");
-	if(pFile) {
-		fwrite(szBuff, 1, strlen(szBuff), pFile);
-		fflush(pFile);
-	} else {
-		OutputDebugString("Couldn't open log file for writing.\n");
-	}
 }

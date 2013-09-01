@@ -61,11 +61,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "ShaderRegisters.h"
 #include "ViewAdjustment.h"
 #include "ShaderModificationRepository.h"
+#include "global.h"
 
 
 
 
-#define _SAFE_RELEASE(x) if(x) { x->Release(); x = NULL; } 
+
 
 class StereoView;
 class D3D9ProxySwapChain;

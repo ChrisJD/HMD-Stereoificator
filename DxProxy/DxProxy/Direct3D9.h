@@ -21,7 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <d3d9.h>
 #include "ProxyHelper.h"
-
+#include "src/LoggerCpp.h"
 
 
 class __declspec(dllexport) BaseDirect3D9 : public IDirect3D9
@@ -62,6 +62,8 @@ public:
 private:
 	IDirect3D9* m_pD3D;
 	ULONG m_nRefCount;
+
+	//Log::Logger log;
 };
 
 #endif

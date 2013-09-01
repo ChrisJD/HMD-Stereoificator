@@ -1,0 +1,3 @@
+[submodule "LoggerCPP"]
+	path = LoggerCPP
+	url = https://github.com/ChrisJD/LoggerCpp.git

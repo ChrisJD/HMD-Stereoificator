@@ -199,6 +199,7 @@ public:
 		combobox = new combobox_control(instance_handle, window_handle, text, 20, 81, 1001);
 		combobox2 = new combobox_control(instance_handle, window_handle, text, 20, 115, 1002);
 
+
 		char viewPath[512];
 		ProxyHelper helper = ProxyHelper();
 		helper.GetPath(viewPath, "img\\logo.bmp");
@@ -329,21 +330,8 @@ int WINAPI wWinMain(HINSTANCE instance_handle, HINSTANCE, LPWSTR, INT) {
 	InstallHook();
 
     frame_window main_window("stereoification");
-    //main_window.add_item("Disabled\t0");
-    //main_window.add_item("DIY Rift\t25");
     main_window.add_item("Oculus Rift\t26");
-    //main_window.add_item("Oculus Rift Cropped\t27");
 	main_window.add_item("Side by Side\t20");
-	/*main_window.add_item("Over Under\t30");
-	main_window.add_item("Horizontal Interleave\t40");
-	main_window.add_item("Vertical Interleave\t50");
-	main_window.add_item("Checkerboard\t60");
-	main_window.add_item("Anaglyph (Red/Cyan)\t1");
-	main_window.add_item("Anaglyph (Red/Cyan) B+W\t2");
-	main_window.add_item("Anaglyph (Yellow/Blue)\t5");
-	main_window.add_item("Anaglyph (Yellow/Blue) B+W\t6");
-	main_window.add_item("Anaglyph (Green/Magenta)\t10");
-	main_window.add_item("Anaglyph (Green/Magenta) B+W\t11");*/
 
 	main_window.add_item2("No Tracking\t0");
 	main_window.add_item2("Hillcrest Labs\t10");

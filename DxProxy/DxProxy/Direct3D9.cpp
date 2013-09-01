@@ -25,6 +25,7 @@ BaseDirect3D9::BaseDirect3D9(IDirect3D9* pD3D) :
 	m_pD3D(pD3D),
 	m_nRefCount(1)
 {
+	
 }
 
 BaseDirect3D9::~BaseDirect3D9()
