@@ -21,7 +21,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <d3d9.h>
 #include "ProxyHelper.h"
-#include "src/LoggerCpp.h"
 #include "global.h"
 
 

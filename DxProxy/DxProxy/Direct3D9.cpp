@@ -146,7 +146,7 @@ HRESULT WINAPI BaseDirect3D9::CreateDevice(UINT Adapter, D3DDEVTYPE DeviceType, 
 	bool stereoificatorCfgLoaded = helper.LoadConfig(cfg);
 
 	if (cfg.forceAdapterNumber >= (int)GetAdapterCount()) {
-		log.error() << "forceAdapterNumber outside of range of valid adapters. Using primary Adapter instead.";
+		LOG_ERROR(log, "forceAdapterNumber outside of range of valid adapters. Using primary Adapter instead.");
 	}
 
 	// Create real interface
@@ -155,22 +155,22 @@ HRESULT WINAPI BaseDirect3D9::CreateDevice(UINT Adapter, D3DDEVTYPE DeviceType, 
 	if(FAILED(hResult))
 		return hResult;
 
-	log.notice() << "Actual D3D Device created";
-	log.notice() << "Number of back buffers = " << pPresentationParameters->BackBufferCount;
+	LOG_NOTICE(log, "Actual D3D Device created");
+	LOG_NOTICE(log, "Number of back buffers = " << pPresentationParameters->BackBufferCount);
 	
 	if(!stereoificatorCfgLoaded) {
-		log.critic() << "Config loading failed, config could not be loaded. Returning normal D3DDevice. Stereoificator will not be active.";
+		LOG_CRIT(log, "Config loading failed, config could not be loaded. Returning normal D3DDevice. Stereoificator will not be active.");
 		return hResult;
 	}
 
-	log.notice() << "Config loading - OK";
-	log.notice() <<  "Config type: " << cfg.game_type;
+	LOG_NOTICE(log, "Config loading - OK");
+	LOG_NOTICE(log, "Config type: " << cfg.game_type);
 
 	// Create and return proxy
 	D3DProxyDevice* newDev = new D3DProxyDevice(*ppReturnedDeviceInterface, this, cfg);
 	*ppReturnedDeviceInterface = newDev;
 
-	log.notice() << "[OK] Stereoificator D3D device created.";
+	LOG_NOTICE(log, "[OK] Stereoificator D3D device created.");
 
 	return hResult;
 }

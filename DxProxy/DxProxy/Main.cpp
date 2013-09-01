@@ -121,8 +121,8 @@ IDirect3D9* WINAPI Direct3DCreate9(UINT nSDKVersion)
 		OutputDebugString("Log configuration failed");
     }
 
-	logs.notice() << "Stereoificator D3D9 log successfully initialized.";
-	logs.notice() << "Direct3DCreate9(" <<  nSDKVersion << ")";
+	LOG_NOTICE(logs, "Stereoificator D3D9 log successfully initialized.");
+	LOG_NOTICE(logs, "Direct3DCreate9(" <<  nSDKVersion << ")");
 	
 
 	// Load DLL
