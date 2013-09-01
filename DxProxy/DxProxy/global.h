@@ -22,7 +22,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #define SAFE_RELEASE(x) if(x) { x->Release(); x = NULL; } 
 
-#include "src/LoggerCpp.h"
+namespace LogName {
+	
+	const char * const D3D9Log = "Stereoificator.D3D9";
+
+}
+
 
 
 //extern const char* SteroificatorD3D9Log;

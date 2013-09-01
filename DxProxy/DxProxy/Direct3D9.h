@@ -22,6 +22,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <d3d9.h>
 #include "ProxyHelper.h"
 #include "src/LoggerCpp.h"
+#include "global.h"
+
 
 
 class __declspec(dllexport) BaseDirect3D9 : public IDirect3D9
@@ -63,7 +65,11 @@ private:
 	IDirect3D9* m_pD3D;
 	ULONG m_nRefCount;
 
-	//Log::Logger log;
+#pragma warning( push )
+#pragma warning( disable : 4251 ) //class 'Log::Logger' needs to have dll-interface to be used by clients of class 'BaseDirect3D9'. Logger is never exposed to callers so ignoring warning
+	Log::Logger log;
+#pragma warning( pop ) 
 };
+
 
 #endif

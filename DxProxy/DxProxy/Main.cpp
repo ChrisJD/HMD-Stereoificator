@@ -17,6 +17,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ********************************************************************/
 
 #define _CRT_SECURE_NO_WARNINGS
+#include "global.h"
 #include "Main.h"
 #include "Direct3D9.h"
 #include <windows.h>
@@ -37,7 +38,6 @@ typedef DWORD (WINAPI *LPD3DPERF_GetStatus)( void );
 
 
 
-
 // Globals from d3d9.dll
 HMODULE g_hDll = NULL;
 LPDirect3DCreate9 g_pfnDirect3DCreate9 = NULL;
@@ -51,7 +51,7 @@ LPD3DPERF_QueryRepeatFrame g_pfnD3DPERF_QueryRepeatFrame = NULL;
 LPD3DPERF_SetOptions g_pfnD3DPERF_SetOptions = NULL;
 LPD3DPERF_GetStatus g_pfnD3DPERF_GetStatus = NULL;
 
-static bool LoadDll()
+static bool LoadDll(const Log::Logger& logs)
 {
 	if(g_hDll)
 		return true;
@@ -91,7 +91,7 @@ static bool LoadDll()
 IDirect3D9* WINAPI Direct3DCreate9(UINT nSDKVersion)
 {
 	// Log setup
-	Log::Logger logs("Stereoificator.D3D9");
+	Log::Logger logs(LogName::D3D9Log); // use this name in other classes to get access to the same log channel (from the log manager or by specifying the same name in constructor)
 
 	Log::Config::Vector configList;
     Log::Config::addOutput(configList, "OutputFile");
@@ -118,14 +118,15 @@ IDirect3D9* WINAPI Direct3DCreate9(UINT nSDKVersion)
     catch (std::exception& e)
     {
         std::cerr << e.what();
-		OutputDebugString("Log Configure Failed");
+		OutputDebugString("Log configuration failed");
     }
 
-	logs.notice() << "Direct3DCreate9" <<  nSDKVersion;
+	logs.notice() << "Stereoificator D3D9 log successfully initialized.";
+	logs.notice() << "Direct3DCreate9(" <<  nSDKVersion << ")";
 	
 
 	// Load DLL
-	if(!LoadDll())
+	if(!LoadDll(logs))
 		return NULL;
 
 	// Create real interface

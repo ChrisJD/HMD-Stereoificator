@@ -23,7 +23,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 BaseDirect3D9::BaseDirect3D9(IDirect3D9* pD3D) :
 	m_pD3D(pD3D),
-	m_nRefCount(1)
+	m_nRefCount(1),
+	log(LogName::D3D9Log)
 {
 	
 }
@@ -145,7 +146,7 @@ HRESULT WINAPI BaseDirect3D9::CreateDevice(UINT Adapter, D3DDEVTYPE DeviceType, 
 	bool stereoificatorCfgLoaded = helper.LoadConfig(cfg);
 
 	if (cfg.forceAdapterNumber >= (int)GetAdapterCount()) {
-		OutputDebugString("[ERR] forceAdapterNumber outside of range of valid adapters. Using original Adapter instead.\n");
+		log.error() << "forceAdapterNumber outside of range of valid adapters. Using primary Adapter instead.";
 	}
 
 	// Create real interface
@@ -154,35 +155,22 @@ HRESULT WINAPI BaseDirect3D9::CreateDevice(UINT Adapter, D3DDEVTYPE DeviceType, 
 	if(FAILED(hResult))
 		return hResult;
 
-	OutputDebugString("[OK] Normal D3D device created\n");
-
-	char buf[64];
-	sprintf_s(buf, "Number of back buffers = %d\n", pPresentationParameters->BackBufferCount);
-	OutputDebugString(buf);
-
+	log.notice() << "Actual D3D Device created";
+	log.notice() << "Number of back buffers = " << pPresentationParameters->BackBufferCount;
 	
 	if(!stereoificatorCfgLoaded) {
-		OutputDebugString("[ERR] Config loading failed, config could not be loaded. Returning normal D3DDevice. Stereoificator will not be active.\n");
+		log.critic() << "Config loading failed, config could not be loaded. Returning normal D3DDevice. Stereoificator will not be active.";
 		return hResult;
 	}
 
-	OutputDebugString("[OK] Config loading - OK\n");
-
-	
-
-	char buf1[32];
-	LPCSTR psz = NULL;
-
-	wsprintf(buf1,"Config type: %d", cfg.game_type);
-	psz = buf1;
-	OutputDebugString(psz);
-	OutputDebugString("\n");
+	log.notice() << "Config loading - OK";
+	log.notice() <<  "Config type: " << cfg.game_type;
 
 	// Create and return proxy
 	D3DProxyDevice* newDev = new D3DProxyDevice(*ppReturnedDeviceInterface, this, cfg);
 	*ppReturnedDeviceInterface = newDev;
 
-	OutputDebugString("[OK] Stereoificator D3D device created.\n");
+	log.notice() << "[OK] Stereoificator D3D device created.";
 
 	return hResult;
 }
