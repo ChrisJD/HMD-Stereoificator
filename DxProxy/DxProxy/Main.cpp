@@ -92,7 +92,7 @@ IDirect3D9* WINAPI Direct3DCreate9(UINT nSDKVersion)
 {
 	// Log setup
 	Log::Logger logs(LogName::D3D9Log); // use this name in other classes to get access to the same log channel (from the log manager or by specifying the same name in constructor)
-
+	
 	Log::Config::Vector configList;
     Log::Config::addOutput(configList, "OutputFile");
     Log::Config::setOption(configList, "filename",          "Stereoificator.D3D9.log");

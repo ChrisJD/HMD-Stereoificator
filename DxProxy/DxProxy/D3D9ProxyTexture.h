@@ -19,6 +19,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef D3DPROXYTEXTURE_H_INCLUDED
 #define D3DPROXYTEXTURE_H_INCLUDED
 
+#include "global.h"
 #include <d3d9.h>
 #include <unordered_map>
 #include "Direct3DTexture9.h"
@@ -70,6 +71,11 @@ protected:
 
 	BaseDirect3DDevice9* const m_pOwningDevice;
 	IDirect3DTexture9* const m_pActualTextureRight;
+
+private:
+
+	Log::Logger log;
+
 };
 
 #endif

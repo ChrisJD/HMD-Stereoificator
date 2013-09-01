@@ -16,6 +16,8 @@ You should have received a copy of the GNU Lesser General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ********************************************************************/
 
+
+
 #include "D3D9ProxyCubeTexture.h"
 #include <assert.h>
 
@@ -24,7 +26,8 @@ D3D9ProxyCubeTexture::D3D9ProxyCubeTexture(IDirect3DCubeTexture9* pActualTexture
 	BaseDirect3DCubeTexture9(pActualTextureLeft),
 	m_pActualTextureRight(pActualTextureRight),
 	m_wrappedSurfaceLevels(),
-	m_pOwningDevice(pOwningDevice)
+	m_pOwningDevice(pOwningDevice),
+	log(LogName::D3D9Log)
 {
 	assert (pOwningDevice != NULL);
 

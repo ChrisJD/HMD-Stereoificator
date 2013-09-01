@@ -19,7 +19,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef MAIN_H_INCLUDED
 #define MAIN_H_INCLUDED
 
+#include "src/Logger.h"
+#include "src/Manager.h"
 #include "global.h"
-#include "src/LoggerCpp.h"
+
 
 #endif
