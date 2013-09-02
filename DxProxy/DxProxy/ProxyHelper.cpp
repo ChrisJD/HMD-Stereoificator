@@ -455,10 +455,10 @@ bool ProxyHelper::LoadUserConfig(ProxyConfig& config, bool forceDefault)
 	GetUserAndGameNodes(defaultUsersPath, config.gameName, &docDefaultUsers, defaultUser, defaultUserProfileForGame);
 		
 	if (defaultUserProfileForGame) {
-		LOG_NOTICE(log, "Default user settings available.\n");
+		LOG_NOTICE(log, "Default user settings available.");
 	}
 	else {
-		LOG_ERROR(log, "No default user settings found.\n");
+		LOG_ERROR(log, "No default user settings found.");
 	}
 
 

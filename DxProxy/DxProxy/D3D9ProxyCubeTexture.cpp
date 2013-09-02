@@ -241,18 +241,16 @@ HRESULT WINAPI D3D9ProxyCubeTexture::GetCubeMapSurface(D3DCUBEMAP_FACES FaceType
 				// Failure to insert should not be possible. In this case we could still return the wrapped surface,
 				// however, if we did and it was requested again a new wrapped instance will be returned and things would explode
 				// at some point. Better to fail fast.
-				OutputDebugString(__FUNCTION__);
-				OutputDebugString("\n");
-				OutputDebugString("Unable to store surface level.\n");
+				LOG_CRIT(log, __FUNCTION__);
+				LOG_CRIT(log, "Unable to store surface level.");
 				assert(false);
 
 				finalResult = D3DERR_INVALIDCALL;
 			}
 		}
 		else { 
-			OutputDebugString(__FUNCTION__);
-			OutputDebugString("\n");
-			OutputDebugString("Error fetching actual surface level.\n");
+			LOG_ERROR(log, __FUNCTION__);
+			LOG_ERROR(log, "Error fetching actual surface level.");
 			finalResult = leftResult;
 		}
 	}

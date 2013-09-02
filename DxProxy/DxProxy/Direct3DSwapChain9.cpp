@@ -23,7 +23,8 @@ BaseDirect3DSwapChain9::BaseDirect3DSwapChain9(IDirect3DSwapChain9* pActualSwapC
 	m_pActualSwapChain(pActualSwapChain),
 	m_pOwningDevice(pOwningDevice),
 	m_nRefCount(1),
-	m_bIsAdditionalChain(isAdditionalChain)
+	m_bIsAdditionalChain(isAdditionalChain),
+	log(LogName::D3D9Log)
 {
 	assert (pActualSwapChain != NULL);
 	assert (pOwningDevice != NULL);
@@ -95,25 +96,20 @@ HRESULT WINAPI BaseDirect3DSwapChain9::GetDevice(IDirect3DDevice9** ppDevice)
 
 HRESULT WINAPI BaseDirect3DSwapChain9::Present(CONST RECT* pSourceRect, CONST RECT* pDestRect, HWND hDestWindowOverride, CONST RGNDATA* pDirtyRegion, DWORD dwFlags)
 {
-	OutputDebugString(__FUNCTION__);
-	OutputDebugString("\n");
-
 	return m_pActualSwapChain->Present(pSourceRect, pDestRect, hDestWindowOverride, pDirtyRegion, dwFlags);
 }
 
 HRESULT WINAPI BaseDirect3DSwapChain9::GetFrontBufferData(IDirect3DSurface9* pDestSurface) 
 {
-	OutputDebugString(__FUNCTION__);
-	OutputDebugString("\n");
-	OutputDebugString("GetSwapChain. Danger Will Robinson. Surface not wrapped.\n");
+	LOG_ERROR(log, __FUNCTION__);
+	LOG_ERROR(log, "GetSwapChain. Danger Will Robinson. Surface not wrapped.\n");
 	return m_pActualSwapChain->GetFrontBufferData(pDestSurface);
 }
 
 HRESULT WINAPI BaseDirect3DSwapChain9::GetBackBuffer(UINT iBackBuffer, D3DBACKBUFFER_TYPE Type, IDirect3DSurface9** ppBackBuffer) 
 {
-	OutputDebugString(__FUNCTION__);
-	OutputDebugString("\n");
-	OutputDebugString("GetSwapChain. Danger Will Robinson. Surface not wrapped.\n");
+	LOG_ERROR(log, __FUNCTION__);
+	LOG_ERROR(log, "GetSwapChain. Danger Will Robinson. Surface not wrapped.\n");
 	return m_pActualSwapChain->GetBackBuffer(iBackBuffer, Type, ppBackBuffer);
 }
 

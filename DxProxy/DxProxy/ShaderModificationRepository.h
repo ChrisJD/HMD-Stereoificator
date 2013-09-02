@@ -100,9 +100,8 @@ private:
 				return D3DXPC_VECTOR;
 			}
 			else {
-				OutputDebugString("Unknown or unsupported constant type: ");
-				OutputDebugString(type.c_str());
-				OutputDebugString("\n");
+				Log::Logger log (LogName::D3D9Log);
+				LOG_ERROR(log, "Unknown or unsupported constant type: " << type);
 
 				return D3DXPC_FORCE_DWORD;
 			}

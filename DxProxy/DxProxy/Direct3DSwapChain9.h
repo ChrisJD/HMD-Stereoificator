@@ -19,6 +19,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef DIRECT3DSwapChain9_H_INCLUDED
 #define DIRECT3DSwapChain9_H_INCLUDED
 
+#include "global.h"
+
 #include <d3d9.h>
 #include "Direct3DDevice9.h"
 
@@ -53,6 +55,8 @@ protected:
 
 private:
 	ULONG m_nRefCount;
+
+	Log::Logger log;
 
 };
 

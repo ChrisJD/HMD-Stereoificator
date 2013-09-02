@@ -23,6 +23,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "d3d9.h"
 #include "d3dx9.h"
 
+#include "global.h"
+#include "src/Manager.h"
+
 #include "ShaderConstantModification.h"
 
 #include "Vector4SimpleTranslate.h"
@@ -74,7 +77,9 @@ public:
 			return std::make_shared<Vector4SimpleTranslate>(mod, adjustmentMatricies);
 
 		default:
-			OutputDebugString("Nonexistant Vec4 modification\n");
+			Log::Logger log(LogName::D3D9Log);
+
+			LOG_CRIT(log, "Nonexistant Vec4 modification.");
 			assert(false);
 			throw std::out_of_range ("Nonexistant Vec4 modification");
 		}
@@ -114,7 +119,9 @@ public:
 			return std::make_shared<MatrixTransformHUD>(mod, adjustmentMatricies, transpose);
 
 		default:
-			OutputDebugString("Nonexistant matrix modification\n");
+			Log::Logger log(LogName::D3D9Log);
+
+			LOG_CRIT(log, "Nonexistant matrix modification.");
 			assert(false);
 			throw std::out_of_range ("Nonexistant matrix modification");
 		}
