@@ -22,14 +22,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "StereoView.h"
 #include "HMDisplayInfo.h"
 
+
 class OculusRiftView : public StereoView
 {
 public:
 
 	OculusRiftView(ProxyHelper::ProxyConfig& config, std::shared_ptr<HMDisplayInfo> hmd);
 	virtual ~OculusRiftView();
-	virtual void InitShaderEffects();
-
+	
 	virtual void SetViewEffectConstants();
 	virtual void CalculateShaderVariables( );
 

@@ -25,7 +25,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 OculusRiftView::OculusRiftView(ProxyHelper::ProxyConfig& config, std::shared_ptr<HMDisplayInfo> hmd) : StereoView(config),
 	hmdInfo(hmd)
 {
-	OutputDebugString("Created OculusRiftView\n");
+	LOG_INFO(log, __FUNCTION__);
+
+	shaderFileName = "HMDBarrel.fx";
 }
 
 OculusRiftView::~OculusRiftView()
@@ -33,19 +35,6 @@ OculusRiftView::~OculusRiftView()
 	hmdInfo.reset();
 }
 
-
-void OculusRiftView::InitShaderEffects()
-{
-	shaderEffect[OCULUS_RIFT] = "HMDBarrel.fx";
-
-	char viewPath[512];
-	ProxyHelper helper = ProxyHelper();
-	helper.GetPath(viewPath, "fx\\");
-
-	strcat_s(viewPath, 512, shaderEffect[stereo_mode].c_str());
-
-	D3DXCreateEffectFromFile(m_pActualDevice, viewPath, NULL, NULL, 0, NULL, &viewEffect, NULL);
-}
 
 
 

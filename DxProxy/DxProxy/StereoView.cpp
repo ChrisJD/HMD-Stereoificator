@@ -20,9 +20,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 DWORD g_color;   
 
-StereoView::StereoView(ProxyHelper::ProxyConfig& config)
+
+
+StereoView::StereoView(ProxyHelper::ProxyConfig& config) :
+		log(LogName::D3D9Log)
 {
-	OutputDebugString("Created SteroView\n");
+	LOG_INFO(log, __FUNCTION__);
+
+	shaderFileName = "SideBySide.fx";
+
 	initialized = false;
 	game_type = config.game_type;
 	stereo_mode = config.stereo_mode;
@@ -54,7 +60,6 @@ StereoView::StereoView(ProxyHelper::ProxyConfig& config)
 
 StereoView::~StereoView()
 {
-	OutputDebugString("Destroyed SteroView\n");
 }
 
 
@@ -62,23 +67,16 @@ StereoView::~StereoView()
 void releaseCheck(char* object, int newRefCount)
 {
 	if (newRefCount > 0) {
-		char buf[128];
-		sprintf_s(buf, "Error: %s count = %d\n", object, newRefCount);
-		OutputDebugString(buf);
+		LOG_INFO(log, "Release count for " << object << " = " newRefCount);
 	}
 }
 
 
 void StereoView::Init(IDirect3DDevice9* pActualDevice)
 {
-	OutputDebugString("SteroView Init\n");
-
-
 	if (initialized) {
-		OutputDebugString("SteroView already Init'd\n");
 		return;
 	}
-
 
 	m_pActualDevice = pActualDevice;
 
@@ -92,23 +90,19 @@ void StereoView::Init(IDirect3DDevice9* pActualDevice)
 
 
 
-
-
 void StereoView::InitShaderEffects()
 {
-	
-	shaderEffect[SIDE_BY_SIDE] = "SideBySide.fx";
-
 	char viewPath[512];
 	ProxyHelper helper = ProxyHelper();
 	helper.GetPath(viewPath, "fx\\");
 
-	strcat_s(viewPath, 512, shaderEffect[stereo_mode].c_str());
+	strcat_s(viewPath, 512, shaderFileName.c_str());
 
 	if (FAILED(D3DXCreateEffectFromFile(m_pActualDevice, viewPath, NULL, NULL, D3DXFX_DONOTSAVESTATE, NULL, &viewEffect, NULL))) {
-		OutputDebugString("Effect creation failed\n");
+		LOG_ERROR(log, "Effect creation failed. Effect '" << viewPath << "' could not be created.");
 	}
 }
+
 
 void StereoView::InitTextureBuffers()
 {
@@ -116,21 +110,6 @@ void StereoView::InitTextureBuffers()
 	D3DSURFACE_DESC pDesc = D3DSURFACE_DESC();
 	m_pActualDevice->GetBackBuffer(0, 0, D3DBACKBUFFER_TYPE_MONO, &backBuffer);
 	backBuffer->GetDesc(&pDesc);
-	/*
-	char buf[32];
-	LPCSTR psz = NULL;
-
-	wsprintf(buf,"vp w: %d",viewport.Width);
-	psz = buf;
-	OutputDebugString(psz);
-	OutputDebugString("\n");
-	
-	
-
-	wsprintf(buf,"bb w: %d",pDesc.Width);
-	psz = buf;
-	OutputDebugString(psz);
-	OutputDebugString("\n");*/
 
 	m_pActualDevice->CreateTexture(pDesc.Width, pDesc.Height, 0, D3DUSAGE_RENDERTARGET, pDesc.Format, D3DPOOL_DEFAULT, &leftTexture, NULL);
 	leftTexture->GetSurfaceLevel(0, &leftSurface);
@@ -141,9 +120,6 @@ void StereoView::InitTextureBuffers()
 
 void StereoView::InitVertexBuffers()
 {
-	OutputDebugString("SteroView initVertexBuffers\n");
-
-
 	m_pActualDevice->CreateVertexBuffer(sizeof(TEXVERTEX) * 4, NULL,
         D3DFVF_TEXVERTEX, D3DPOOL_MANAGED, &screenVertexBuffer, NULL);
 
@@ -421,23 +397,18 @@ void StereoView::Draw(D3D9ProxySurface* stereoCapableSurface)
 
 
 	if (FAILED(m_pActualDevice->SetRenderTarget(0, backBuffer))) {
-		OutputDebugString("SetRenderTarget backbuffer failed\n");
+		LOG_DEBUG(log, __FUNCTION__ << "SetRenderTarget backbuffer failed.");
 	}
 
-
-	/*if (FAILED(m_pActualDevice->Clear(0, NULL, D3DCLEAR_TARGET, g_color, 0, 0))) {
-		OutputDebugString("clear failed\n");
-	}*/
-
 	if (FAILED(m_pActualDevice->SetStreamSource(0, screenVertexBuffer, 0, sizeof(TEXVERTEX)))) {
-		OutputDebugString("SetStreamSource failed\n");
+		LOG_DEBUG(log, __FUNCTION__ << "SetStreamSource failed.");
 	}
 
 	UINT iPass, cPasses;
 
 
 	if (FAILED(viewEffect->SetTechnique("ViewShader"))) {
-		OutputDebugString("SetTechnique failed\n");
+		LOG_DEBUG(log, __FUNCTION__ << "SetTechnique failed.");
 	}
 
 
@@ -445,26 +416,26 @@ void StereoView::Draw(D3D9ProxySurface* stereoCapableSurface)
 
 
 	if (FAILED(viewEffect->Begin(&cPasses, 0))) {
-		OutputDebugString("Begin failed\n");
+		LOG_DEBUG(log, __FUNCTION__ << "Begin failed.");
 	}
 
 	for(iPass = 0; iPass < cPasses; iPass++)
 	{
 		if (FAILED(viewEffect->BeginPass(iPass))) {
-			OutputDebugString("Beginpass failed\n");
+			LOG_DEBUG(log, __FUNCTION__ << "Beginpass failed.");
 		}
 
 		if (FAILED(m_pActualDevice->DrawPrimitive(D3DPT_TRIANGLEFAN, 0, 2))) {
-			OutputDebugString("Draw failed\n");
+			LOG_DEBUG(log, __FUNCTION__ << "Draw failed.");
 		}
 
 		if (FAILED(viewEffect->EndPass())) {
-			OutputDebugString("Beginpass failed\n");
+			LOG_DEBUG(log, __FUNCTION__ << "Beginpass failed.");
 		}
 	}
 
 	if (FAILED(viewEffect->End())) {
-		OutputDebugString("End failed\n");
+		LOG_DEBUG(log, __FUNCTION__ << "End failed.");
 	}
 	
 	// TODO figure out HL2 problem. This is a workaround for now
@@ -510,10 +481,10 @@ void StereoView::SaveScreen()
 
 void StereoView::ReleaseEverything()
 {
-	OutputDebugString("SteroView Reset\n");
+	LOG_DEBUG(log, __FUNCTION__);
 
 	if(!initialized)
-		OutputDebugString("SteroView is already reset\n");
+		LOG_DEBUG(log, "SteroView is already reset.");
 
 	if(backBuffer)
 		releaseCheck("backBuffer", backBuffer->Release());	

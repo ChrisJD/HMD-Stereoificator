@@ -21,11 +21,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "ProxyHelper.h"
 #include "D3DProxyDevice.h"
+
+#include "global.h"
+
 #include <d3d9.h>
 #include <d3dx9.h>
-#include <map>
+
 #include <string.h>
 #include <assert.h>
+#include <map>
 
 class StereoView
 {
@@ -89,6 +93,7 @@ protected:
 
 
 
+
 	IDirect3DTexture9* leftTexture;
 	IDirect3DTexture9* rightTexture;
 	IDirect3DSurface9* backBuffer;
@@ -134,9 +139,12 @@ protected:
 
 	ID3DXEffect* viewEffect;
 
-	std::map<int, std::string> shaderEffect;
+	std::string shaderFileName;
 
 	IDirect3DStateBlock9* sb;
+
+	Log::Logger log;
+
 
 };
 
