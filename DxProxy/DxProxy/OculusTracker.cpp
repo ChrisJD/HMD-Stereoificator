@@ -39,10 +39,27 @@ OculusTracker::OculusTracker()
 	}
 
 	if (pHMD) {
+
+		// TODO get IPD from profile, need to rethink where the rift library is initialized to do this though
+		/*Profile* pUserProfile = pHMD->GetProfile();
+        if (pUserProfile)
+        {
+			float ipd = pUserProfile->GetIPD();
+		}*/
+
+
 		pSensor = *pHMD->GetSensor();
 	
 		if (pSensor) {
 			SFusion.AttachToSensor(pSensor);
+
+			if (SFusion.IsYawCorrectionEnabled()) {
+				LOG_NOTICE(log, "Yaw Correction enabled.");
+			}
+			else {
+				LOG_NOTICE(log, "Yaw Correction disabled - Have you performed calibration using the Oculus Config Utility?");
+			}
+
 			ready = true;
 		}
 		else {
