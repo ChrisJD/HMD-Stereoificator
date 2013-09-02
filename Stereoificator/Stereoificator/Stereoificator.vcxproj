@@ -59,8 +59,8 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>..\..\DxHijack\DxHijack32\$(Configuration)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>hijackdll.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\..\DxHijack\DxHijack32\$(Configuration);$(SolutionDir)LoggerCpp\$(Configuration)\</AdditionalLibraryDirectories>
+      <AdditionalDependencies>hijackdll.lib;LoggerCpp.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>copy /Y "$(TargetPath)" "C:\Program Files (x86)\Stereoificator\Stereoificator\bin\$(TargetName)$(TargetExt)"</Command>
@@ -83,15 +83,15 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(ProjectDir)\..\..\DxHijack\DxHijack32;$(ProjectDir)\..\..\DxProxy\DxProxy</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\LoggerCpp;$(ProjectDir)\..\..\DxHijack\DxHijack32;$(ProjectDir)\..\..\DxProxy\DxProxy</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalLibraryDirectories>..\..\DxHijack\DxHijack32\$(Configuration)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>hijackdll.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\..\DxHijack\DxHijack32\$(Configuration);$(SolutionDir)LoggerCpp\$(Configuration)\</AdditionalLibraryDirectories>
+      <AdditionalDependencies>hijackdll.lib;LoggerCpp.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ProgramDatabaseFile>$(IntDir)$(TargetName).pdb</ProgramDatabaseFile>
     </Link>
     <PostBuildEvent>

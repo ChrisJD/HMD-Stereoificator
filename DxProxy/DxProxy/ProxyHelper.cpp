@@ -26,15 +26,16 @@ using namespace pugi;
 
 HRESULT RegGetString(HKEY hKey, LPCTSTR szValueName, LPTSTR * lpszResult);
 
-ProxyHelper::ProxyHelper()
-	: baseDirLoaded(false)
+ProxyHelper::ProxyHelper() : 
+		baseDirLoaded(false),
+		log(LogName::D3D9Log)
 {
 }
 
 char* ProxyHelper::GetBaseDir()
 {
 	if (baseDirLoaded == true){
-		OutputDebugString("PxHelp: Already have base value.\n");
+		LOG_DEBUG(log, "ProxyHelper: Already have Stereoificator path.");
 		return baseDir;
 	}
 
@@ -43,28 +44,21 @@ char* ProxyHelper::GetBaseDir()
 
 	LONG openRes = RegOpenKeyEx(HKEY_CURRENT_USER, sk, 0, KEY_QUERY_VALUE , &hKey);
 
-	if (openRes==ERROR_SUCCESS) 
+	if (openRes != ERROR_SUCCESS) 
 	{
-		OutputDebugString("PxHelp: Success opening key.\n");
-	} 
-	else 
-	{
-		OutputDebugString("PxHelp: Error opening key.\n");
+		LOG_ERROR(log, "ProxyHelper: Failed to open Stereoificator registry key.");
 		return "";
 	}
 
 	HRESULT hr = RegGetString(hKey, TEXT("BasePath"), &baseDir);
 	if (FAILED(hr)) 
 	{
-		OutputDebugString("PxHelp: Error with GetString.\n");
+		LOG_ERROR(log, "ProxyHelper: Failed to read Stereoificator path from registry.");
 		return "";
 	} 
 	else 
 	{
-		OutputDebugString("PxHelp: Success with GetString.\n");
-		//strcpy_s(baseDir, sizeof(szVal), szVal);
-		OutputDebugString(baseDir);
-		OutputDebugString("\n");
+		LOG_INFO(log, "ProxyHelper: Successfully got Stereoificator path '" << baseDir << "'from registry.");
 		baseDirLoaded = true;
 	}
 
@@ -80,25 +74,23 @@ char* ProxyHelper::GetTargetExe()
 
 	if (openRes==ERROR_SUCCESS) 
 	{
-		OutputDebugString("PxHelp TE: Success opening key.\n");
+		LOG_DEBUG(log, "ProxyHelper TE: Success opening key.");
 	} 
 	else
 	{
-		OutputDebugString("PxHelp TE: Error opening key.\n");
+		LOG_DEBUG(log, "ProxyHelper TE: Error opening key.");
 		return "";
 	}
 	 
 	HRESULT hr = RegGetString(hKey, TEXT("TargetExe"), &targetExe);
 	if (FAILED(hr)) 
 	{
-		OutputDebugString("PxHelp TE: Error with GetString.\n");
+		LOG_ERROR(log, "ProxyHelper Target Exe: Error with GetString.");
 		return "";
 	} 
 	else 
 	{
-		OutputDebugString("PxHelp TE: Success with GetString.\n");
-		OutputDebugString(targetExe);
-		OutputDebugString("\n");
+		LOG_INFO(log, "ProxyHelper Target Exe: " << targetExe);
 	}
 
 	return targetExe;
@@ -120,6 +112,8 @@ bool FileExists(char* path)
 
 bool ProxyHelper::LoadConfig(ProxyConfig& config)
 {
+	LOG_NOTICE(log, "Loading config from file...");
+
 	bool fileFound = false;
 	bool profileFound = false;
 	bool userCfgFound = false;
@@ -134,15 +128,14 @@ bool ProxyHelper::LoadConfig(ProxyConfig& config)
 
 	// load the base dir for the app
 	GetBaseDir();
-	OutputDebugString("Got base dir as: ");
-	OutputDebugString(baseDir);
-	OutputDebugString("\n");
+	LOG_NOTICE(log, "Reported Stereoificator path is '" << baseDir << "'");
 
 	// get global config
 	char configPath[512];
 	GetPath(configPath, "cfg\\config.xml");
-	OutputDebugString(configPath);
-	OutputDebugString("\n");
+
+
+	LOG_NOTICE(log, "Attempting to parse config file '" << configPath << "' ...");
 
 	xml_document docConfig;
 	xml_parse_result resultConfig = docConfig.load_file(configPath);
@@ -157,21 +150,23 @@ bool ProxyHelper::LoadConfig(ProxyConfig& config)
 		config.debugMode = xml_config.attribute("debugMode").as_int(0);
 		config.forceAdapterNumber = xml_config.attribute("forceAdapterNumber").as_int(-1);
 
+		LOG_NOTICE(log, "Config loaded.");
+
 		fileFound = true;
+	}
+	else {
+		LOG_ERROR(log, "Failed to parse config file.");
 	}
 
 	
 	// get the target exe
 	GetTargetExe();
-	OutputDebugString("Got target exe as: ");
-	OutputDebugString(targetExe);
-	OutputDebugString("\n");
 
 	// get the profile
 	char profilePath[512];
 	GetPath(profilePath, "cfg\\profiles.xml");
-	OutputDebugString(profilePath);
-	OutputDebugString("\n");
+
+	LOG_NOTICE(log, "Attempting to parse '" << profilePath << "' for profile for '" << targetExe << "' ...");
 
 	xml_document docProfiles;
 	xml_parse_result resultProfiles = docProfiles.load_file(profilePath);
@@ -186,36 +181,32 @@ bool ProxyHelper::LoadConfig(ProxyConfig& config)
 		{
 			if(strcmp(targetExe, profile.attribute("game_exe").value()) == 0)
 			{
-				OutputDebugString("Load the specific profile!!!\n");
 				gameProfile = profile;
 				profileFound = true;
+				LOG_NOTICE(log, "Profile for '" << targetExe << "' found.");
 				break;
 			}
 		}
 	}
 
+	if (!profileFound)
+	{
+		LOG_NOTICE(log, "No profile could be found for '" << targetExe << "'");
+	}
+
 	if(resultProfiles.status == status_ok && profileFound && gameProfile)
 	{
-		OutputDebugString("Set the config to profile!!!\n");
 		config.game_type = gameProfile.attribute("game_type").as_int(10);
 		config.gameName = gameProfile.attribute("game_name").as_string();
 
-		OutputDebugString(config.gameName.c_str());
-		OutputDebugString("\n");
-
-		char buf[32];
-		LPCSTR psz = NULL;
-		wsprintf(buf,"gameType: %d", config.game_type);
-		psz = buf;
-		OutputDebugString(psz);
-		OutputDebugString("\n");
-
+		LOG_NOTICE(log, "Profile game name '" << config.gameName << "', type '" << config.game_type << "'");
+		
 		config.rollEnabled = gameProfile.attribute("rollEnabled").as_bool(false);
 		config.duplicationRules = gameProfile.attribute("duplicationRules").as_int(0);
 		config.worldScaleFactor = gameProfile.attribute("worldScaleFactor").as_float(1.0f);
 		config.hudDistanceMode = gameProfile.attribute("hudDistanceMode").as_int(0);
 		
-		// get file name
+		// get shader rules file name
 		std::string shaderRulesFileName = gameProfile.attribute("shaderModRules").as_string("");
 
 		if (!shaderRulesFileName.empty()) {
@@ -227,12 +218,18 @@ bool ProxyHelper::LoadConfig(ProxyConfig& config)
 			config.shaderRulePath = "";
 		}
 
-
+		LOG_NOTICE(log, "Attempting to parse user config for this profile..." );
 		userCfgFound = LoadUserConfig(config);
+		if (userCfgFound) {
+			LOG_NOTICE(log, "User config loaded.");
+		}
+		else {
+			LOG_ERROR(log, "Problem loading user config.");
+		}
 	}
 
 	if (!(fileFound && profileFound && userCfgFound)) {
-		OutputDebugString("[ERROR] Could not load part/all of proxy config");
+		LOG_ERROR(log, "Could not load part/all of proxy config.");
 	}
 
 	
@@ -258,7 +255,6 @@ bool ProxyHelper::HasProfile(char* name)
 		{
 			if(strcmp(name, profile.attribute("game_exe").value()) == 0)
 			{
-				OutputDebugString("Found a profile!!!\n");
 				profileFound = true;
 				break;
 			}
@@ -325,8 +321,6 @@ bool ProxyHelper::SaveConfig(int mode, float aspect)
 {
 	// load the base dir for the app
 	GetBaseDir();
-	OutputDebugString(baseDir);
-	OutputDebugString("\n");
 
 	// get global config
 	char configPath[512];
@@ -357,8 +351,6 @@ bool ProxyHelper::SaveConfig2(int mode)
 {
 	// load the base dir for the app
 	GetBaseDir();
-	OutputDebugString(baseDir);
-	OutputDebugString("\n");
 
 	// get global config
 	char configPath[512];
@@ -434,12 +426,7 @@ bool ProxyHelper::LoadUserConfig(ProxyConfig& config, bool forceDefault)
 	CheckUsersXml();
 
 	GetPath(defaultUsersPath, "cfg\\defaults.users.xml");
-	OutputDebugString(defaultUsersPath);
-	OutputDebugString("\n");
-	
 	GetPath(usersPath, "cfg\\users.xml");
-	OutputDebugString(usersPath);
-	OutputDebugString("\n");
 	
 
 	// Load the relevant nodes if they can be found
@@ -449,12 +436,14 @@ bool ProxyHelper::LoadUserConfig(ProxyConfig& config, bool forceDefault)
 
 	// if we are forcing defaults to load then don't load user specific settings
 	if (!forceDefault) {
-		OutputDebugString("Attempting to load from users.xml\n");
-
 		usersFileParsedOK = GetUserAndGameNodes(usersPath, config.gameName, &docUsers, user, userProfileForGame);
-		
-		if (userProfileForGame)
-			OutputDebugString("User settings available.\n");
+	}
+
+	if (userProfileForGame) {
+		LOG_NOTICE(log, "User settings available.");
+	}
+	else {
+		LOG_WARN(log, "No user settings found.");
 	}
 	
 	// Load the relevant default nodes if they can be found
@@ -463,12 +452,14 @@ bool ProxyHelper::LoadUserConfig(ProxyConfig& config, bool forceDefault)
 	xml_node defaultUser;
 	xml_node defaultUserProfileForGame;
 		
-	OutputDebugString("Attempting to load from users.defaults.xml\n");
-
 	GetUserAndGameNodes(defaultUsersPath, config.gameName, &docDefaultUsers, defaultUser, defaultUserProfileForGame);
 		
-	if (defaultUserProfileForGame)
-		OutputDebugString("Default user settings available.\n");
+	if (defaultUserProfileForGame) {
+		LOG_NOTICE(log, "Default user settings available.\n");
+	}
+	else {
+		LOG_ERROR(log, "No default user settings found.\n");
+	}
 
 
 	// Load settings using user specific if available or defaults or hardcoded defaults if niether file can be loaded.
@@ -476,7 +467,7 @@ bool ProxyHelper::LoadUserConfig(ProxyConfig& config, bool forceDefault)
 	UserConfigFromNode(config, userProfileForGame, defaultUserProfileForGame);
 
 	if (!userProfileForGame && !defaultUserProfileForGame) {
-		OutputDebugString("Error loading user settings for game. Hardcoded fallback values in use.\n");
+		LOG_ERROR(log, "Problem loading user settings for game. Hardcoded fallback values in use.");
 	}
 
 	// Not tracking whether settings were loaded from specific or defaults or mix. Easiest solution as to whether 
@@ -510,8 +501,6 @@ bool ProxyHelper::SaveUserConfig(ProxyConfig& cfg)
 	bool profileSaved = false;
 	char profilePath[512];
 	GetPath(profilePath, "cfg\\users.xml");
-	OutputDebugString(profilePath);
-	OutputDebugString("\n");
 
 	xml_document userProfiles;
 	xml_parse_result userProfilesResult = userProfiles.load_file(profilePath);
@@ -541,7 +530,7 @@ bool ProxyHelper::SaveUserConfig(ProxyConfig& cfg)
 				settingsEntry = gameSettings.append_child("game");
 
 				if (!settingsEntry) {
-					OutputDebugString("Failed to create new game entry in gamesettings of users.xml");
+					LOG_DEBUG(log, "Failed to create new game entry in gamesettings of users.xml");
 				}
 
 				settingsEntry.append_attribute("game_name") = cfg.gameName.c_str();
@@ -581,13 +570,13 @@ bool ProxyHelper::SaveUserConfig(ProxyConfig& cfg)
 				settingsEntry.attribute("hudDistance") = cfg.hudDistance;
 			}
 
-			OutputDebugString("Saving the user settings to users.xml.\n");
+			LOG_NOTICE(log, "Saving the user settings to users.xml.");
 			profileSaved = userProfiles.save_file(profilePath);
 		}
 	}
 
 	if (!profileSaved) {
-		OutputDebugString("[ERROR] Setting NOT saved to users.xml");
+		LOG_ERROR(log, "Problem saving. Setting NOT saved.");
 	}
 
 	return profileSaved;
@@ -598,8 +587,6 @@ bool ProxyHelper::GetConfig(int& mode, int& mode2)
 {
 	// load the base dir for the app
 	GetBaseDir();
-	OutputDebugString(baseDir);
-	OutputDebugString("\n");
 
 	// get global config
 	char configPath[512];
@@ -634,7 +621,7 @@ bool ProxyHelper::CheckUsersXml()
 	char defaultUsersPath[512];
 	GetPath(defaultUsersPath, "cfg\\defaults.users.xml");
 	if (!FileExists(defaultUsersPath)) {
-		OutputDebugString("[ERROR] default.users.xml could not be found.");
+		LOG_ERROR(log, "default.users.xml could not be found.");
 		return false;
 	}
 

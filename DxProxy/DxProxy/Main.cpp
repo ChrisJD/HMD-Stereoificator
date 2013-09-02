@@ -100,7 +100,7 @@ IDirect3D9* WINAPI Direct3DCreate9(UINT nSDKVersion)
     Log::Config::setOption(configList, "max_startup_size",  "0");				// always start new file at startup
     Log::Config::setOption(configList, "max_size",          "100000");			// 10MB
 	
-	Log::Config::addOutput(configList, "OutputDebug"); //TODO remove me
+	//Log::Config::addOutput(configList, "OutputDebug"); //TODO remove me
 
 #ifdef _DEBUG
 	Log::Config::addOutput(configList, "OutputConsole");
@@ -118,7 +118,7 @@ IDirect3D9* WINAPI Direct3DCreate9(UINT nSDKVersion)
     catch (std::exception& e)
     {
         std::cerr << e.what();
-		OutputDebugString("Log configuration failed");
+		OutputDebugString("Log configuration failed.");
     }
 
 	LOG_NOTICE(logs, "Stereoificator D3D9 log successfully initialized.");

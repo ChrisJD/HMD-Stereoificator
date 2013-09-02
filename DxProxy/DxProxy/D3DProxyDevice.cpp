@@ -139,6 +139,8 @@ D3DProxyDevice::D3DProxyDevice(IDirect3DDevice9* pDevice, BaseDirect3D9* pCreate
 
 	//if (game profile has shader rules)
 	if (!cfg.shaderRulePath.empty()) {
+		LOG_NOTICE(log, "Loading shader modification rules...");
+
 		m_ShaderModificationRepository = new ShaderModificationRepository(m_spShaderViewAdjustment);
 	
 		if (!m_ShaderModificationRepository->LoadRules(cfg.shaderRulePath)) {
@@ -217,7 +219,7 @@ D3DProxyDevice::~D3DProxyDevice()
 */
 void D3DProxyDevice::OnCreateOrRestore()
 {
-	LOG_INFO(__FUNCTION__);
+	LOG_INFO(log, __FUNCTION__);
 
 	m_currentRenderingSide = stereoificator::Left;
 	m_pCurrentView = &m_leftView;

@@ -23,13 +23,19 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef PROXYHELPER_H_INCLUDED
 #define PROXYHELPER_H_INCLUDED
 
+
+#include "Stereoificator.h"
+#include "global.h"
+
+#include "pugixml.hpp"
+
+#include <windows.h>
+
 #include <iostream>
 #include <fstream>
 #include <sstream>
 #include <string>
-#include <windows.h>
-#include "pugixml.hpp"
-#include "Stereoificator.h"
+
 
 class __declspec(dllexport) ProxyHelper
 {
@@ -125,6 +131,11 @@ private:
 	bool GetUserAndGameNodes(pugi::char_t* userConfigPath, std::string gameName, pugi::xml_document* document, pugi::xml_node& user, pugi::xml_node& game);
 
 	bool SaveUserConfig(ProxyConfig& cfg);
+
+#pragma warning( push )
+#pragma warning( disable : 4251 ) //class 'Log::Logger' needs to have dll-interface to be used by clients of class 'ProxyHelper'. Logger is never exposed to callers so ignoring warning
+	Log::Logger log;
+#pragma warning( pop ) 
 
 };
 

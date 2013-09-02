@@ -25,7 +25,8 @@ ShaderRegisters::ShaderRegisters(DWORD maxConstantRegistersF, IDirect3DDevice9* 
 	m_registersF(maxConstantRegistersF * VECTOR_LENGTH, 0), // VECTOR_LENGTH floats per register
 	m_dirtyRegistersF(),
 	m_pActualDevice(pActualDevice),
-	m_pActiveVertexShader(NULL)
+	m_pActiveVertexShader(NULL),
+	log(LogName::D3D9Log)
 {
 	assert(pActualDevice != NULL);
 
@@ -252,8 +253,7 @@ void ShaderRegisters::ApplyStereoConstants(stereoificator::RenderPosition curren
 					break;
 
 				default:
-					OutputDebugString("SetSide - Unknown rendering position");
-					DebugBreak();
+					LOG_ERROR(log, "SetSide - Unknown rendering position.");
 					break;
 				}
 				m_pActualDevice->SetVertexShaderConstantF(itStereoConstant->second.StartRegister(), data, itStereoConstant->second.Count());
@@ -282,8 +282,7 @@ void ShaderRegisters::ApplyStereoConstants(stereoificator::RenderPosition curren
 				break;
 
 			default:
-				OutputDebugString("SetSide - Unknown rendering position");
-				DebugBreak();
+				LOG_ERROR(log, "SetSide - Unknown rendering position.");
 				break;
 			}
 			m_pActualDevice->SetVertexShaderConstantF(itStereoConstant->second.StartRegister(), data, itStereoConstant->second.Count());

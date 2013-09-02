@@ -26,20 +26,10 @@ ShaderModificationRepository::ShaderModificationRepository(std::shared_ptr<ViewA
 	m_AllModificationRules(),
 	m_defaultModificationRuleIDs(),
 	m_shaderSpecificModificationRuleIDs(),
-	m_spAdjustmentMatricies(adjustmentMatricies)
+	m_spAdjustmentMatricies(adjustmentMatricies),
+	log(LogName::D3D9Log)
 {
 	D3DXMatrixIdentity(&m_identity);
-
-
-	// For testing load source settings manually
-	/*m_defaultModificationRuleIDs.push_back(1);
-	m_defaultModificationRuleIDs.push_back(2);
-	m_defaultModificationRuleIDs.push_back(3);
-
-	m_AllModificationRules.insert(std::make_pair<UINT, ConstantModificationRule>(1, ConstantModificationRule("", 4, D3DXPC_MATRIX_COLUMNS, ShaderConstantModificationFactory::MatSimpleTranslateColMajorIgnoreOrtho, 1)));
-	m_AllModificationRules.insert(std::make_pair<UINT, ConstantModificationRule>(2, ConstantModificationRule("", 8, D3DXPC_MATRIX_COLUMNS, ShaderConstantModificationFactory::MatSimpleTranslateColMajorIgnoreOrtho, 2))); 
-	m_AllModificationRules.insert(std::make_pair<UINT, ConstantModificationRule>(3, ConstantModificationRule("", 51, D3DXPC_MATRIX_COLUMNS, ShaderConstantModificationFactory::MatSimpleTranslateColMajorIgnoreOrtho, 3)));*/
-
 }
 
 ShaderModificationRepository::~ShaderModificationRepository()
@@ -58,21 +48,20 @@ bool ShaderModificationRepository::LoadRules(std::string rulesPath)
 	pugi::xml_parse_result resultProfiles = rulesFile.load_file(rulesPath.c_str());
 
 	if(resultProfiles.status != pugi::status_ok) {
-		OutputDebugString("Parsing of shader rules file failed. No rules loaded.\n");
-		OutputDebugString(rulesPath.c_str());
+		LOG_NOTICE(log, "Parsing of shader rules file '" << rulesPath << "'failed.");
 		return false;
 	}
 
 	// load from file
 	pugi::xml_node xmlShaderConfig = rulesFile.child("shaderConfig");
 	if (!xmlShaderConfig) {
-		OutputDebugString("'shaderConfig' node missing, malformed shader rules doc.\n"); 
+		LOG_NOTICE(log, "'shaderConfig' node missing, malformed shader rules doc."); 
 		return false;
 	}
 
 	pugi::xml_node xmlRules = xmlShaderConfig.child("rules");
 	if (!xmlRules) {
-		OutputDebugString("No 'rules' node found, malformed shader rules doc.\n"); 
+		LOG_NOTICE(log, "No 'rules' node found, malformed shader rules doc."); 
 		return false;
 	}
 	else {
@@ -89,7 +78,7 @@ bool ShaderModificationRepository::LoadRules(std::string rulesPath)
 			newRule.m_transpose = rule.attribute("transpose").as_bool(false);
 
 			if (!(m_AllModificationRules.insert(std::make_pair<UINT, ConstantModificationRule>(newRule.m_modificationRuleID, newRule)).second)) {
-				OutputDebugString("Two rules found with the same 'id'. Only the first will be applied.\n"); 
+				LOG_NOTICE(log, "Two rules found with 'id' = " << newRule.m_modificationRuleID << ". Only the first will be applied."); 
 			}
 		}
 
@@ -102,7 +91,7 @@ bool ShaderModificationRepository::LoadRules(std::string rulesPath)
 			}
 		}
 		else {
-			OutputDebugString("No default rules found, did you do this intentionally?\n");
+			LOG_NOTICE(log, "No default rules found, is this intentional?");
 		}
 
 		// Shader specific rules (optional)
@@ -111,7 +100,7 @@ bool ShaderModificationRepository::LoadRules(std::string rulesPath)
 			uint32_t hash = shader.attribute("shaderHash").as_uint(0);
 
 			if (hash == 0) {
-				OutputDebugString("Shader specific rule with invalid/no hash. Skipping rule.\n");
+				LOG_NOTICE(log, "Shader specific rule with invalid/no hash. Skipping rule.");
 				continue;
 			}
 
@@ -122,7 +111,7 @@ bool ShaderModificationRepository::LoadRules(std::string rulesPath)
 			}
 
 			if (!(m_shaderSpecificModificationRuleIDs.insert(std::pair<uint32_t, std::vector<UINT>>(hash, shaderRules)).second)) {
-				OutputDebugString("Two sets of rules found with the same 'shaderHash'. Only the first will be applied.\n"); 
+				LOG_NOTICE(log, "Two rules found with hash = " << hash << ". Only the first will be applied.");
 			}
 		}
 	}
@@ -201,7 +190,7 @@ std::map<UINT, StereoShaderConstant<float>> ShaderModificationRepository::GetMod
 			UINT pConstantNum = 64;
 			pConstantTable->GetConstantDesc(handle, pConstantDesc, &pConstantNum);
 			if (pConstantNum >= 64) {
-				OutputDebugString("ShaderModificationRepository::GetModifiedConstantsF - Need larger constant description buffer");
+				LOG_ERROR(log, "ShaderModificationRepository::GetModifiedConstantsF - Need larger constant description buffer.");
 			}
 
 			
@@ -227,18 +216,9 @@ std::map<UINT, StereoShaderConstant<float>> ShaderModificationRepository::GetMod
 								bool nameMatch = false;
 								if ((*itRules)->m_allowPartialNameMatch) {
 									nameMatch = std::strstr(pConstantDesc[j].Name, (*itRules)->m_constantName.c_str()) != NULL;
-
-									/*if (nameMatch) {
-										OutputDebugString("Match\n");
-									}
-									else {
-										OutputDebugString("No Match\n");
-									}*/
 								}
 								else {
 									nameMatch = (*itRules)->m_constantName.compare(pConstantDesc[j].Name) == 0;
-
-									//OutputDebugString("Full name match only\n");
 								}
 
 								if (!nameMatch) {

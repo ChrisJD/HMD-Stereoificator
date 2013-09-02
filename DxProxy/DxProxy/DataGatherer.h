@@ -19,10 +19,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef DATAGATHERER_H_INCLUDED
 #define DATAGATHERER_H_INCLUDED
 
-#include "MurmurHash3.h"
+
 #include "D3D9ProxyVertexShader.h"
 
+#include "global.h"
+
+#include "MurmurHash3.h"
+
 #include <d3dx9.h>
+
 #include <list>
 #include <unordered_set>
 #include <fstream>
@@ -71,6 +76,8 @@ private:
 	std::ofstream m_renderTargetDumpFile;
 	
 	uint32_t m_currentHash;
+
+	Log::Logger log;
 };
 
 #endif

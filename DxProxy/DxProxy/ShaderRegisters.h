@@ -22,14 +22,17 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define VECTOR_LENGTH 4
 #define RegisterIndex(x) (x * VECTOR_LENGTH)
 
+
+#include "D3D9ProxyVertexShader.h"
+#include "Stereoificator.h"
+#include "global.h"
+
 #include "d3d9.h"
 #include "d3dx9.h"
 #include <vector>
 #include <set>
 #include <map>
 #include <algorithm>
-#include "D3D9ProxyVertexShader.h"
-#include "Stereoificator.h"
 
 
 class D3D9ProxyVertexShader;
@@ -107,6 +110,8 @@ private:
 	D3D9ProxyVertexShader* m_pActiveVertexShader;
 
 	IDirect3DDevice9* m_pActualDevice;
+
+	Log::Logger log;
 };
 
 

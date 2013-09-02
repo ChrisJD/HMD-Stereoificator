@@ -19,22 +19,29 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef ShaderModificationRepository_H_INCLUDED
 #define ShaderModificationRepository_H_INCLUDED
 
+
+#include "D3D9ProxyVertexShader.h"
+#include "DuplicationConditions.h"
+#include "StereoShaderConstant.h"
+#include "ShaderRegisters.h"
+#include "ShaderConstantModification.h"
+#include "ShaderConstantModificationFactory.h"
+#include "ViewAdjustment.h"
+
+#include "global.h"
+
+#include "pugixml.hpp"
+#include "MurmurHash3.h"
+
+#include "Limits.h"
+
 #include <d3d9.h>
 #include <d3dx9.h>
+
 #include <vector>
 #include <unordered_map>
 #include <string>
 #include <memory>
-#include "StereoShaderConstant.h"
-#include "DuplicationConditions.h"
-#include "ShaderRegisters.h"
-#include "MurmurHash3.h"
-#include "Limits.h"
-#include "ShaderConstantModification.h"
-#include "ShaderConstantModificationFactory.h"
-#include "ViewAdjustment.h"
-#include "pugixml.hpp"
-#include "D3D9ProxyVertexShader.h"
 
 class ViewAdjustment;
 
@@ -132,6 +139,9 @@ private:
 
 	// <Shader hash, vector<Modification Rule ID>>
 	std::unordered_map<uint32_t, std::vector<UINT>> m_shaderSpecificModificationRuleIDs;
+
+	Log::Logger log;
+
 };
 
 #endif

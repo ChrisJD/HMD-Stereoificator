@@ -23,7 +23,8 @@ DataGatherer::DataGatherer() :
 	m_vshadersInUseIterator(m_vshadersInUse.begin()),
 	m_allRecordedVShaders(),
 	m_currentHash(0),
-	m_capturingInUseShaders(false)
+	m_capturingInUseShaders(false),
+	log(LogName::D3D9Log)
 {
 	m_shaderDumpFile.open("vertexShaderDump.csv", std::ios::out);
 	m_renderTargetDumpFile.open("renderTargetDump.csv", std::ios::out);
@@ -93,7 +94,7 @@ void DataGatherer::OnCreateVertexShader(D3D9ProxyVertexShader* pWrappedShader)
 
 				pConstantTable->GetConstantDesc(handle, pConstantDesc, &pConstantNum);
 				if (pConstantNum >= 512) {
-					OutputDebugString("Need larger constant description buffer");
+					LOG_ERROR(log, "Need larger constant description buffer.");
 				}
 
 				
@@ -160,36 +161,6 @@ bool DataGatherer::CapturingInUseVShaders()
 }
 
 
-/*void DataGatherer::CheckForListChange()
-{
-	// iterator has been invalidated by changes to set
-	if (!m_recordedShaderUpdateHandled) {
-		OutputDebugString("Handling shader list change\n");
-		m_recordedShaderUpdateHandled = true;
-		m_vshadersInUseIterator = m_vshadersInUse.begin();
-
-			
-		if (m_currentHash != 0) {
-
-			// move iterator back to the same hash it was on before
-			bool found = false;
-			while (m_vshadersInUseIterator != m_vshadersInUse.end()) {
-
-				if (*m_vshadersInUseIterator == m_currentHash) {
-					found = true;
-					break;
-				}
-
-				++m_vshadersInUseIterator;
-			}
-
-
-			if (!found) {
-				m_vshadersInUseIterator = m_vshadersInUse.begin();
-			}
-		}
-	}
-}*/
 
 
 uint32_t DataGatherer::NextShaderHash()
@@ -203,7 +174,7 @@ uint32_t DataGatherer::NextShaderHash()
 	++m_vshadersInUseIterator;
 	if (m_vshadersInUseIterator == m_vshadersInUse.end()) {
 		m_vshadersInUseIterator = m_vshadersInUse.begin();
-		OutputDebugString("End of shader hash list\n");
+		OutputDebugString("End of shader hash list\n"); // TODO intentionally going to debug rather than log. Remove/change when OSD added
 	}
 
 	m_currentHash = *m_vshadersInUseIterator;
@@ -221,7 +192,7 @@ uint32_t DataGatherer::PreviousShaderHash()
 	// Move to previous hash. 
 	if (m_vshadersInUseIterator == m_vshadersInUse.begin()) {
 		m_vshadersInUseIterator = m_vshadersInUse.end();
-		OutputDebugString("Wrap around\n");
+		OutputDebugString("Wrap around\n");// TODO intentionally going to debug rather than log. Remove/change when OSD added
 	}
 	--m_vshadersInUseIterator;
 

@@ -19,11 +19,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef HMDISPLAYINFO_H_INCLUDED
 #define HMDISPLAYINFO_H_INCLUDED
 
+#include "global.h"
+
 #include "d3d9.h"
 #include "d3dx9.h"
+
+#include <math.h>
 #include <utility>
 #include <sstream>
-#include <math.h>
+
 
 #define HMD_PI 3.14159265
 
@@ -44,7 +48,8 @@ public:
 		physicalScreenSize(std::make_pair<float, float>(0.14976f, 0.0935f)), // Rift dev kit 
 		eyeToScreenDistance(0.041f), // Rift dev kit
 		physicalLensSeparation(0.064f), // Rift dev kit 
-		distortionCoefficients()
+		distortionCoefficients(),
+		log(LogName::D3D9Log)
 	{
 		 // Rift dev kit 
 		distortionCoefficients[0] = 1.0f;
@@ -63,9 +68,7 @@ public:
 		// of how to do this)
 		UpdateScale(-1);
 
-		std::stringstream sstm;
-		sstm << "scaleHorizontal: " << scaleHorizontal << std::endl;
-		OutputDebugString(sstm.str().c_str());
+		LOG_INFO(log, "scaleHorizontal: " << scaleHorizontal);
 	}
 
 	// Returns left lens center as a percentage of fullscreen width (use '1 - the result' for the right equivilant)
@@ -117,10 +120,7 @@ public:
 			scaleHorizontal = scaleToFillHorizontal;
 		}
 
-		
-
-
-		OutputDebugString(sstm.str().c_str());
+		LOG_INFO(log, sstm.str());
 	}
 
 
@@ -157,6 +157,8 @@ public:
 	}
 
 
+private:
+	Log::Logger log;
 
 };
 
