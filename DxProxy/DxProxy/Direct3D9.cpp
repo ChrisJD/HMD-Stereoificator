@@ -26,82 +26,78 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 BaseDirect3D9::BaseDirect3D9(IDirect3D9* pD3D) :
 	m_pD3D(pD3D),
 	m_nRefCount(1),
-	log(LogName::D3D9Log)
+	log(LogName::D3D9Log),
+	m_isRiftAdapterValid(false),
+	m_riftAdapter(0)
 {
-	IDXGIFactory* pFactory;
-	HRESULT hr = CreateDXGIFactory(__uuidof(IDXGIFactory), (void**)(&pFactory) );
+	// Find rift via EnumDisplayDevices. Note that the index of the device the montior is connected to
+	// doesn't seem to be guaranteed to be the same as the index of the D3D9 adapter (although in all 
+	// my tests it always has been). So, in case the device and adapter index are different we match by
+	// device name, for example: '\\.\DISPLAY1'
+	bool riftFound = false;
+	std::string riftDeviceName;
 
-	if (SUCCEEDED(hr)) {
-		LOG_NOTICE(log, "DXGI Factory created - OK");
+	DISPLAY_DEVICE device;
+	ZeroMemory(&device, sizeof(DISPLAY_DEVICE));
+	device.cb = sizeof(DISPLAY_DEVICE);
 
-		UINT i = 0; 
-		IDXGIAdapter* pAdapter; 
-		std::vector <IDXGIAdapter*> adapters; 
-		while(pFactory->EnumAdapters(i, &pAdapter) != DXGI_ERROR_NOT_FOUND) 
-		{ 
-			adapters.push_back(pAdapter); 
-			++i; 
-		} 
+	int itDD = 0;
+	while (EnumDisplayDevices(NULL, itDD, &device, 0) != 0) {
 
-		auto itAdapter = adapters.begin();
-		while (itAdapter != adapters.end()) 
-		{
-			UINT iOutput = 0; 
-			IDXGIOutput* pOutput; 
-			while((*itAdapter)->EnumOutputs(iOutput, &pOutput) != DXGI_ERROR_NOT_FOUND) 
-			{
-				DXGI_OUTPUT_DESC outputDesc;
-				pOutput->GetDesc(&outputDesc);
+		LOG_DEBUG(log, "Device Name:" << device.DeviceName);
+		LOG_DEBUG(log, "Device ID:" << device.DeviceID);
+		LOG_DEBUG(log, "Device Key:" << device.DeviceKey);
+		LOG_DEBUG(log, "Device String:" << device.DeviceString);
 
-				LOG_NOTICE(log, "Device Name:" << outputDesc.DeviceName);
-				
-				//MONITORINFOEX monitorInfo;
-				//monitorInfo.cbSize = sizeof(MONITORINFOEX);
-				//GetMonitorInfo(outputDesc.Monitor, &monitorInfo);
-				
-				//LOG_DEBUG(log, "Device Name:" << monitorInfo.szDevice);
+		DISPLAY_DEVICE monitorDevice;
+		ZeroMemory(&monitorDevice, sizeof(DISPLAY_DEVICE));
+		monitorDevice.cb = sizeof(DISPLAY_DEVICE);
 
-				DISPLAY_DEVICE device;
-				ZeroMemory(&device, sizeof(DISPLAY_DEVICE));
-				device.cb = sizeof(DISPLAY_DEVICE);
-				if (EnumDisplayDevices(NULL, iOutput, &device, 0) != 0) {
+		if (EnumDisplayDevices(device.DeviceName, 0, &monitorDevice, 0) != 0) {
+			LOG_DEBUG(log, "Monitor Device Name:" << monitorDevice.DeviceName);
+			LOG_DEBUG(log, "Monitor Device ID:" << monitorDevice.DeviceID);
+			LOG_DEBUG(log, "Monitor Device Key:" << monitorDevice.DeviceKey);
+			LOG_DEBUG(log, "Monitor Device String:" << monitorDevice.DeviceString);
 
-					LOG_DEBUG(log, "Device Name:" << device.DeviceName);
-					LOG_DEBUG(log, "Device ID:" << device.DeviceID);
-					LOG_DEBUG(log, "Device Key:" << device.DeviceKey);
-					LOG_DEBUG(log, "Device String:" << device.DeviceString);
+			// Is Rift Dev Kit
+			if (!riftFound && strstr(monitorDevice.DeviceID, "OVR0001")) {
 
-					DISPLAY_DEVICE monitorDevice;
-					ZeroMemory(&device, sizeof(DISPLAY_DEVICE));
-					monitorDevice.cb = sizeof(DISPLAY_DEVICE);
-
-					if (EnumDisplayDevices(device.DeviceName, 0, &monitorDevice, 0) != 0) {
-						LOG_DEBUG(log, "Monitor Device Name:" << monitorDevice.DeviceName);
-						LOG_DEBUG(log, "Monitor Device ID:" << monitorDevice.DeviceID);
-						LOG_DEBUG(log, "Monitor Device Key:" << monitorDevice.DeviceKey);
-						LOG_DEBUG(log, "Monitor Device String:" << monitorDevice.DeviceString);
-
-						// If Rift Dev Kit
-						if (strstr(monitorDevice.DeviceID, "OVR0001")) {
-
-						}
-					}
-				}
-
-				
-				++iOutput; 
-			} 
-			
-			
-
-
-
-			++itAdapter;
+				// Device rather than the attached monitor is used as the device name is what 
+				// we will be needing to use with D3D
+				LOG_NOTICE(log, "Rift device identified as " << device.DeviceName);
+				riftDeviceName = device.DeviceName;
+				riftFound = true;
+			}
 		}
 
+		++itDD;
 	}
-	else {
-		LOG_WARN(log, "DXGI Factory creation failed.");
+
+
+	// Now that we know which device the Rift is connected to find the D3D9 adapter that device is associated with.
+	if (riftFound) {
+		UINT numAdapters = m_pD3D->GetAdapterCount();
+
+		D3DADAPTER_IDENTIFIER9 adapterID;
+		for (UINT i = 0; i < numAdapters; i++)
+		{
+			ZeroMemory(&adapterID, sizeof(D3DADAPTER_IDENTIFIER9));
+			m_pD3D->GetAdapterIdentifier(i, 0, &adapterID);
+
+			LOG_DEBUG(log, "Description:" << adapterID.Description);
+			LOG_DEBUG(log, "DevName: " << adapterID.DeviceName);
+
+			if (riftDeviceName.find(adapterID.DeviceName) != std::string::npos) {
+				LOG_NOTICE(log, "Rift connected to adapter " << i);
+				m_isRiftAdapterValid = true;
+				m_riftAdapter = i;
+				break;
+			}
+		}
+	}
+
+	if (!m_isRiftAdapterValid) {
+		LOG_WARN(log, "Unable to determine which adapter the Rift is connected to.");
 	}
 }
 

@@ -67,6 +67,9 @@ private:
 	IDirect3D9* m_pD3D;
 	ULONG m_nRefCount;
 
+	bool m_isRiftAdapterValid;
+	UINT m_riftAdapter; 
+
 #pragma warning( push )
 #pragma warning( disable : 4251 ) //class 'Log::Logger' needs to have dll-interface to be used by clients of class 'BaseDirect3D9'. Logger is never exposed to callers so ignoring warning
 	Log::Logger log;
