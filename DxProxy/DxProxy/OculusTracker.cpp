@@ -20,6 +20,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 OculusTracker::OculusTracker()
 {
+	bool ready = false;
 	pManager = NULL;
 	pHMD = NULL;
 	pSensor = NULL;
@@ -28,18 +29,35 @@ OculusTracker::OculusTracker()
 
 	pManager = *DeviceManager::Create();
 
-	pHMD = *pManager->EnumerateDevices<HMDDevice>().CreateDevice();
+
+	//TODO Logging messages for the sensor not being available would be better off displayed in game
+	if (pManager) {
+		pHMD = *pManager->EnumerateDevices<HMDDevice>().CreateDevice();
+	}
+	else {
+		LOG_ERROR(log, "OculusTracker - Manager creation failed.");
+	}
 
 	if (pHMD) {
 		pSensor = *pHMD->GetSensor();
 	
-		if (pSensor)
+		if (pSensor) {
 			SFusion.AttachToSensor(pSensor);
-
-		LOG_NOTICE(log, "OculusTracker Created.");
+			ready = true;
+		}
+		else {
+			LOG_ERROR(log, "OculusTracker - Couldn't find Rift sensor.");
+		}
 	}
 	else {
-		LOG_NOTICE(log, "OculusTracker Not created. Ensure the Rift's USB cable is connected, the dev box is powered and no other programs are using the tracker.");
+		LOG_ERROR(log, "OculusTracker - Couldn't find Rift.");
+	}
+
+	if (!ready) {
+		LOG_ERROR(log, "OculusTracker - NOT Ready. Ensure the Rift's USB cable is connected, the control box is powered and no other programs are using the tracker." );
+	}
+	else {
+		LOG_NOTICE(log, "OculusTracker - Ready." );
 	}
 }
 
