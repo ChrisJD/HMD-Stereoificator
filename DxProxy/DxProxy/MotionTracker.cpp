@@ -18,7 +18,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "MotionTracker.h"
 
-MotionTracker::MotionTracker()
+MotionTracker::MotionTracker() :
+		log(LogName::D3D9Log)
 {	
 	currentYaw = 0.0f;
 	currentPitch = 0.0f;
@@ -38,9 +39,6 @@ MotionTracker::MotionTracker()
 	mouseData.mi.dwFlags = MOUSEEVENTF_MOVE;
 	mouseData.mi.time = 0;
 	mouseData.mi.dwExtraInfo = 0;
-
-	
-	OutputDebugString("Motion Tracker Created\n");
 }
 
 MotionTracker::~MotionTracker()

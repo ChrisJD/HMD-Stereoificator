@@ -26,7 +26,7 @@ TCHAR szName[]=TEXT("VireioSMTrack");
 
 SharedMemoryTracker::SharedMemoryTracker():MotionTracker()
 {
-	OutputDebugString("Socket Tracker Created\n");
+	LOG_NOTICE( log, "Socket Tracker Created.");
 	hMapFile = NULL;
 	pTrackBuf = NULL;
 	sharedMemoryAvailable = openSharedMemory();
@@ -41,8 +41,6 @@ SharedMemoryTracker::~SharedMemoryTracker()
 
 int SharedMemoryTracker::getOrientationFromDevice(float* yaw, float* pitch, float* roll) 
 {
-	OutputDebugString("Socket Tracker getOrient\n");
-
 	if(pTrackBuf == NULL)
 		return 1;												// error no buffer
 

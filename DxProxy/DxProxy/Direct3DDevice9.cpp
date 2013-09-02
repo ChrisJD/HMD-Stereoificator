@@ -34,15 +34,12 @@ BaseDirect3DDevice9::~BaseDirect3DDevice9()
 
 HRESULT WINAPI BaseDirect3DDevice9::QueryInterface(REFIID riid, LPVOID* ppv)
 {
-	//OutputDebugString(__FUNCTION__); 
-	////OutputDebugString("\n"); 
 	return m_pDevice->QueryInterface(riid, ppv);
 }
 
 ULONG WINAPI BaseDirect3DDevice9::AddRef()
 {
-	////OutputDebugString(__FUNCTION__); 
-	////OutputDebugString("\n"); 
+	
 	return ++m_nRefCount;
 }
 
@@ -53,8 +50,7 @@ ULONG WINAPI BaseDirect3DDevice9::Release()
 		delete this;
 		return 0;
 	}
-	////OutputDebugString(__FUNCTION__); 
-	////OutputDebugString("\n"); 
+	
 	return m_nRefCount;
 }
 
@@ -66,22 +62,19 @@ IDirect3DDevice9* BaseDirect3DDevice9::getActual()
 
 HRESULT WINAPI BaseDirect3DDevice9::TestCooperativeLevel()
 {
-	////OutputDebugString(__FUNCTION__); 
-	////OutputDebugString("\n"); 
+	
 	return m_pDevice->TestCooperativeLevel();
 }
 
 UINT WINAPI BaseDirect3DDevice9::GetAvailableTextureMem()
 {
-	////OutputDebugString(__FUNCTION__); 
-	////OutputDebugString("\n"); 
+	
 	return m_pDevice->GetAvailableTextureMem();
 }
 
 HRESULT WINAPI BaseDirect3DDevice9::EvictManagedResources()
 {
-	////OutputDebugString(__FUNCTION__); 
-	////OutputDebugString("\n"); 
+	
 	return m_pDevice->EvictManagedResources();
 }
 
@@ -98,260 +91,223 @@ HRESULT WINAPI BaseDirect3DDevice9::GetDirect3D(IDirect3D9** ppD3D9)
 
 HRESULT WINAPI BaseDirect3DDevice9::GetDeviceCaps(D3DCAPS9* pCaps)
 {
-	////OutputDebugString(__FUNCTION__); 
-	////OutputDebugString("\n"); 
+	
 	return m_pDevice->GetDeviceCaps(pCaps);
 }
 
 HRESULT WINAPI BaseDirect3DDevice9::GetDisplayMode(UINT iSwapChain,D3DDISPLAYMODE* pMode)
 {
-	////OutputDebugString(__FUNCTION__); 
-	////OutputDebugString("\n"); 
+	
 	return m_pDevice->GetDisplayMode(iSwapChain, pMode);
 }
 
 HRESULT WINAPI BaseDirect3DDevice9::GetCreationParameters(D3DDEVICE_CREATION_PARAMETERS *pParameters)
 {
-	////OutputDebugString(__FUNCTION__); 
-	////OutputDebugString("\n"); 
+	
 	return m_pDevice->GetCreationParameters(pParameters);
 }
 
 HRESULT WINAPI BaseDirect3DDevice9::SetCursorProperties(UINT XHotSpot,UINT YHotSpot,IDirect3DSurface9* pCursorBitmap)
 {
-	////OutputDebugString(__FUNCTION__); 
-	////OutputDebugString("\n"); 
+	
 	return m_pDevice->SetCursorProperties(XHotSpot, YHotSpot, pCursorBitmap);
 }
 
 void WINAPI BaseDirect3DDevice9::SetCursorPosition(int X,int Y,DWORD Flags)
 {
-	////OutputDebugString(__FUNCTION__); 
-	////OutputDebugString("\n"); 
+	
 	return m_pDevice->SetCursorPosition(X, Y, Flags);
 }
 
 BOOL WINAPI BaseDirect3DDevice9::ShowCursor(BOOL bShow)
 {
-	////OutputDebugString(__FUNCTION__); 
-	////OutputDebugString("\n"); 
+	
 	return m_pDevice->ShowCursor(bShow);
 }
 
 HRESULT WINAPI BaseDirect3DDevice9::CreateAdditionalSwapChain(D3DPRESENT_PARAMETERS* pPresentationParameters,IDirect3DSwapChain9** pSwapChain)
 {
-	////OutputDebugString(__FUNCTION__); 
-	////OutputDebugString("\n"); 
+	
 	return m_pDevice->CreateAdditionalSwapChain(pPresentationParameters, pSwapChain);
 }
 
 HRESULT WINAPI BaseDirect3DDevice9::GetSwapChain(UINT iSwapChain,IDirect3DSwapChain9** pSwapChain)
 {
-	////OutputDebugString(__FUNCTION__); 
-	////OutputDebugString("\n"); 
+	
 	return m_pDevice->GetSwapChain(iSwapChain, pSwapChain);
 }
 
 UINT WINAPI BaseDirect3DDevice9::GetNumberOfSwapChains()
 {
-	////OutputDebugString(__FUNCTION__); 
-	////OutputDebugString("\n"); 
+	
 	return m_pDevice->GetNumberOfSwapChains();
 }
 
 HRESULT WINAPI BaseDirect3DDevice9::Reset(D3DPRESENT_PARAMETERS* pPresentationParameters)
 {
-	////OutputDebugString(__FUNCTION__); 
-	////OutputDebugString("\n"); 
+	
 	return m_pDevice->Reset(pPresentationParameters);
 }
 
 HRESULT WINAPI BaseDirect3DDevice9::Present(CONST RECT* pSourceRect,CONST RECT* pDestRect,HWND hDestWindowOverride,CONST RGNDATA* pDirtyRegion)
 {
-	////OutputDebugString(__FUNCTION__); 
-	////OutputDebugString("\n"); 
+	
 	return m_pDevice->Present( pSourceRect, pDestRect, hDestWindowOverride, pDirtyRegion);
 }
 
 HRESULT WINAPI BaseDirect3DDevice9::GetBackBuffer(UINT iSwapChain,UINT iBackBuffer,D3DBACKBUFFER_TYPE Type,IDirect3DSurface9** ppBackBuffer)
 {
-	////OutputDebugString(__FUNCTION__); 
-	////OutputDebugString("\n"); 
+	
 	return m_pDevice->GetBackBuffer(iSwapChain, iBackBuffer, Type, ppBackBuffer);
 }
 
 HRESULT WINAPI BaseDirect3DDevice9::GetRasterStatus(UINT iSwapChain,D3DRASTER_STATUS* pRasterStatus)
 {
-	////OutputDebugString(__FUNCTION__); 
-	////OutputDebugString("\n"); 
+	
 	return m_pDevice->GetRasterStatus(iSwapChain, pRasterStatus);
 }
 
 HRESULT WINAPI BaseDirect3DDevice9::SetDialogBoxMode(BOOL bEnableDialogs)
 {
-	////OutputDebugString(__FUNCTION__); 
-	////OutputDebugString("\n"); 
+	
 	return m_pDevice->SetDialogBoxMode(bEnableDialogs);
 }
 
 void WINAPI BaseDirect3DDevice9::SetGammaRamp(UINT iSwapChain,DWORD Flags,CONST D3DGAMMARAMP* pRamp)
 {
-	////OutputDebugString(__FUNCTION__); 
-	////OutputDebugString("\n"); 
+	
 	return m_pDevice->SetGammaRamp(iSwapChain, Flags, pRamp);
 }
 
 void WINAPI BaseDirect3DDevice9::GetGammaRamp(UINT iSwapChain,D3DGAMMARAMP* pRamp)
 {
-	////OutputDebugString(__FUNCTION__); 
-	////OutputDebugString("\n"); 
+	
 	return m_pDevice->GetGammaRamp(iSwapChain, pRamp);
 }
 
 HRESULT WINAPI BaseDirect3DDevice9::CreateTexture(UINT Width,UINT Height,UINT Levels,DWORD Usage,D3DFORMAT Format,D3DPOOL Pool,IDirect3DTexture9** ppTexture,HANDLE* pSharedHandle)
 {
-	////OutputDebugString(__FUNCTION__); 
-	////OutputDebugString("\n"); 
+	
 	return m_pDevice->CreateTexture(Width, Height, Levels, Usage, Format, Pool, ppTexture, pSharedHandle);
 }
 
 HRESULT WINAPI BaseDirect3DDevice9::CreateVolumeTexture(UINT Width,UINT Height,UINT Depth,UINT Levels,DWORD Usage,D3DFORMAT Format,D3DPOOL Pool,IDirect3DVolumeTexture9** ppVolumeTexture,HANDLE* pSharedHandle)
 {
-	////OutputDebugString(__FUNCTION__); 
-	////OutputDebugString("\n"); 
+	
 	return m_pDevice->CreateVolumeTexture(Width, Height, Depth, Levels, Usage, Format, Pool, ppVolumeTexture, pSharedHandle);
 }
 
 HRESULT WINAPI BaseDirect3DDevice9::CreateCubeTexture(UINT EdgeLength,UINT Levels,DWORD Usage,D3DFORMAT Format,D3DPOOL Pool,IDirect3DCubeTexture9** ppCubeTexture,HANDLE* pSharedHandle)
 {
-	////OutputDebugString(__FUNCTION__); 
-	////OutputDebugString("\n"); 
+	
 	return m_pDevice->CreateCubeTexture(EdgeLength, Levels, Usage, Format, Pool, ppCubeTexture, pSharedHandle);
 }
 
 HRESULT WINAPI BaseDirect3DDevice9::CreateVertexBuffer(UINT Length,DWORD Usage,DWORD FVF,D3DPOOL Pool,IDirect3DVertexBuffer9** ppVertexBuffer,HANDLE* pSharedHandle)
 {
-	////OutputDebugString(__FUNCTION__); 
-	////OutputDebugString("\n"); 
+	
 	return m_pDevice->CreateVertexBuffer(Length, Usage, FVF, Pool, ppVertexBuffer, pSharedHandle);
 }
 
 HRESULT WINAPI BaseDirect3DDevice9::CreateIndexBuffer(UINT Length,DWORD Usage,D3DFORMAT Format,D3DPOOL Pool,IDirect3DIndexBuffer9** ppIndexBuffer,HANDLE* pSharedHandle)
 {
-	////OutputDebugString(__FUNCTION__); 
-	////OutputDebugString("\n"); 
+	
 	return m_pDevice->CreateIndexBuffer(Length, Usage, Format, Pool, ppIndexBuffer, pSharedHandle);
 }
 
 HRESULT WINAPI BaseDirect3DDevice9::CreateRenderTarget(UINT Width,UINT Height,D3DFORMAT Format,D3DMULTISAMPLE_TYPE MultiSample,DWORD MultisampleQuality,BOOL Lockable,IDirect3DSurface9** ppSurface,HANDLE* pSharedHandle)
 {
-	////OutputDebugString(__FUNCTION__); 
-	////OutputDebugString("\n"); 
+	
 	return m_pDevice->CreateRenderTarget(Width, Height, Format, MultiSample, MultisampleQuality, Lockable, ppSurface, pSharedHandle);
 }
 
 HRESULT WINAPI BaseDirect3DDevice9::CreateDepthStencilSurface(UINT Width,UINT Height,D3DFORMAT Format,D3DMULTISAMPLE_TYPE MultiSample,DWORD MultisampleQuality,BOOL Discard,IDirect3DSurface9** ppSurface,HANDLE* pSharedHandle)
 {
-	////OutputDebugString(__FUNCTION__); 
-	////OutputDebugString("\n"); 
+	
 	return m_pDevice->CreateDepthStencilSurface(Width, Height, Format, MultiSample, MultisampleQuality, Discard, ppSurface, pSharedHandle);
 }
 
 HRESULT WINAPI BaseDirect3DDevice9::UpdateSurface(IDirect3DSurface9* pSourceSurface,CONST RECT* pSourceRect,IDirect3DSurface9* pDestinationSurface,CONST POINT* pDestPoint)
 {
-	////OutputDebugString(__FUNCTION__); 
-	////OutputDebugString("\n"); 
+	
 	return m_pDevice->UpdateSurface(pSourceSurface, pSourceRect, pDestinationSurface, pDestPoint);
 }
 
 HRESULT WINAPI BaseDirect3DDevice9::UpdateTexture(IDirect3DBaseTexture9* pSourceTexture,IDirect3DBaseTexture9* pDestinationTexture)
 {
-	////OutputDebugString(__FUNCTION__); 
-	////OutputDebugString("\n"); 
+	
 	return m_pDevice->UpdateTexture(pSourceTexture, pDestinationTexture);
 }
 
 HRESULT WINAPI BaseDirect3DDevice9::GetRenderTargetData(IDirect3DSurface9* pRenderTarget,IDirect3DSurface9* pDestSurface)
 {
-	////OutputDebugString(__FUNCTION__); 
-	////OutputDebugString("\n"); 
+	
 	return m_pDevice->GetRenderTargetData(pRenderTarget, pDestSurface);
 }
 
 HRESULT WINAPI BaseDirect3DDevice9::GetFrontBufferData(UINT iSwapChain,IDirect3DSurface9* pDestSurface)
 {
-	////OutputDebugString(__FUNCTION__); 
-	////OutputDebugString("\n"); 
+	
 	return m_pDevice->GetFrontBufferData(iSwapChain, pDestSurface);
 }
 
 HRESULT WINAPI BaseDirect3DDevice9::StretchRect(IDirect3DSurface9* pSourceSurface,CONST RECT* pSourceRect,IDirect3DSurface9* pDestSurface,CONST RECT* pDestRect,D3DTEXTUREFILTERTYPE Filter)
 {
-	////OutputDebugString(__FUNCTION__); 
-	////OutputDebugString("\n"); 
+	
 	return m_pDevice->StretchRect(pSourceSurface, pSourceRect, pDestSurface, pDestRect, Filter);
 }
 
 HRESULT WINAPI BaseDirect3DDevice9::ColorFill(IDirect3DSurface9* pSurface,CONST RECT* pRect,D3DCOLOR color)
 {
-	////OutputDebugString(__FUNCTION__); 
-	////OutputDebugString("\n"); 
+	
 	return m_pDevice->ColorFill(pSurface, pRect, color);
 }
 
 HRESULT WINAPI BaseDirect3DDevice9::CreateOffscreenPlainSurface(UINT Width,UINT Height,D3DFORMAT Format,D3DPOOL Pool,IDirect3DSurface9** ppSurface,HANDLE* pSharedHandle)
 {
-	////OutputDebugString(__FUNCTION__); 
-	////OutputDebugString("\n"); 
+	
 	return m_pDevice->CreateOffscreenPlainSurface(Width, Height, Format, Pool, ppSurface, pSharedHandle);
 }
 
 HRESULT WINAPI BaseDirect3DDevice9::SetRenderTarget(DWORD RenderTargetIndex,IDirect3DSurface9* pRenderTarget)
 {
-	////OutputDebugString(__FUNCTION__); 
-	////OutputDebugString("\n"); 
+	
 	return m_pDevice->SetRenderTarget(RenderTargetIndex, pRenderTarget);
 }
 
 HRESULT WINAPI BaseDirect3DDevice9::GetRenderTarget(DWORD RenderTargetIndex,IDirect3DSurface9** ppRenderTarget)
 {
-	////OutputDebugString(__FUNCTION__); 
-	////OutputDebugString("\n"); 
+	
 	return m_pDevice->GetRenderTarget(RenderTargetIndex, ppRenderTarget);
 }
 
 HRESULT WINAPI BaseDirect3DDevice9::SetDepthStencilSurface(IDirect3DSurface9* pNewZStencil)
 {
-	////OutputDebugString(__FUNCTION__); 
-	////OutputDebugString("\n"); 
+	
 	return m_pDevice->SetDepthStencilSurface(pNewZStencil);
 }
 
 HRESULT WINAPI BaseDirect3DDevice9::GetDepthStencilSurface(IDirect3DSurface9** ppZStencilSurface)
 {
-	////OutputDebugString(__FUNCTION__); 
-	////OutputDebugString("\n"); 
+	
 	return m_pDevice->GetDepthStencilSurface(ppZStencilSurface);
 }
 
 HRESULT WINAPI BaseDirect3DDevice9::BeginScene()
 {
-	////OutputDebugString(__FUNCTION__); 
-	////OutputDebugString("\n"); 
+	
 	return m_pDevice->BeginScene();
 }
 
 HRESULT WINAPI BaseDirect3DDevice9::EndScene()
 {
-	////OutputDebugString(__FUNCTION__); 
-	////OutputDebugString("\n"); 
+	
 	return m_pDevice->EndScene();
 }
 
 HRESULT WINAPI BaseDirect3DDevice9::Clear(DWORD Count,CONST D3DRECT* pRects,DWORD Flags,D3DCOLOR Color,float Z,DWORD Stencil)
 {
-	////OutputDebugString(__FUNCTION__); 
-	////OutputDebugString("\n"); 
+	
 	return m_pDevice->Clear(Count, pRects, Flags, Color, Z, Stencil);
 }
 

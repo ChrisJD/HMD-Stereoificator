@@ -35,7 +35,7 @@ However, I haven't actually included it in this repository yet.
 
 FreeTrackTracker::FreeTrackTracker(void):MotionTracker()
 {
-	OutputDebugString("FreeTrack Tracker Created\n");
+	LOG_NOTICE(log, "FreeTrack Tracker Created.");
 	init();
 }
 

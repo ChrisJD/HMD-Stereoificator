@@ -22,6 +22,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define PI 3.141592654
 #define RADIANS_TO_DEGREES(rad) ((float) rad * (float) (180.0 / PI))
 
+#include "global.h"
+
 #include <math.h>
 #include <windows.h>
 
@@ -71,6 +73,7 @@ protected:
 	float multiplierRoll;
 	INPUT mouseData;
 
+	Log::Logger log;
 	
 };
 

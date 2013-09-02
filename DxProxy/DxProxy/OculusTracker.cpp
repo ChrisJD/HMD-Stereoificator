@@ -36,10 +36,10 @@ OculusTracker::OculusTracker()
 		if (pSensor)
 			SFusion.AttachToSensor(pSensor);
 
-		OutputDebugString("OculusTracker Created\n");
+		LOG_NOTICE(log, "OculusTracker Created.");
 	}
 	else {
-		OutputDebugString("OculusTracker Not created, is the Rift's USB cable connected and the dev box powered?\n");
+		LOG_NOTICE(log, "OculusTracker Not created. Ensure the Rift's USB cable is connected, the dev box is powered and no other programs are using the tracker.");
 	}
 }
 
@@ -55,8 +55,6 @@ OculusTracker::~OculusTracker()
 
 int OculusTracker::getOrientationFromDevice(float* yaw, float* pitch, float* roll) 
 {
-	//OutputDebugString("OculusTracker getOrient\n");
-
 	if(SFusion.IsAttachedToSensor() == false)
 		return 1;												// error no sensor
 
