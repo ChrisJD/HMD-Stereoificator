@@ -338,6 +338,9 @@ private:
 	bool m_redShaderIsActive;
 	bool m_highlightDrawnWithoutVShader;
 	bool m_printSamplerDetails;
+
+	Log::Logger log;
+
 };
 
 #endif

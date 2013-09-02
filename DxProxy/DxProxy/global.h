@@ -33,6 +33,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #endif
 
 
+// Log levels
+// Debug - 
+// Info - 
+// Notice - Used for informational messages about normal events. These messages should always be enabled. They should be used sparingly and never anywhere where they could be repeatedly spammed.
+// Warning - Things that shouldn't occur during normal operation but are possibilities and have more comprehensive handling or fallback than errors.
+// Error - Things that shouldn't occur during normal operation, will prevent something from working and do not have fallback behvaiour beyond, "oh this thing didn't work".
+// Critical - Show stoppers, these messages will generally immediatelly be followed by the program coming to an end.
+
+
+
 // Use these macros rather than using the .debug(), etc methods directly to allow easy stripping of logs
 // logger is a Log::Logger
 #if LOGGING_LEVEL >= 6
@@ -47,11 +57,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define LOG_INFO(logger, logMsg) do { } while(0)
 #endif
 
-#if LOGGING_LEVEL >= 4
+// Notices are always on.
+//#if LOGGING_LEVEL >= 4
 #define LOG_NOTICE(logger, logMsg) do { logger.notice() << logMsg; } while(0)
-#else
-#define LOG_NOTICE(logger, logMsg) do { } while(0)
-#endif
+//#else
+//#define LOG_NOTICE(logger, logMsg) do { } while(0)
+//#endif
 
 #if LOGGING_LEVEL >= 3
 #define LOG_WARN(logger, logMsg) do { logger.warning() << logMsg; } while(0)

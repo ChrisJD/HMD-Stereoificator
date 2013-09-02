@@ -61,9 +61,10 @@ D3DProxyDevice::D3DProxyDevice(IDirect3DDevice9* pDevice, BaseDirect3D9* pCreate
 	m_redShaderIsActive(false),
 	m_highlightDrawnWithoutVShader(false),
 	m_primaryRenderTargetModeChanged(true),
-	m_printSamplerDetails(false)
+	m_printSamplerDetails(false),
+	log(LogName::D3D9Log)
 {
-	OutputDebugString("D3D ProxyDev Created\n");
+	LOG_NOTICE(log, "D3D ProxyDev Created.");
 
 	std::shared_ptr<HMDisplayInfo> defaultInfo = std::make_shared<HMDisplayInfo>(); // rift info
 	m_spShaderViewAdjustment = std::make_shared<ViewAdjustment>(defaultInfo, 1.0f, false);
@@ -126,19 +127,12 @@ D3DProxyDevice::D3DProxyDevice(IDirect3DDevice9* pDevice, BaseDirect3D9* pCreate
 		cfg.separationAdjustment = 0.0f;
 
 	config = cfg;
+	LOG_NOTICE(log, "Game Type = " << config.game_type);
 
 	trackerInitialized = false;
-
-	char buf[64];
-	LPCSTR psz = NULL;
-	sprintf_s(buf, "type: %d, aspect: %f\n", config.game_type, config.aspect_multiplier);
-	psz = buf;
-	OutputDebugString(psz);
-
+	
 	m_spShaderViewAdjustment->HMDInfo()->UpdateScale(config.horizontalGameFov);
-
 	m_spShaderViewAdjustment->Load(config);
-
 	
 	m_pDuplicationConditions = DuplicationConditionsFactory::Create((DuplicationConditionsFactory::DuplicationConditionNames)config.duplicationRules);
 	
@@ -148,11 +142,14 @@ D3DProxyDevice::D3DProxyDevice(IDirect3DDevice9* pDevice, BaseDirect3D9* pCreate
 		m_ShaderModificationRepository = new ShaderModificationRepository(m_spShaderViewAdjustment);
 	
 		if (!m_ShaderModificationRepository->LoadRules(cfg.shaderRulePath)) {
-			OutputDebugString("Rules failed to load.");
+			LOG_ERROR(log, "Shader modification rules failed to load.");
+		}
+		else {
+			LOG_NOTICE(log, "Shader modification rules '" << cfg.shaderRulePath << "' loaded.");
 		}
 	}
 	else {
-		OutputDebugString("No shader rule path found. No rules to apply");
+		LOG_NOTICE(log, "No 'shaderRulePath' specified in config. No shader modification rules have been loaded.");
 		// We call this success as we have successfully loaded nothing. We assume 'no rules' is intentional
 	}
 
@@ -164,10 +161,7 @@ D3DProxyDevice::D3DProxyDevice(IDirect3DDevice9* pDevice, BaseDirect3D9* pCreate
 	if (cfg.debugMode == 1) {
 		m_pDataGatherer = new DataGatherer();
 
-		OutputDebugString("Data Gatherering Mode Active.\n");
-		OutputDebugString("Data Gatherering Mode Active.\n");
-		OutputDebugString("Data Gatherering Mode Active.\n");
-		OutputDebugString("Data Gatherering Mode Active.\n");
+		LOG_NOTICE(log, "Data Gatherering Mode Active (debugMode == 1).");
 	}
 
 	OnCreateOrRestore();
@@ -223,8 +217,7 @@ D3DProxyDevice::~D3DProxyDevice()
 */
 void D3DProxyDevice::OnCreateOrRestore()
 {
-	OutputDebugString(__FUNCTION__);
-	OutputDebugString("\n");
+	LOG_INFO(__FUNCTION__);
 
 	m_currentRenderingSide = stereoificator::Left;
 	m_pCurrentView = &m_leftView;
@@ -233,7 +226,7 @@ void D3DProxyDevice::OnCreateOrRestore()
 	// Wrap the swap chain
 	IDirect3DSwapChain9* pActualPrimarySwapChain;
 	if (FAILED(BaseDirect3DDevice9::GetSwapChain(0, &pActualPrimarySwapChain))) {
-		OutputDebugString("Failed to fetch swapchain.\n");
+		LOG_CRIT(log, "Failed to fetch swapchain.");
 		exit(1); 
 	}
 
@@ -288,18 +281,18 @@ void D3DProxyDevice::OnCreateOrRestore()
 			IDirect3DPixelShader9* pPShader;
 			if (FAILED(CreatePixelShader((DWORD*)memblock, &pPShader))) {
 
-				OutputDebugString("MakeItRed, Create shader failed.\n");
+				LOG_ERROR(log, "MakeItRed, Create shader failed.");
 				SAFE_RELEASE(pPShader);
 			}
 			else {
 				m_pRedPixelShader = static_cast<BaseDirect3DPixelShader9*>(pPShader);
-				OutputDebugString("MakeItRed, Create shader  OK\n");
+				LOG_INFO(log, "MakeItRed, Create shader - OK\n");
 			}
 
 			delete[] memblock;
 		}
 		else { 
-			OutputDebugString("Unable to open MakeItRed file\n");
+			LOG_ERROR(log, "Unable to open MakeItRed file.");
 		}
 
 		
@@ -370,9 +363,6 @@ void D3DProxyDevice::ReleaseEverything()
  */
 HRESULT WINAPI D3DProxyDevice::Reset(D3DPRESENT_PARAMETERS* pPresentationParameters)
 {
-	//OutputDebugString(__FUNCTION__);
-	//OutputDebugString("\n");
-
 	if(stereoView)
 		stereoView->ReleaseEverything();
 
@@ -409,10 +399,10 @@ HRESULT WINAPI D3DProxyDevice::Reset(D3DPRESENT_PARAMETERS* pPresentationParamet
 		sprintf_s(buf, "Error: %s error description: %s\n",
 				DXGetErrorString(hr), DXGetErrorDescription(hr));
 
-		OutputDebugString(buf);
-				
+		LOG_WARN(log, "Device reset failed with '" << DXGetErrorString(hr) << "': " << DXGetErrorDescription(hr));
+#else
+		LOG_WARN(log, "Device reset failed.");
 #endif
-		OutputDebugString("Device reset failed");
 	}
 
 	return hr;
@@ -459,7 +449,7 @@ void D3DProxyDevice::HandleControls()
 				sstm << "Selected Shader Hash: " << m_pDataGatherer->CurrentHashCode() << std::endl;
 				sstm << "Vertex Shader Count: " << m_pDataGatherer->VShaderInUseCount() << std::endl;
 			}
-			OutputDebugString(sstm.str().c_str());
+			OutputDebugString(sstm.str().c_str()); // TODO we want this to OutbugDebugString instead of log at the moment, but it should be moved to an OSD
 
 			m_printSamplerDetails = !m_printSamplerDetails;
 
@@ -471,7 +461,7 @@ void D3DProxyDevice::HandleControls()
 			{
 				std::stringstream sstm;
 				sstm << "Current Shader Hash: " << m_pDataGatherer->NextShaderHash() << std::endl;
-				OutputDebugString(sstm.str().c_str());
+				OutputDebugString(sstm.str().c_str()); // TODO we want this to OutbugDebugString instead of log at the moment, but it should be moved to an OSD
 
 				anyKeyPressed = true;
 			}
@@ -480,7 +470,7 @@ void D3DProxyDevice::HandleControls()
 			{
 				std::stringstream sstm;
 				sstm << "Current Shader Hash: " << m_pDataGatherer->PreviousShaderHash() << std::endl;
-				OutputDebugString(sstm.str().c_str());
+				OutputDebugString(sstm.str().c_str()); // TODO we want this to OutbugDebugString instead of log at the moment, but it should be moved to an OSD
 
 				anyKeyPressed = true;
 			}
@@ -490,10 +480,10 @@ void D3DProxyDevice::HandleControls()
 				m_highlightDrawnWithoutVShader = !m_highlightDrawnWithoutVShader;
 				
 				if (m_highlightDrawnWithoutVShader) {
-					OutputDebugString("Highlighting models drawn without using a Vertex Shader.");
+					OutputDebugString("Highlighting models drawn without using a Vertex Shader."); // TODO we want this to OutbugDebugString instead of log at the moment, but it should be moved to an OSD
 				}
 				else {
-					OutputDebugString("Highlighting models drawn with selected Vertex Shader.");
+					OutputDebugString("Highlighting models drawn with selected Vertex Shader."); // TODO we want this to OutbugDebugString instead of log at the moment, but it should be moved to an OSD
 				}
 
 				anyKeyPressed = true;
@@ -509,12 +499,12 @@ void D3DProxyDevice::HandleControls()
 					m_pDataGatherer->EndInUseShaderCapture();
 
 					std::stringstream sstm;
-					sstm << "Capture ended, " << m_pDataGatherer->VShaderInUseCount() << " shaders used during capture period." << std::endl;
-					OutputDebugString(sstm.str().c_str());
+					sstm << "Capture ended, " << m_pDataGatherer->VShaderInUseCount() << " shaders used during capture period." << std::endl; 
+					OutputDebugString(sstm.str().c_str()); // TODO we want this to OutbugDebugString instead of log at the moment, but it should be moved to an OSD
 				}
 				else {
 					m_pDataGatherer->StartInUseShaderCapture();
-					OutputDebugString("Capture started.");
+					OutputDebugString("Capture started."); // TODO we want this to OutbugDebugString instead of log at the moment, but it should be moved to an OSD
 				}
 
 				anyKeyPressed = true;
@@ -613,7 +603,6 @@ void D3DProxyDevice::HandleControls()
 				ProxyHelper helper;
 				helper.LoadUserConfig(config, true);
 				m_spShaderViewAdjustment->Load(config);
-				OutputDebugString("reset defaults pressed\n");
 			}
 			else {
 				stereoView->swapEyes = !stereoView->swapEyes;
@@ -716,7 +705,7 @@ void D3DProxyDevice::HandleTracking()
 
 	if (!trackerInitialized)
 	{
-		OutputDebugString("Try to init Tracker\n");
+		LOG_NOTICE(log, "Initializing Tracker.");
 		tracker = MotionTrackerFactory::Get(config);
 		tracker->setMultipliers(config.yaw_multiplier, config.pitch_multiplier, config.roll_multiplier);
 		trackerInitialized = true;
@@ -840,13 +829,13 @@ HRESULT WINAPI D3DProxyDevice::CreateRenderTarget(UINT Width, UINT Height, D3DFO
 		if (m_pDuplicationConditions->ShouldDuplicateRenderTarget(Width, Height, Format, MultiSample, MultisampleQuality, Lockable, isSwapChainBackBuffer))
 		{
 			if (FAILED(BaseDirect3DDevice9::CreateRenderTarget(Width, Height, Format, MultiSample, MultisampleQuality, Lockable, &pRightRenderTarget, pSharedHandle))) {
-				OutputDebugString("Failed to create right eye render target while attempting to create stereo pair, falling back to mono\n");
+				LOG_WARN(log, "Failed to create right eye render target while attempting to create stereo pair, falling back to mono.");
 				pRightRenderTarget = NULL;
 			}
 		}
 	}
 	else {
-		OutputDebugString("Failed to create render target\n"); 
+		LOG_DEBUG(log, "Failed to create render target."); 
 	}
 
 
@@ -869,8 +858,6 @@ HRESULT WINAPI D3DProxyDevice::CreateRenderTarget(UINT Width, UINT Height, D3DFO
 HRESULT WINAPI D3DProxyDevice::CreateRenderTarget(UINT Width, UINT Height, D3DFORMAT Format, D3DMULTISAMPLE_TYPE MultiSample,
 													DWORD MultisampleQuality,BOOL Lockable,IDirect3DSurface9** ppSurface,HANDLE* pSharedHandle)
 {
-	//OutputDebugString(__FUNCTION__); 
-	//OutputDebugString("\n"); 
 
 	return CreateRenderTarget(Width, Height, Format, MultiSample, MultisampleQuality, Lockable, ppSurface, pSharedHandle, false);
 }
@@ -880,8 +867,6 @@ HRESULT WINAPI D3DProxyDevice::CreateRenderTarget(UINT Width, UINT Height, D3DFO
 
 HRESULT WINAPI D3DProxyDevice::CreateDepthStencilSurface(UINT Width,UINT Height,D3DFORMAT Format,D3DMULTISAMPLE_TYPE MultiSample,DWORD MultisampleQuality,BOOL Discard,IDirect3DSurface9** ppSurface,HANDLE* pSharedHandle)
 {
-	//OutputDebugString(__FUNCTION__);
-	//OutputDebugString("\n");
 
 	IDirect3DSurface9* pDepthStencilSurfaceLeft = NULL;
 	IDirect3DSurface9* pDepthStencilSurfaceRight = NULL;
@@ -897,13 +882,13 @@ HRESULT WINAPI D3DProxyDevice::CreateDepthStencilSurface(UINT Width,UINT Height,
 		if (m_pDuplicationConditions->ShouldDuplicateDepthStencilSurface(Width, Height, Format, MultiSample, MultisampleQuality, Discard)) 
 		{
 			if (FAILED(BaseDirect3DDevice9::CreateDepthStencilSurface(Width, Height, Format, MultiSample, MultisampleQuality, Discard, &pDepthStencilSurfaceRight, pSharedHandle))) {
-				OutputDebugString("Failed to create right eye Depth Stencil Surface while attempting to create stereo pair, falling back to mono\n");
+				LOG_WARN(log, "Failed to create right eye Depth Stencil Surface while attempting to create stereo pair, falling back to mono.");
 				pDepthStencilSurfaceRight = NULL;
 			}
 		}
 	}
 	else {
-		OutputDebugString("Failed to create Depth Stencil Surface\n"); 
+		LOG_DEBUG(log, "Failed to create Depth Stencil Surface."); 
 	}
 
 
@@ -919,9 +904,6 @@ HRESULT WINAPI D3DProxyDevice::CreateDepthStencilSurface(UINT Width,UINT Height,
 
 HRESULT WINAPI D3DProxyDevice::CreateOffscreenPlainSurface(UINT Width,UINT Height,D3DFORMAT Format,D3DPOOL Pool,IDirect3DSurface9** ppSurface,HANDLE* pSharedHandle)
 {
-	//OutputDebugString(__FUNCTION__); 
-	//OutputDebugString("\n"); 
-
 	// OffscreenPlainSurfaces doesn't need to be Stereo. They can't be used as render targets and they can't have rendertargets copied to them with stretch rect,
 	// so don't need to be stereo capable.
 	// See table at bottom of http://msdn.microsoft.com/en-us/library/windows/desktop/bb174471%28v=vs.85%29.aspx for stretch rect restrictions
@@ -938,9 +920,6 @@ HRESULT WINAPI D3DProxyDevice::CreateOffscreenPlainSurface(UINT Width,UINT Heigh
 
 HRESULT WINAPI D3DProxyDevice::CreateTexture(UINT Width,UINT Height,UINT Levels,DWORD Usage,D3DFORMAT Format,D3DPOOL Pool,IDirect3DTexture9** ppTexture,HANDLE* pSharedHandle)
 {
-	//OutputDebugString(__FUNCTION__); 
-	//OutputDebugString("\n"); 
-
 	HRESULT creationResult;
 	IDirect3DTexture9* pLeftTexture = NULL;
 	IDirect3DTexture9* pRightTexture = NULL;	
@@ -956,13 +935,13 @@ HRESULT WINAPI D3DProxyDevice::CreateTexture(UINT Width,UINT Height,UINT Levels,
 		if (m_pDuplicationConditions->ShouldDuplicateTexture(Width, Height, Levels, Usage, Format, Pool)) {
 
 			if (FAILED(BaseDirect3DDevice9::CreateTexture(Width, Height, Levels, Usage, Format, Pool, &pRightTexture, pSharedHandle))) {
-				OutputDebugString("Failed to create right eye texture while attempting to create stereo pair, falling back to mono\n");
+				LOG_WARN(log, "Failed to create right eye texture while attempting to create stereo pair, falling back to mono.");
 				pRightTexture = NULL;
 			}
 		}
 	}
 	else {
-		OutputDebugString("Failed to create texture\n"); 
+		LOG_DEBUG(log, "Failed to create texture."); 
 	}
 
 	if (SUCCEEDED(creationResult))
@@ -976,9 +955,6 @@ HRESULT WINAPI D3DProxyDevice::CreateTexture(UINT Width,UINT Height,UINT Levels,
 
 HRESULT WINAPI D3DProxyDevice::CreateCubeTexture(UINT EdgeLength, UINT Levels, DWORD Usage, D3DFORMAT Format, D3DPOOL Pool, IDirect3DCubeTexture9** ppCubeTexture, HANDLE* pSharedHandle)
 {
-	//OutputDebugString(__FUNCTION__); 
-	//OutputDebugString("\n"); 
-
 	HRESULT creationResult;
 	IDirect3DCubeTexture9* pLeftCubeTexture = NULL;
 	IDirect3DCubeTexture9* pRightCubeTexture = NULL;	
@@ -994,13 +970,13 @@ HRESULT WINAPI D3DProxyDevice::CreateCubeTexture(UINT EdgeLength, UINT Levels, D
 		if (m_pDuplicationConditions->ShouldDuplicateCubeTexture(EdgeLength, Levels, Usage, Format, Pool)) {
 
 			if (FAILED(BaseDirect3DDevice9::CreateCubeTexture(EdgeLength, Levels, Usage, Format, Pool, &pRightCubeTexture, pSharedHandle))) {
-				OutputDebugString("Failed to create right eye texture while attempting to create stereo pair, falling back to mono\n");
+				LOG_WARN(log, "Failed to create right eye texture while attempting to create stereo pair, falling back to mono.");
 				pRightCubeTexture = NULL;
 			}
 		}
 	}
 	else {
-		OutputDebugString("Failed to create texture\n"); 
+		LOG_DEBUG(log, "Failed to create texture."); 
 	}
 
 	if (SUCCEEDED(creationResult))
@@ -1012,9 +988,6 @@ HRESULT WINAPI D3DProxyDevice::CreateCubeTexture(UINT EdgeLength, UINT Levels, D
 
 HRESULT WINAPI D3DProxyDevice::CreateVolumeTexture(UINT Width,UINT Height,UINT Depth,UINT Levels,DWORD Usage,D3DFORMAT Format,D3DPOOL Pool,IDirect3DVolumeTexture9** ppVolumeTexture,HANDLE* pSharedHandle)
 {
-	//OutputDebugString(__FUNCTION__); 
-	//OutputDebugString("\n"); 
-
 	// Volumes can't be used as render targets and therefore don't need to be stereo (in DX9)
 	IDirect3DVolumeTexture9* pActualTexture = NULL;
 	HRESULT creationResult = BaseDirect3DDevice9::CreateVolumeTexture(Width, Height, Depth, Levels, Usage, Format, Pool, &pActualTexture, pSharedHandle);
@@ -1138,16 +1111,7 @@ HRESULT WINAPI D3DProxyDevice::Clear(DWORD Count,CONST D3DRECT* pRects,DWORD Fla
 			HRESULT hr;
 			if (FAILED(hr = BaseDirect3DDevice9::Clear(Count, pRects, Flags, Color, Z, Stencil))) {
 
-#ifdef _DEBUG
-
-				char buf[256];
-				sprintf_s(buf, "Error: %s error description: %s\n",
-						DXGetErrorString(hr), DXGetErrorDescription(hr));
-
-				OutputDebugString(buf);
-				OutputDebugString("Clear failed\n");
-				
-#endif
+				LOG_DEBUG(log, "Second clear failed.");
 				
 			}
 		}
@@ -1193,8 +1157,7 @@ void D3DProxyDevice::BeforeDrawing()
 					break;
 
 				default:
-					OutputDebugString("BeforeDrawing - Unknown rendering position");
-					DebugBreak();
+					LOG_ERROR(log, "BeforeDrawing - Unknown rendering position.");
 					break;
 				}
 			}
@@ -1215,8 +1178,7 @@ void D3DProxyDevice::BeforeDrawing()
 				break;
 
 			default:
-				OutputDebugString("BeforeDrawing - Unknown rendering position - depth stencil");
-				DebugBreak();
+				LOG_ERROR(log, "BeforeDrawing - Unknown rendering position - depth stencil");
 				break;
 			}
 		}
@@ -1291,7 +1253,7 @@ void D3DProxyDevice::BeforeDrawing()
 				++rtIt;
 			}
 
-			OutputDebugString(sstm.str().c_str());
+			OutputDebugString(sstm.str().c_str()); // TODO we want this here rather than the log atm?
 		}
 	}
 }
@@ -1319,9 +1281,9 @@ HRESULT WINAPI D3DProxyDevice::DrawIndexedPrimitive(D3DPRIMITIVETYPE PrimitiveTy
 	HRESULT result;
 	if (SUCCEEDED(result = BaseDirect3DDevice9::DrawIndexedPrimitive(PrimitiveType, BaseVertexIndex, MinVertexIndex, NumVertices, startIndex, primCount))) {
 		if (m_activeRenderTargets[0]->IsStereo() && switchDrawingSide()) {
-			HRESULT result2 = BaseDirect3DDevice9::DrawIndexedPrimitive(PrimitiveType, BaseVertexIndex, MinVertexIndex, NumVertices, startIndex, primCount);
-			if (result != result2)
-				OutputDebugString("moop\n");
+			if (FAILED(BaseDirect3DDevice9::DrawIndexedPrimitive(PrimitiveType, BaseVertexIndex, MinVertexIndex, NumVertices, startIndex, primCount))) {
+				LOG_DEBUG(log, __FUNCTION__ << ": Failed to draw to second side.");
+			}
 		}
 	}
 
@@ -1494,9 +1456,8 @@ HRESULT WINAPI D3DProxyDevice::SetStreamSource(UINT StreamNumber, IDirect3DVerte
 					pStreamData->AddRef();
 			}
 			else {
-				OutputDebugString(__FUNCTION__);
-				OutputDebugString("\n");
-				OutputDebugString("Unable to store active Texture Stage.\n");
+				LOG_CRIT(log, __FUNCTION__);
+				LOG_CRIT(log, "Unable to store active Texture Stage.");
 				assert(false);
 
 				//If we get here the state of the texture tracking is fubared and an implosion is imminent.
@@ -1544,7 +1505,7 @@ HRESULT WINAPI D3DProxyDevice::SetRenderTarget(DWORD RenderTargetIndex, IDirect3
 
 #ifdef _DEBUG
 	if (newRenderTarget && !newRenderTarget->getActualLeft() && !newRenderTarget->getActualRight()) {
-		OutputDebugString("RenderTarget is not a valid (D3D9ProxySurface) stereo capable surface\n"); 
+		LOG_ERROR(log, "RenderTarget is not a valid (D3D9ProxySurface) stereo capable surface."); 
 	}
 #endif
 	
@@ -1555,7 +1516,7 @@ HRESULT WINAPI D3DProxyDevice::SetRenderTarget(DWORD RenderTargetIndex, IDirect3
 	// Removing a render target
 	if (newRenderTarget == NULL) {
 		if (RenderTargetIndex == 0) {
-			OutputDebugString("Attempt to set primary render target to null, implosion imminent");
+			LOG_INFO(log, "Attempt to set primary render target to null. Returning D3DERR_INVALIDCALL to calling application.");
 			result = D3DERR_INVALIDCALL; 
 		}		
 		else {
@@ -1603,8 +1564,7 @@ HRESULT WINAPI D3DProxyDevice::SetRenderTarget(DWORD RenderTargetIndex, IDirect3
 
 			default:
 
-				OutputDebugString("SetRenderTarget - Unknown rendering position");
-				DebugBreak();
+				LOG_ERROR(log, "SetRenderTarget - Unknown rendering position.");
 
 				break;
 			}
@@ -1628,8 +1588,7 @@ HRESULT WINAPI D3DProxyDevice::SetRenderTarget(DWORD RenderTargetIndex, IDirect3
 		default:
 
 			result = D3DERR_INVALIDCALL;
-			OutputDebugString("SetRenderTarget - Unknown rendering position");
-			DebugBreak();
+			LOG_ERROR(log, "SetRenderTarget - Unknown rendering position.");
 
 			break;
 		}
@@ -1704,9 +1663,7 @@ HRESULT WINAPI D3DProxyDevice::SetDepthStencilSurface(IDirect3DSurface9* pNewZSt
 			break;
 
 		default:
-			OutputDebugString("SetDepthStencilSurface - Unknown rendering position");
-			DebugBreak();
-
+			LOG_ERROR(log, "SetDepthStencilSurface - Unknown rendering position");
 			break;
 		}
 	}
@@ -1770,8 +1727,7 @@ HRESULT WINAPI D3DProxyDevice::SetTexture(DWORD Stage,IDirect3DBaseTexture9* pTe
 			break;
 
 		default:
-			OutputDebugString("BeforeDrawing - Unknown rendering position");
-			DebugBreak();
+			LOG_ERROR(log, "BeforeDrawing - Unknown rendering position.");
 			break;
 		}
 	}
@@ -1809,9 +1765,8 @@ HRESULT WINAPI D3DProxyDevice::SetTexture(DWORD Stage,IDirect3DBaseTexture9* pTe
 					pTexture->AddRef();
 			}
 			else {
-				OutputDebugString(__FUNCTION__);
-				OutputDebugString("\n");
-				OutputDebugString("Unable to store active Texture Stage.\n");
+				LOG_CRIT(log, __FUNCTION__);
+				LOG_CRIT(log, "Unable to store active Texture Stage.");
 				assert(false);
 
 				//If we get here the state of the texture tracking is fubared and an implosion is imminent.
@@ -2042,7 +1997,7 @@ bool D3DProxyDevice::switchDrawingSide()
 		switched = setDrawingSide(stereoificator::Left);
 	}
 	else {
-		OutputDebugString("Tried to switch side when side wasn't left or right");
+		LOG_INFO(log, "Tried to switch side when side wasn't left or right");
 		switched = false;
 	}
 
@@ -2100,13 +2055,12 @@ bool D3DProxyDevice::setDrawingSide(stereoificator::RenderPosition side)
 				break;
 
 			default:
-				OutputDebugString("SetSide - Unknown rendering position");
-				DebugBreak();
+				LOG_ERROR(log, "SetSide - Unknown rendering position");
 				break;
 			}
 				
 			if (result != D3D_OK) {
-				OutputDebugString("Error trying to set one of the Render Targets while switching between active eyes for drawing.\n");
+				LOG_DEBUG(log, "Error trying to set one of the Render Targets while switching between active eyes for drawing.");
 			}
 			else {
 				renderTargetChanged = true;
@@ -2139,9 +2093,7 @@ bool D3DProxyDevice::setDrawingSide(stereoificator::RenderPosition side)
 			break;
 
 		default:
-			OutputDebugString("SetDepthStencilSurface - Unknown rendering position");
-			DebugBreak();
-
+			LOG_ERROR(log, "SetDepthStencilSurface - Unknown rendering position.");
 			break;
 		}			
 	}
@@ -2167,8 +2119,9 @@ bool D3DProxyDevice::setDrawingSide(stereoificator::RenderPosition side)
 			}
 			// else the texture is mono and doesn't need changing. It will always be set initially and then won't need changing
 				
-			if (result != D3D_OK)
-				OutputDebugString("Error trying to set one of the textures while switching between active eyes for drawing.\n");
+			if (result != D3D_OK) {
+				LOG_DEBUG(log, "Error trying to set one of the textures while switching between active eyes for drawing.");
+			}
 		}
 	}
 
@@ -2192,9 +2145,7 @@ bool D3DProxyDevice::setDrawingSide(stereoificator::RenderPosition side)
 
 		default:
 
-			OutputDebugString("Unknown rendering position");
-			DebugBreak();
-
+			LOG_ERROR(log, "Unknown rendering position");
 			break;
 		}
 
@@ -2221,8 +2172,7 @@ bool D3DProxyDevice::setDrawingSide(stereoificator::RenderPosition side)
 
 		default:
 
-			OutputDebugString("Unknown rendering position");
-			DebugBreak();
+			LOG_ERROR(log, "Unknown rendering position");
 
 			break;
 		}
@@ -2256,7 +2206,7 @@ HRESULT WINAPI D3DProxyDevice::Present(CONST RECT* pSourceRect,CONST RECT* pDest
 		pWrappedBackBuffer->Release();
 	}
 	catch (std::out_of_range) {
-		OutputDebugString("Present: No primary swap chain found. (Present probably called before device has been reset)");
+		LOG_ERROR(log, __FUNCTION__ << ": No primary swap chain found. (Present probably called before device has been reset)");
 	}
 
 	
@@ -2286,7 +2236,7 @@ HRESULT WINAPI D3DProxyDevice::GetBackBuffer(UINT iSwapChain,UINT iBackBuffer,D3
 		// ref count increase happens in the swapchain GetBackBuffer so we don't add another ref here as we are just passing the value through
 	}
 	catch (std::out_of_range) {
-		OutputDebugString("GetBackBuffer: out of range getting swap chain");
+		LOG_WARN(log, "GetBackBuffer: out of range getting swap chain.");
 		result = D3DERR_INVALIDCALL;
 	}
 
@@ -2304,7 +2254,7 @@ HRESULT WINAPI D3DProxyDevice::GetSwapChain(UINT iSwapChain,IDirect3DSwapChain9*
 		(*pSwapChain)->AddRef();
 	}
 	catch (std::out_of_range) {
-		OutputDebugString("GetSwapChain: out of range fetching swap chain");
+		LOG_WARN(log, "GetSwapChain: out of range fetching swap chain");
 		return D3DERR_INVALIDCALL;
 	}
 
@@ -2332,7 +2282,7 @@ HRESULT WINAPI D3DProxyDevice::GetFrontBufferData(UINT iSwapChain, IDirect3DSurf
 		result = m_activeSwapChains.at(iSwapChain)->GetFrontBufferData(pDestSurface);
 	}
 	catch (std::out_of_range) {
-		OutputDebugString("GetFrontBufferData: out of range fetching swap chain");
+		LOG_WARN(log, "GetFrontBufferData: out of range fetching swap chain");
 		result = D3DERR_INVALIDCALL;
 	}
 
@@ -2356,18 +2306,18 @@ HRESULT WINAPI D3DProxyDevice::GetRenderTargetData(IDirect3DSurface9* pRenderTar
 
 	if (SUCCEEDED(result)) {
 		if (!pRenderTargetRight && pDestSurfaceRight) {
-			//OutputDebugString("INFO: GetRenderTargetData - Source is not stereo, destination is stereo. Copying source to both sides of destination.\n");
+			//LOG_INFO(log, "INFO: GetRenderTargetData - Source is not stereo, destination is stereo. Copying source to both sides of destination.");
 
 			if (FAILED(BaseDirect3DDevice9::GetRenderTargetData(pRenderTargetLeft, pDestSurfaceRight))) {
-				OutputDebugString("ERROR: GetRenderTargetData - Failed to copy source left to destination right.\n");
+				LOG_INFO(log, "GetRenderTargetData - Failed to copy source left to destination right.");
 			}
 		} 
 		else if (pRenderTargetRight && !pDestSurfaceRight) {
-			//OutputDebugString("INFO: GetRenderTargetData - Source is stereo, destination is not stereo. Copied Left side only.\n");
+			//LOG_INFO(log, "INFO: GetRenderTargetData - Source is stereo, destination is not stereo. Copied Left side only.");
 		}
 		else if (pRenderTargetRight && pDestSurfaceRight)	{
 			if (FAILED(BaseDirect3DDevice9::GetRenderTargetData(pRenderTargetRight, pDestSurfaceRight))) {
-				OutputDebugString("ERROR: GetRenderTargetData - Failed to copy source right to destination right.\n");
+				LOG_INFO(log, "GetRenderTargetData - Failed to copy source right to destination right.");
 			}
 		}
 	}
@@ -2403,18 +2353,18 @@ HRESULT WINAPI D3DProxyDevice::StretchRect(IDirect3DSurface9* pSourceSurface,CON
 
 	if (SUCCEEDED(result)) {
 		if (!pWrappedSource->ContainsStereoData() && pWrappedDest->IsStereo()) {
-			//OutputDebugString("INFO: StretchRect - Source is not stereo, destination is stereo. Copying source to both sides of destination.\n");
+			//LOG_INFO(log, "StretchRect - Source is not stereo, destination is stereo. Copying source to both sides of destination.");
 
 			if (FAILED(BaseDirect3DDevice9::StretchRect(pSourceSurfaceLeft, pSourceRect, pDestSurfaceRight, pDestRect, Filter))) {
-				OutputDebugString("ERROR: StretchRect - Failed to copy source left to destination right.\n");
+				LOG_INFO(log, "StretchRect - Failed to copy source left to destination right.");
 			}
 		} 
 		else if (pWrappedSource->ContainsStereoData() && !pWrappedDest->IsStereo()) {
-			//OutputDebugString("INFO: StretchRect - Source is stereo, destination is not stereo. Copied Left side only.\n");
+			//LOG_INFO(log, "StretchRect - Source is stereo, destination is not stereo. Copied Left side only.");
 		}
 		else if (pWrappedSource->ContainsStereoData() && pWrappedDest->IsStereo())	{
 			if (FAILED(BaseDirect3DDevice9::StretchRect(pSourceSurfaceRight, pSourceRect, pDestSurfaceRight, pDestRect, Filter))) {
-				OutputDebugString("ERROR: StretchRect - Failed to copy source right to destination right.\n");
+				LOG_INFO(log, "StretchRect - Failed to copy source right to destination right.");
 			}
 		}
 	}
@@ -2440,18 +2390,18 @@ HRESULT WINAPI D3DProxyDevice::UpdateSurface(IDirect3DSurface9* pSourceSurface,C
 
 	if (SUCCEEDED(result)) {
 		if (!pWrappedSource->ContainsStereoData() && pWrappedDest->IsStereo()) {
-			//OutputDebugString("INFO: UpdateSurface - Source is not stereo, destination is stereo. Copying source to both sides of destination.\n");
+			//LOG_INFO(log, "UpdateSurface - Source is not stereo, destination is stereo. Copying source to both sides of destination.");
 
 			if (FAILED(BaseDirect3DDevice9::UpdateSurface(pSourceSurfaceLeft, pSourceRect, pDestSurfaceRight, pDestPoint))) {
-				OutputDebugString("ERROR: UpdateSurface - Failed to copy source left to destination right.\n");
+				LOG_INFO(log, "UpdateSurface - Failed to copy source left to destination right.");
 			}
 		} 
 		else if (pWrappedSource->ContainsStereoData() && !pWrappedDest->IsStereo()) {
-			//OutputDebugString("INFO: UpdateSurface - Source is stereo, destination is not stereo. Copied Left side only.\n");
+			//LOG_INFO(log, "UpdateSurface - Source is stereo, destination is not stereo. Copied Left side only.");
 		}
 		else if (pWrappedSource->ContainsStereoData() && pWrappedDest->IsStereo())	{
 			if (FAILED(BaseDirect3DDevice9::UpdateSurface(pSourceSurfaceRight, pSourceRect, pDestSurfaceRight, pDestPoint))) {
-				OutputDebugString("ERROR: UpdateSurface - Failed to copy source right to destination right.\n");
+				LOG_INFO(log, "UpdateSurface - Failed to copy source right to destination right.");
 			}
 		}
 	}
@@ -2480,18 +2430,18 @@ HRESULT WINAPI D3DProxyDevice::UpdateTexture(IDirect3DBaseTexture9* pSourceTextu
 
 	if (SUCCEEDED(result)) {
 		if (!sourceContainsStereoData && pDestTextureRight) {
-			//OutputDebugString("INFO: UpdateTexture - Source is not stereo, destination is stereo. Copying source to both sides of destination.\n");
+			//LOG_INFO(log,  "UpdateTexture - Source is not stereo, destination is stereo. Copying source to both sides of destination.");
 
 			if (FAILED(BaseDirect3DDevice9::UpdateTexture(pSourceTextureLeft, pDestTextureRight))) {
-				OutputDebugString("ERROR: UpdateTexture - Failed to copy source left to destination right.\n");
+				LOG_INFO(log, "UpdateTexture - Failed to copy source left to destination right.");
 			}
 		} 
 		else if (sourceContainsStereoData && !pDestTextureRight) {
-			//OutputDebugString("INFO: UpdateTexture - Source is stereo, destination is not stereo. Copied Left side only.\n");
+			//LOG_INFO(log, "UpdateTexture - Source is stereo, destination is not stereo. Copied Left side only.");
 		}
 		else if (sourceContainsStereoData && pDestTextureRight)	{
 			if (FAILED(BaseDirect3DDevice9::UpdateTexture(pSourceTextureRight, pDestTextureRight))) {
-				OutputDebugString("ERROR: UpdateTexture - Failed to copy source right to destination right.\n");
+				LOG_INFO(log, "UpdateTexture - Failed to copy source right to destination right.");
 			}
 		}
 	}
@@ -2529,9 +2479,7 @@ HRESULT D3DProxyDevice::SetStereoViewTransform(D3DXMATRIX pCenterMatrix, D3DXMAT
 
 	default:
 
-		OutputDebugString("Unknown rendering position");
-		DebugBreak();
-
+		LOG_ERROR(log, "Unknown rendering position");
 		break;
 	}
 
@@ -2573,9 +2521,7 @@ HRESULT D3DProxyDevice::SetStereoProjectionTransform(D3DXMATRIX pCenterMatrix, D
 
 	default:
 
-		OutputDebugString("Unknown rendering position");
-		DebugBreak();
-
+		LOG_ERROR(log, "Unknown rendering position");
 		break;
 	}
 
@@ -2641,9 +2587,7 @@ HRESULT WINAPI D3DProxyDevice::SetTransform(D3DTRANSFORMSTATETYPE State, CONST D
 
 			default:
 
-				OutputDebugString("Unknown rendering position");
-				DebugBreak();
-
+				LOG_ERROR(log, "Unknown rendering position");
 				break;
 			}
 
@@ -2709,9 +2653,7 @@ HRESULT WINAPI D3DProxyDevice::SetTransform(D3DTRANSFORMSTATETYPE State, CONST D
 
 			default:
 
-				OutputDebugString("Unknown rendering position");
-				DebugBreak();
-
+				LOG_ERROR(log, "Unknown rendering position");
 				break;
 			}
 
@@ -2732,9 +2674,8 @@ HRESULT WINAPI D3DProxyDevice::SetTransform(D3DTRANSFORMSTATETYPE State, CONST D
 
 HRESULT WINAPI D3DProxyDevice::MultiplyTransform(D3DTRANSFORMSTATETYPE State,CONST D3DMATRIX* pMatrix)
 {
-	OutputDebugString(__FUNCTION__); 
-	OutputDebugString("\n"); 
-	OutputDebugString("Not implemented - Fix Me!\n"); 
+	LOG_CRIT(log, __FUNCTION__); 
+	LOG_CRIT(log, "Not implemented - Fix Me!\n"); 
 
 	return BaseDirect3DDevice9::MultiplyTransform(State, pMatrix);
 }
@@ -2811,12 +2752,12 @@ void D3DProxyDevice::UnWrapTexture(IDirect3DBaseTexture9* pWrappedTexture, IDire
 		}
 
 		default:
-			OutputDebugString("Unhandled texture type in SetTexture\n");
+			LOG_ERROR(log, "Unhandled texture type in SetTexture.");
 			break;
 	}
 
 	if ((*ppActualLeftTexture) == NULL) {
-		OutputDebugString("No left texture? Unpossible!\n");
+		LOG_CRIT(log, "No left texture? Unpossible!");
 		assert (false);
 	}
 }
