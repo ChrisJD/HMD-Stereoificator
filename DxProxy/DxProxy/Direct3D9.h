@@ -19,11 +19,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef DIRECT3D9_H_INCLUDED
 #define DIRECT3D9_H_INCLUDED
 
-#include <d3d9.h>
+#pragma comment(lib, "dxgi.lib")
+
 #include "ProxyHelper.h"
 #include "global.h"
 
-
+#include <windows.h>
+#include <d3d9.h>
+#include <cstring>
 
 class __declspec(dllexport) BaseDirect3D9 : public IDirect3D9
 {

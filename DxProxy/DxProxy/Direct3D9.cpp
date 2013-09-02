@@ -21,12 +21,88 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "Main.h"
 #include "D3DProxyDevice.h"
 
+#include <DXGI.h>
+
 BaseDirect3D9::BaseDirect3D9(IDirect3D9* pD3D) :
 	m_pD3D(pD3D),
 	m_nRefCount(1),
 	log(LogName::D3D9Log)
 {
-	
+	IDXGIFactory* pFactory;
+	HRESULT hr = CreateDXGIFactory(__uuidof(IDXGIFactory), (void**)(&pFactory) );
+
+	if (SUCCEEDED(hr)) {
+		LOG_NOTICE(log, "DXGI Factory created - OK");
+
+		UINT i = 0; 
+		IDXGIAdapter* pAdapter; 
+		std::vector <IDXGIAdapter*> adapters; 
+		while(pFactory->EnumAdapters(i, &pAdapter) != DXGI_ERROR_NOT_FOUND) 
+		{ 
+			adapters.push_back(pAdapter); 
+			++i; 
+		} 
+
+		auto itAdapter = adapters.begin();
+		while (itAdapter != adapters.end()) 
+		{
+			UINT iOutput = 0; 
+			IDXGIOutput* pOutput; 
+			while((*itAdapter)->EnumOutputs(iOutput, &pOutput) != DXGI_ERROR_NOT_FOUND) 
+			{
+				DXGI_OUTPUT_DESC outputDesc;
+				pOutput->GetDesc(&outputDesc);
+
+				LOG_NOTICE(log, "Device Name:" << outputDesc.DeviceName);
+				
+				//MONITORINFOEX monitorInfo;
+				//monitorInfo.cbSize = sizeof(MONITORINFOEX);
+				//GetMonitorInfo(outputDesc.Monitor, &monitorInfo);
+				
+				//LOG_DEBUG(log, "Device Name:" << monitorInfo.szDevice);
+
+				DISPLAY_DEVICE device;
+				ZeroMemory(&device, sizeof(DISPLAY_DEVICE));
+				device.cb = sizeof(DISPLAY_DEVICE);
+				if (EnumDisplayDevices(NULL, iOutput, &device, 0) != 0) {
+
+					LOG_DEBUG(log, "Device Name:" << device.DeviceName);
+					LOG_DEBUG(log, "Device ID:" << device.DeviceID);
+					LOG_DEBUG(log, "Device Key:" << device.DeviceKey);
+					LOG_DEBUG(log, "Device String:" << device.DeviceString);
+
+					DISPLAY_DEVICE monitorDevice;
+					ZeroMemory(&device, sizeof(DISPLAY_DEVICE));
+					monitorDevice.cb = sizeof(DISPLAY_DEVICE);
+
+					if (EnumDisplayDevices(device.DeviceName, 0, &monitorDevice, 0) != 0) {
+						LOG_DEBUG(log, "Monitor Device Name:" << monitorDevice.DeviceName);
+						LOG_DEBUG(log, "Monitor Device ID:" << monitorDevice.DeviceID);
+						LOG_DEBUG(log, "Monitor Device Key:" << monitorDevice.DeviceKey);
+						LOG_DEBUG(log, "Monitor Device String:" << monitorDevice.DeviceString);
+
+						// If Rift Dev Kit
+						if (strstr(monitorDevice.DeviceID, "OVR0001")) {
+
+						}
+					}
+				}
+
+				
+				++iOutput; 
+			} 
+			
+			
+
+
+
+			++itAdapter;
+		}
+
+	}
+	else {
+		LOG_WARN(log, "DXGI Factory creation failed.");
+	}
 }
 
 BaseDirect3D9::~BaseDirect3D9()
