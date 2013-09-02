@@ -63,7 +63,7 @@ public:
 			hudScale(1.0f),
 			hudDistance(1.0f),
 			debugMode(0), // 0 == off
-			forceAdapterNumber(-1), // -1 == disabled
+			forceDisplayOnRift(true), 
 			duplicationRules(0) 
 		{}
 
@@ -91,7 +91,7 @@ public:
 		float hudDistance;
 
 		int debugMode;
-		int forceAdapterNumber;
+		bool forceDisplayOnRift;
 		int hudDistanceMode;
 	};
 

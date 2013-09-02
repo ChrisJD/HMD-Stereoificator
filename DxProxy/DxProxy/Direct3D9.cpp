@@ -88,7 +88,7 @@ BaseDirect3D9::BaseDirect3D9(IDirect3D9* pD3D) :
 			LOG_DEBUG(log, "DevName: " << adapterID.DeviceName);
 
 			if (riftDeviceName.find(adapterID.DeviceName) != std::string::npos) {
-				LOG_NOTICE(log, "Rift connected to adapter " << i);
+				LOG_NOTICE(log, "Rift connected to D3D adapter " << i);
 				m_isRiftAdapterValid = true;
 				m_riftAdapter = i;
 				break;
@@ -212,13 +212,12 @@ HRESULT WINAPI BaseDirect3D9::CreateDevice(UINT Adapter, D3DDEVTYPE DeviceType, 
 	ProxyHelper::ProxyConfig cfg;
 	bool stereoificatorCfgLoaded = helper.LoadConfig(cfg);
 
-	if (cfg.forceAdapterNumber >= (int)GetAdapterCount()) {
-		LOG_ERROR(log, "forceAdapterNumber outside of valid range. Using primary Adapter instead.");
+	if (cfg.forceDisplayOnRift && m_isRiftAdapterValid) {
+		LOG_NOTICE(log, "Forcing display adapter to adapter the Rift is connected to.");
 	}
-
+	
 	// Create real interface
-	HRESULT hResult = m_pD3D->CreateDevice( (cfg.forceAdapterNumber >= (int)GetAdapterCount() || (cfg.forceAdapterNumber < 0)) ? Adapter : cfg.forceAdapterNumber, DeviceType, hFocusWindow, BehaviorFlags,
-		pPresentationParameters, ppReturnedDeviceInterface);
+	HRESULT hResult = m_pD3D->CreateDevice( (cfg.forceDisplayOnRift && m_isRiftAdapterValid ? m_riftAdapter :  Adapter), DeviceType, hFocusWindow, BehaviorFlags, pPresentationParameters, ppReturnedDeviceInterface);
 	if(FAILED(hResult))
 		return hResult;
 
