@@ -123,12 +123,7 @@ HRESULT WINAPI BaseDirect3D9::CheckDeviceFormatConversion(UINT Adapter, D3DDEVTY
 
 HRESULT WINAPI BaseDirect3D9::GetDeviceCaps(UINT Adapter, D3DDEVTYPE DeviceType, D3DCAPS9* pCaps)
 {
-	HRESULT hResult = m_pD3D->GetDeviceCaps(Adapter, DeviceType, pCaps);
-
-	if(FAILED(hResult))
-		return hResult;
-
-	return hResult;
+	return m_pD3D->GetDeviceCaps(Adapter, DeviceType, pCaps);
 }
 
 HMONITOR WINAPI BaseDirect3D9::GetAdapterMonitor(UINT Adapter)
@@ -146,7 +141,7 @@ HRESULT WINAPI BaseDirect3D9::CreateDevice(UINT Adapter, D3DDEVTYPE DeviceType, 
 	bool stereoificatorCfgLoaded = helper.LoadConfig(cfg);
 
 	if (cfg.forceAdapterNumber >= (int)GetAdapterCount()) {
-		LOG_ERROR(log, "forceAdapterNumber outside of range of valid adapters. Using primary Adapter instead.");
+		LOG_ERROR(log, "forceAdapterNumber outside of valid range. Using primary Adapter instead.");
 	}
 
 	// Create real interface
@@ -155,7 +150,7 @@ HRESULT WINAPI BaseDirect3D9::CreateDevice(UINT Adapter, D3DDEVTYPE DeviceType, 
 	if(FAILED(hResult))
 		return hResult;
 
-	LOG_NOTICE(log, "Actual D3D Device created");
+	LOG_NOTICE(log, "Actual D3D Device created.");
 	LOG_NOTICE(log, "Number of back buffers = " << pPresentationParameters->BackBufferCount);
 	
 	if(!stereoificatorCfgLoaded) {
@@ -164,7 +159,6 @@ HRESULT WINAPI BaseDirect3D9::CreateDevice(UINT Adapter, D3DDEVTYPE DeviceType, 
 	}
 
 	LOG_NOTICE(log, "Config loading - OK");
-	LOG_NOTICE(log, "Config type: " << cfg.game_type);
 
 	// Create and return proxy
 	D3DProxyDevice* newDev = new D3DProxyDevice(*ppReturnedDeviceInterface, this, cfg);
