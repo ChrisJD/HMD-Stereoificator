@@ -27,6 +27,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SteroificatorShared", "Ster
 		{15022CB2-F612-4ED0-9DF7-B4C9E9852FA9} = {15022CB2-F612-4ED0-9DF7-B4C9E9852FA9}
 	EndProjectSection
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DxProxyDLL", "DxProxyDLL\DxProxyDLL.vcxproj", "{BFC1D33A-8828-4596-A72B-B0DD6A2B3C91}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -53,6 +55,10 @@ Global
 		{CFEACCF5-F9CD-4EC1-8C27-A3A6A6B3190B}.Debug|Win32.Build.0 = Debug|Win32
 		{CFEACCF5-F9CD-4EC1-8C27-A3A6A6B3190B}.Release|Win32.ActiveCfg = Release|Win32
 		{CFEACCF5-F9CD-4EC1-8C27-A3A6A6B3190B}.Release|Win32.Build.0 = Release|Win32
+		{BFC1D33A-8828-4596-A72B-B0DD6A2B3C91}.Debug|Win32.ActiveCfg = Debug|Win32
+		{BFC1D33A-8828-4596-A72B-B0DD6A2B3C91}.Debug|Win32.Build.0 = Debug|Win32
+		{BFC1D33A-8828-4596-A72B-B0DD6A2B3C91}.Release|Win32.ActiveCfg = Release|Win32
+		{BFC1D33A-8828-4596-A72B-B0DD6A2B3C91}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

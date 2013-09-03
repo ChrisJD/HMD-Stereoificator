@@ -42,7 +42,7 @@ typedef DWORD (WINAPI *LPD3DPERF_GetStatus)( void );
 HMODULE g_hDll = NULL;
 LPDirect3DCreate9 g_pfnDirect3DCreate9 = NULL;
 
-// TODO Do the perf methods really need to be hooked?
+// TODO Do the perf methods really need to be here?
 LPD3DPERF_BeginEvent g_pfnD3DPERF_BeginEvent = NULL;
 LPD3DPERF_EndEvent g_pfnD3DPERF_EndEvent = NULL;
 LPD3DPERF_SetMarker g_pfnD3DPERF_SetMarker = NULL;
@@ -51,7 +51,7 @@ LPD3DPERF_QueryRepeatFrame g_pfnD3DPERF_QueryRepeatFrame = NULL;
 LPD3DPERF_SetOptions g_pfnD3DPERF_SetOptions = NULL;
 LPD3DPERF_GetStatus g_pfnD3DPERF_GetStatus = NULL;
 
-static bool LoadDll(const Log::Logger& logs)
+static bool LoadDll()
 {
 	if(g_hDll)
 		return true;
@@ -126,7 +126,7 @@ IDirect3D9* WINAPI Direct3DCreate9(UINT nSDKVersion)
 	
 
 	// Load DLL
-	if(!LoadDll(logs))
+	if(!LoadDll())
 		return NULL;
 
 	// Create real interface

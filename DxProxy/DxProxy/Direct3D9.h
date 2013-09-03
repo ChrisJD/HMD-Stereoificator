@@ -30,7 +30,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 class  BaseDirect3D9 : public IDirect3D9
 {
 public:
-	__declspec(dllexport) BaseDirect3D9(IDirect3D9* pD3D);
+	BaseDirect3D9(IDirect3D9* pD3D);
 	virtual ~BaseDirect3D9();
 
 	virtual HRESULT WINAPI QueryInterface(REFIID riid, LPVOID* ppv);
