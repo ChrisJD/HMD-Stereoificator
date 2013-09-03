@@ -63,16 +63,32 @@ public:
 		DWORD BehaviorFlags, D3DPRESENT_PARAMETERS* pPresentationParameters,
 		IDirect3DDevice9** ppReturnedDeviceInterface);
 
+	
+
+	/* It is possible that the specified adapter from the client app and the adapter the Rift is connected
+		to may have different capabilities. So instead of just overriding the adapter when the device is
+		created we override all of the Direct3D behaviour when forcing the Rift so that only one device
+		is reported as being available to the client app. As only one adapter will appear to be available
+		it will be reported as adapter 0, so the Rift adapters capabilities need to be reported for this
+		adapter and the rift adapter will be be mapped to 0 as far as the client can tell. 
+		
+		Changes are also needed in GetCreationParameters and GetDeviceCaps in Device9 when adapter forced
+		*/
+	bool AreForcingRift() { return m_forceDisplayOnRift && m_isRiftAdapterValid; }
+
 private:
+
 	IDirect3D9* m_pD3D;
 	ULONG m_nRefCount;
 
+	bool m_forceDisplayOnRift;
 	bool m_isRiftAdapterValid;
 	UINT m_riftAdapter; 
 
 #pragma warning( push )
 #pragma warning( disable : 4251 ) //class 'Log::Logger' needs to have dll-interface to be used by clients of class 'BaseDirect3D9'. Logger is never exposed to callers so ignoring warning
 	Log::Logger log;
+	ProxyHelper::ProxyConfig cfg;
 #pragma warning( pop ) 
 };
 

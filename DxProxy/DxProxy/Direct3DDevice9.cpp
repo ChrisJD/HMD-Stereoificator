@@ -91,8 +91,14 @@ HRESULT WINAPI BaseDirect3DDevice9::GetDirect3D(IDirect3D9** ppD3D9)
 
 HRESULT WINAPI BaseDirect3DDevice9::GetDeviceCaps(D3DCAPS9* pCaps)
 {
+	HRESULT hr = m_pDevice->GetDeviceCaps(pCaps);
+
+	// caps includes adapter number, should be overridden if we are forcing display onto rift
+	if (m_pCreatedBy->AreForcingRift()) {
+		pCaps->AdapterOrdinal = 0;
+	}
 	
-	return m_pDevice->GetDeviceCaps(pCaps);
+	return hr;
 }
 
 HRESULT WINAPI BaseDirect3DDevice9::GetDisplayMode(UINT iSwapChain,D3DDISPLAYMODE* pMode)
@@ -103,8 +109,14 @@ HRESULT WINAPI BaseDirect3DDevice9::GetDisplayMode(UINT iSwapChain,D3DDISPLAYMOD
 
 HRESULT WINAPI BaseDirect3DDevice9::GetCreationParameters(D3DDEVICE_CREATION_PARAMETERS *pParameters)
 {
+	HRESULT hr = m_pDevice->GetCreationParameters(pParameters);
 	
-	return m_pDevice->GetCreationParameters(pParameters);
+	//  includes adapter number, should be overridden if we are forcing display onto rift
+	if (m_pCreatedBy->AreForcingRift()) {
+		pParameters->AdapterOrdinal = 0;
+	}
+	
+	return hr;
 }
 
 HRESULT WINAPI BaseDirect3DDevice9::SetCursorProperties(UINT XHotSpot,UINT YHotSpot,IDirect3DSurface9* pCursorBitmap)

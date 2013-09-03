@@ -231,6 +231,9 @@ bool ProxyHelper::LoadConfig(ProxyConfig& config)
 	if (!(fileFound && profileFound && userCfgFound)) {
 		LOG_ERROR(log, "Could not load part/all of proxy config.");
 	}
+	else {
+		LOG_NOTICE(log, "Config loading completed successfully.");
+	}
 
 	
 	return fileFound && profileFound && userCfgFound;
