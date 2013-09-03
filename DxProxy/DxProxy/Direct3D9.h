@@ -19,7 +19,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef DIRECT3D9_H_INCLUDED
 #define DIRECT3D9_H_INCLUDED
 
-#pragma comment(lib, "dxgi.lib")
 
 #include "ProxyHelper.h"
 #include "global.h"
@@ -28,10 +27,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <d3d9.h>
 #include <cstring>
 
-class __declspec(dllexport) BaseDirect3D9 : public IDirect3D9
+class  BaseDirect3D9 : public IDirect3D9
 {
 public:
-	BaseDirect3D9(IDirect3D9* pD3D);
+	__declspec(dllexport) BaseDirect3D9(IDirect3D9* pD3D);
 	virtual ~BaseDirect3D9();
 
 	virtual HRESULT WINAPI QueryInterface(REFIID riid, LPVOID* ppv);

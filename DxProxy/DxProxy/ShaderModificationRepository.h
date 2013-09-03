@@ -30,7 +30,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "global.h"
 
-#include "pugixml.hpp"
+#include "PugiXML\pugixml.hpp"
 #include "MurmurHash3.h"
 
 #include "Limits.h"

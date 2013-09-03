@@ -24,10 +24,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define PROXYHELPER_H_INCLUDED
 
 
-#include "Stereoificator.h"
+#include "stereoificator.h"
 #include "global.h"
 
-#include "pugixml.hpp"
+#include "PugiXML\pugixml.hpp"
 
 #include <windows.h>
 
@@ -37,7 +37,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <string>
 
 
-class __declspec(dllexport) ProxyHelper
+class ProxyHelper
 {
 public:
 	ProxyHelper();

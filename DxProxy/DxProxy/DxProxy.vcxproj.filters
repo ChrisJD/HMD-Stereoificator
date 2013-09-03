@@ -1,17 +1,11 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Proxy">
-      <UniqueIdentifier>{80cc0ca4-7c65-4467-9166-d0e377de5737}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Stereo">
       <UniqueIdentifier>{8e86dd19-8c6e-4701-9dbe-401badc08f9a}</UniqueIdentifier>
     </Filter>
     <Filter Include="Tracking">
       <UniqueIdentifier>{84220cb3-c67d-49ec-98f3-a45cd7454f58}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="XML">
-      <UniqueIdentifier>{10a1970f-9ec7-4424-9ce2-46eb37af1590}</UniqueIdentifier>
     </Filter>
     <Filter Include="cfg">
       <UniqueIdentifier>{35b7e701-018e-4b6a-816b-bb90e55959c8}</UniqueIdentifier>
@@ -51,9 +45,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="ProxyHelper.cpp">
-      <Filter>Proxy</Filter>
-    </ClCompile>
     <ClCompile Include="StereoViewFactory.cpp">
       <Filter>Stereo</Filter>
     </ClCompile>
@@ -65,9 +56,6 @@
     </ClCompile>
     <ClCompile Include="MotionTracker.cpp">
       <Filter>Tracking</Filter>
-    </ClCompile>
-    <ClCompile Include="pugixml.cpp">
-      <Filter>XML</Filter>
     </ClCompile>
     <ClCompile Include="MotionTrackerFactory.cpp">
       <Filter>Tracking</Filter>
@@ -244,9 +232,6 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="ProxyHelper.h">
-      <Filter>Proxy</Filter>
-    </ClInclude>
     <ClInclude Include="StereoView.h">
       <Filter>Stereo</Filter>
     </ClInclude>
@@ -258,12 +243,6 @@
     </ClInclude>
     <ClInclude Include="MotionTracker.h">
       <Filter>Tracking</Filter>
-    </ClInclude>
-    <ClInclude Include="pugiconfig.hpp">
-      <Filter>XML</Filter>
-    </ClInclude>
-    <ClInclude Include="pugixml.hpp">
-      <Filter>XML</Filter>
     </ClInclude>
     <ClInclude Include="MotionTrackerFactory.h">
       <Filter>Tracking</Filter>

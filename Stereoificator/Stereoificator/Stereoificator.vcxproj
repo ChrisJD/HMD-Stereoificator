@@ -54,13 +54,13 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(ProjectDir)\..\..\DxHijack\DxHijack32;$(ProjectDir)\..\..\DxProxy\DxProxy</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\LoggerCpp;$(ProjectDir)\..\..\DxHijack\DxHijack32;$(ProjectDir)\..\..\DxProxy\DxProxy;$(SolutionDir)\StereoificatorShared</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>..\..\DxHijack\DxHijack32\$(Configuration);$(SolutionDir)LoggerCpp\$(Configuration)\</AdditionalLibraryDirectories>
-      <AdditionalDependencies>hijackdll.lib;LoggerCpp.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>copy /Y "$(TargetPath)" "C:\Program Files (x86)\Stereoificator\Stereoificator\bin\$(TargetName)$(TargetExt)"</Command>
@@ -83,7 +83,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\LoggerCpp;$(ProjectDir)\..\..\DxHijack\DxHijack32;$(ProjectDir)\..\..\DxProxy\DxProxy</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\LoggerCpp;$(ProjectDir)\..\..\DxHijack\DxHijack32;$(ProjectDir)\..\..\DxProxy\DxProxy;$(SolutionDir)\StereoificatorShared</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -91,7 +91,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalLibraryDirectories>..\..\DxHijack\DxHijack32\$(Configuration);$(SolutionDir)LoggerCpp\$(Configuration)\</AdditionalLibraryDirectories>
-      <AdditionalDependencies>hijackdll.lib;LoggerCpp.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
       <ProgramDatabaseFile>$(IntDir)$(TargetName).pdb</ProgramDatabaseFile>
     </Link>
     <PostBuildEvent>
@@ -107,16 +107,9 @@
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\DxProxy\DxProxy\ProxyHelper.cpp" />
-    <ClCompile Include="..\..\DxProxy\DxProxy\pugixml.cpp" />
-    <ClCompile Include="..\..\DxProxy\DxProxy\Stereoificator.cpp" />
     <ClCompile Include="Main.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\DxProxy\DxProxy\ProxyHelper.h" />
-    <ClInclude Include="..\..\DxProxy\DxProxy\pugiconfig.hpp" />
-    <ClInclude Include="..\..\DxProxy\DxProxy\pugixml.hpp" />
-    <ClInclude Include="..\..\DxProxy\DxProxy\stereoificator.h" />
     <ClInclude Include="Resource.h" />
   </ItemGroup>
   <ItemGroup>
@@ -131,6 +124,17 @@
     <None Include="..\..\Release\Stereoificator\changelog.txt" />
     <None Include="..\..\Release\Stereoificator\README.txt" />
     <None Include="icons\app.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\DxHijack\DxHijack32\DxHijack32.vcxproj">
+      <Project>{64cbcbd7-0558-4d0e-aa85-a776fe7f615c}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\LoggerCPP\msvc\LoggerCpp.vcxproj">
+      <Project>{15022cb2-f612-4ed0-9df7-b4c9e9852fa9}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\StereoificatorShared\SteroificatorConfig.vcxproj">
+      <Project>{cfeaccf5-f9cd-4ec1-8c27-a3a6a6b3190b}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
