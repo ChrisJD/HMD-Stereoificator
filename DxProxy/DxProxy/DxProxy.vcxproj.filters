@@ -361,8 +361,8 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <CustomBuild Include="hlsl\MakeItRed.hlsl">
+    <None Include="hlsl\MakeItRed.hlsl">
       <Filter>hlsl</Filter>
-    </CustomBuild>
+    </None>
   </ItemGroup>
 </Project>

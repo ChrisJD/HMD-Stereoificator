@@ -116,11 +116,11 @@
     <ResourceCompile Include="app.rc" />
   </ItemGroup>
   <ItemGroup>
-    <CustomBuild Include="..\..\Release\Stereoificator\img\logo.bmp">
+    <None Include="..\..\Release\Stereoificator\img\logo.bmp">
       <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">xcopy "%(fullpath)" "$(SolutionDir)$(Configuration)\Stereoificator\img\" /Y</Command>
       <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Copying image file from Release to $(Configuration)</Message>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(SolutionDir)$(Configuration)\Stereoificator\img\%(filename).bmp</Outputs>
-    </CustomBuild>
+    </None>
     <None Include="..\..\Release\Stereoificator\changelog.txt" />
     <None Include="..\..\Release\Stereoificator\README.txt" />
     <None Include="icons\app.ico" />

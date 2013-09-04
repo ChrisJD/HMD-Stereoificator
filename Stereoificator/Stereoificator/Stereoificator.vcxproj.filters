@@ -38,10 +38,8 @@
     </None>
     <None Include="..\..\Release\Stereoificator\README.txt" />
     <None Include="..\..\Release\Stereoificator\changelog.txt" />
-  </ItemGroup>
-  <ItemGroup>
-    <CustomBuild Include="..\..\Release\Stereoificator\img\logo.bmp">
+    <None Include="..\..\Release\Stereoificator\img\logo.bmp">
       <Filter>img</Filter>
-    </CustomBuild>
+    </None>
   </ItemGroup>
 </Project>

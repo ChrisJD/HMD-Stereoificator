@@ -42,6 +42,7 @@
     <TargetName>hijackdll</TargetName>
     <PostBuildEventUseInBuild>false</PostBuildEventUseInBuild>
     <OutDir>$(IntDir)</OutDir>
+    <PreLinkEventUseInBuild>false</PreLinkEventUseInBuild>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
@@ -67,7 +68,8 @@
       <OutputFile>$(SolutionDir)$(Configuration)\Stereoificator\bin\$(TargetName)$(TargetExt)</OutputFile>
     </Link>
     <PostBuildEvent>
-      <Command>copy /Y "$(TargetDir)hijackdll.dll" "C:\Program Files (x86)\Stereoificator\Stereoificator\bin\hijackdll.dll"</Command>
+      <Command>
+      </Command>
     </PostBuildEvent>
     <PreBuildEvent>
       <Command>
@@ -78,10 +80,12 @@
       </Message>
     </PreBuildEvent>
     <PreLinkEvent>
-      <Command>xcopy "$(SolutionDir)\Release\Stereoificator\cfg\*.*" "$(SolutionDir)\$(Configuration)\Stereoificator\cfg\" /S /Y</Command>
+      <Command>
+      </Command>
     </PreLinkEvent>
     <PreLinkEvent>
-      <Message>Copy config xml files from Release  to $(Configuration)</Message>
+      <Message>
+      </Message>
     </PreLinkEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -106,7 +110,8 @@
       <OutputFile>$(SolutionDir)$(Configuration)\Stereoificator\bin\$(TargetName)$(TargetExt)</OutputFile>
     </Link>
     <PostBuildEvent>
-      <Command>copy /Y "$(TargetDir)hijackdll.dll" "C:\Program Files (x86)\Stereoificator\Stereoificator\bin\hijackdll.dll"</Command>
+      <Command>
+      </Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>

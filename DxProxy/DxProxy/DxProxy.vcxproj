@@ -49,7 +49,7 @@
     <TargetName>d3d9</TargetName>
     <PostBuildEventUseInBuild>false</PostBuildEventUseInBuild>
     <OutDir>$(SolutionDir)$(Configuration)\lib\</OutDir>
-    <ExtensionsToDeleteOnClean>$(ExtensionsToDeleteOnClean)</ExtensionsToDeleteOnClean>
+    <ExtensionsToDeleteOnClean>*.cso;$(ExtensionsToDeleteOnClean)</ExtensionsToDeleteOnClean>
     <TargetExt>.lib</TargetExt>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -233,14 +233,7 @@
     <ClInclude Include="Vector4SimpleTranslate.h" />
   </ItemGroup>
   <ItemGroup>
-    <CustomBuild Include="hlsl\MakeItRed.hlsl">
-      <FileType>Document</FileType>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">"$(DXSDK_DIR)Utilities\bin\x86\"fxc.exe  /T ps_2_0 /Fo "$(SolutionDir)$(Configuration)\Stereoificator\hlsl\%(Filename).cso" "%(FullPath)"</Command>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(filename).fxo</Outputs>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">mkdir "$(SolutionDir)$(Configuration)\Stereoificator\hlsl\"
-"$(DXSDK_DIR)Utilities\bin\x86\"fxc.exe  /T ps_2_0 /Fo "$(SolutionDir)$(Configuration)\Stereoificator\hlsl\%(Filename).cso" "%(FullPath)"</Command>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(filename).fxo</Outputs>
-    </CustomBuild>
+    <None Include="hlsl\MakeItRed.hlsl" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\LoggerCPP\msvc\LoggerCpp.vcxproj">
@@ -253,4 +246,24 @@
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
+  <PropertyGroup>
+    <BuildDependsOn>
+      $(BuildDependsOn);
+	  BuildHLSLShaders;
+    </BuildDependsOn>
+    <ExtensionsToDeleteOnClean Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">*.cso;$(ExtensionsToDeleteOnClean)</ExtensionsToDeleteOnClean>
+  </PropertyGroup>
+  <PropertyGroup>
+    <BuildDependsOn>
+      $(BuildDependsOn);
+	    BuildHLSLShaders;
+    </BuildDependsOn>
+  </PropertyGroup>
+  <Target Name="BuildHLSLShaders">
+    <ItemGroup>
+      <HLSLShader Include="$(SolutionDir)DxProxy\DxProxy\hlsl\*.hlsl" />
+    </ItemGroup>
+    <Message Text="Building shaders" />
+    <Exec Command='"$(DXSDK_DIR)Utilities\bin\x86\fxc.exe" /T ps_2_0 /Fo "$(SolutionDir)$(Configuration)\Stereoificator\hlsl\%(HLSLShader.filename).cso" "%(HLSLShader.identity)"' />
+  </Target>
 </Project>
