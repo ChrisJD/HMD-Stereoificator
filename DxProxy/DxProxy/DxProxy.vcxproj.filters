@@ -7,9 +7,6 @@
     <Filter Include="Tracking">
       <UniqueIdentifier>{84220cb3-c67d-49ec-98f3-a45cd7454f58}</UniqueIdentifier>
     </Filter>
-    <Filter Include="fx">
-      <UniqueIdentifier>{6f7e6df9-0c4f-45c2-a4de-a22f8771da08}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Direct3D9">
       <UniqueIdentifier>{8518770f-4911-4264-a4c6-0a7e92a34b5d}</UniqueIdentifier>
     </Filter>
@@ -177,14 +174,6 @@
     <ClCompile Include="Main.cpp">
       <Filter>General</Filter>
     </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="..\..\Release\Stereoificator\fx\HMDBarrel.fx">
-      <Filter>fx</Filter>
-    </None>
-    <None Include="..\..\Release\Stereoificator\fx\SideBySide.fx">
-      <Filter>fx</Filter>
-    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="StereoView.h">

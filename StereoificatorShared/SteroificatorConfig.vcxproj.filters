@@ -18,6 +18,9 @@
     <Filter Include="cfg\shader_rules">
       <UniqueIdentifier>{80e3ebd1-98cd-41aa-9f5a-c6d2ab0bf602}</UniqueIdentifier>
     </Filter>
+    <Filter Include="fx">
+      <UniqueIdentifier>{4723c39b-9215-4bf4-8cba-9623e2c513c1}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ProxyHelper.h">
@@ -45,9 +48,6 @@
     </ClCompile>
     <ClCompile Include="PugiXML\pugixml.cpp">
       <Filter>PugiXML</Filter>
-    </ClCompile>
-    <ClCompile Include="global.cpp">
-      <Filter>Source</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -92,6 +92,12 @@
     </None>
     <None Include="..\Release\Stereoificator\cfg\shader_rules\unreal.xml">
       <Filter>cfg\shader_rules</Filter>
+    </None>
+    <None Include="..\Release\Stereoificator\fx\HMDBarrel.fx">
+      <Filter>fx</Filter>
+    </None>
+    <None Include="..\Release\Stereoificator\fx\SideBySide.fx">
+      <Filter>fx</Filter>
     </None>
   </ItemGroup>
 </Project>

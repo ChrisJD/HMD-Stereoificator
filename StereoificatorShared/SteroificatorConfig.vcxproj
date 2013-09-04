@@ -40,6 +40,9 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ReferencePath>$(SolutionDir)\DxProxy\DxProxy;$(ReferencePath)</ReferencePath>
     <OutDir>$(SolutionDir)$(Configuration)\lib\</OutDir>
+    <CustomBuildAfterTargets>
+    </CustomBuildAfterTargets>
+    <ExtensionsToDeleteOnClean>$(ExtensionsToDeleteOnClean)</ExtensionsToDeleteOnClean>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ReferencePath>$(ReferencePath)</ReferencePath>
@@ -55,6 +58,15 @@
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
+    <PreBuildEvent>
+      <Command>xcopy "$(SolutionDir)\Release\Stereoificator" "$(SolutionDir)\Debug\Stereoificator" /i /s /e /t /y
+xcopy "$(SolutionDir)\Release\Stereoificator\cfg" "$(SolutionDir)\Debug\Stereoificator\cfg" /s /y
+xcopy "$(SolutionDir)\Release\Stereoificator\fx" "$(SolutionDir)\Debug\Stereoificator\fx" /s /y
+xcopy "$(SolutionDir)\Release\Stereoificator\img" "$(SolutionDir)\Debug\Stereoificator\img" /s /y</Command>
+    </PreBuildEvent>
+    <PreBuildEvent>
+      <Message>Setup directory structure and copy resources to debug build directory.</Message>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -79,7 +91,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\DxProxy\DxProxy\Stereoificator.cpp" />
-    <ClCompile Include="global.cpp" />
     <ClCompile Include="ProxyHelper.cpp" />
     <ClCompile Include="PugiXML\pugixml.cpp" />
   </ItemGroup>
@@ -98,8 +109,24 @@
     <None Include="..\Release\Stereoificator\cfg\shader_rules\source.xml" />
     <None Include="..\Release\Stereoificator\cfg\shader_rules\theball.xml" />
     <None Include="..\Release\Stereoificator\cfg\shader_rules\unreal.xml" />
+    <None Include="..\Release\Stereoificator\fx\HMDBarrel.fx">
+      <FileType>Document</FileType>
+    </None>
+    <None Include="..\Release\Stereoificator\fx\SideBySide.fx">
+      <FileType>Document</FileType>
+    </None>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
+  <PropertyGroup>
+    <CleanDependsOn>
+      $(CleanDependsOn);
+      CleanDebug;
+    </CleanDependsOn>
+  </PropertyGroup>
+  <Target Name="CleanDebug" Condition="'$(Configuration)'=='Debug'">
+    <Message Text="Removing Debug Stereoificator dir" />
+    <RemoveDir Directories="$(SolutionDir)\Debug\Stereoificator" />
+  </Target>
 </Project>

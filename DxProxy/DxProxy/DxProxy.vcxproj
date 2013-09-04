@@ -233,8 +233,6 @@
     <ClInclude Include="Vector4SimpleTranslate.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\Release\Stereoificator\fx\HMDBarrel.fx" />
-    <None Include="..\..\Release\Stereoificator\fx\SideBySide.fx" />
     <CustomBuild Include="hlsl\MakeItRed.hlsl">
       <FileType>Document</FileType>
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">"$(DXSDK_DIR)Utilities\bin\x86\"fxc.exe  /T ps_2_0 /Fo "$(SolutionDir)$(Configuration)\Stereoificator\hlsl\%(Filename).cso" "%(FullPath)"</Command>
