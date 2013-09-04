@@ -54,12 +54,12 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(SolutionDir)\LoggerCpp;$(ProjectDir)\..\..\DxHijack\DxHijack32;$(ProjectDir)\..\..\DxProxy\DxProxy;$(SolutionDir)\StereoificatorShared</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\LoggerCpp;$(SolutionDir)\DxHijack\DxHijack32;$(SolutionDir)\DxProxy\DxProxy;$(SolutionDir)\StereoificatorShared</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>..\..\DxHijack\DxHijack32\$(Configuration);$(SolutionDir)LoggerCpp\$(Configuration)\</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)\DxHijack\DxHijack32\$(Configuration);$(SolutionDir)LoggerCpp\$(Configuration)\</AdditionalLibraryDirectories>
       <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
@@ -83,14 +83,14 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(SolutionDir)\LoggerCpp;$(ProjectDir)\..\..\DxHijack\DxHijack32;$(ProjectDir)\..\..\DxProxy\DxProxy;$(SolutionDir)\StereoificatorShared</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\LoggerCpp;$(SolutionDir)\DxHijack\DxHijack32;$(SolutionDir)\DxProxy\DxProxy;$(SolutionDir)\StereoificatorShared</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalLibraryDirectories>..\..\DxHijack\DxHijack32\$(Configuration);$(SolutionDir)LoggerCpp\$(Configuration)\</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)\DxHijack\DxHijack32\$(Configuration);$(SolutionDir)LoggerCpp\$(Configuration)\</AdditionalLibraryDirectories>
       <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
       <ProgramDatabaseFile>$(IntDir)$(TargetName).pdb</ProgramDatabaseFile>
     </Link>
