@@ -43,12 +43,14 @@
     <PostBuildEventUseInBuild>false</PostBuildEventUseInBuild>
     <OutDir>$(IntDir)</OutDir>
     <PreLinkEventUseInBuild>false</PreLinkEventUseInBuild>
+    <IntDir>$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
     <TargetName>hijackdll</TargetName>
     <PostBuildEventUseInBuild>false</PostBuildEventUseInBuild>
     <OutDir>$(IntDir)</OutDir>
+    <IntDir>$(Configuration)\</IntDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
