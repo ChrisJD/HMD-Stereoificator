@@ -39,7 +39,7 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ReferencePath>$(SolutionDir)\DxProxy\DxProxy;$(ReferencePath)</ReferencePath>
-    <OutDir>$(SolutionDir)$(Configuration)\lib</OutDir>
+    <OutDir>$(SolutionDir)$(Configuration)\lib\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ReferencePath>$(ReferencePath)</ReferencePath>
@@ -50,7 +50,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>$(SolutionDir)\LoggerCpp;..\DxProxy\DxProxy;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\LoggerCpp;$(SolutionDir)\DxProxy\DxProxy;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -71,17 +71,33 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="..\DxProxy\DxProxy\global.h" />
     <ClInclude Include="..\DxProxy\DxProxy\stereoificator.h" />
+    <ClInclude Include="global.h" />
     <ClInclude Include="ProxyHelper.h" />
     <ClInclude Include="PugiXML\pugiconfig.hpp" />
     <ClInclude Include="PugiXML\pugixml.hpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\DxProxy\DxProxy\global.cpp" />
     <ClCompile Include="..\DxProxy\DxProxy\Stereoificator.cpp" />
+    <ClCompile Include="global.cpp" />
     <ClCompile Include="ProxyHelper.cpp" />
     <ClCompile Include="PugiXML\pugixml.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\Release\Stereoificator\cfg\config.xml" />
+    <None Include="..\Release\Stereoificator\cfg\defaults.users.xml" />
+    <None Include="..\Release\Stereoificator\cfg\profiles.xml" />
+    <None Include="..\Release\Stereoificator\cfg\shader_rules\borderlands.xml" />
+    <None Include="..\Release\Stereoificator\cfg\shader_rules\borderlands2.xml" />
+    <None Include="..\Release\Stereoificator\cfg\shader_rules\ego.xml" />
+    <None Include="..\Release\Stereoificator\cfg\shader_rules\example.xml" />
+    <None Include="..\Release\Stereoificator\cfg\shader_rules\mirrorsedge.xml" />
+    <None Include="..\Release\Stereoificator\cfg\shader_rules\omd2.xml" />
+    <None Include="..\Release\Stereoificator\cfg\shader_rules\rfactor.xml" />
+    <None Include="..\Release\Stereoificator\cfg\shader_rules\serious3.xml" />
+    <None Include="..\Release\Stereoificator\cfg\shader_rules\source.xml" />
+    <None Include="..\Release\Stereoificator\cfg\shader_rules\theball.xml" />
+    <None Include="..\Release\Stereoificator\cfg\shader_rules\unreal.xml" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

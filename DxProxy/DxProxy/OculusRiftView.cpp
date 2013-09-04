@@ -18,14 +18,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ********************************************************************/
 
 #include "OculusRiftView.h"
-#include "StereoView.h"
-#include "D3DProxyDevice.h"
+//#include "D3DProxyDevice.h"
 
 
 OculusRiftView::OculusRiftView(ProxyHelper::ProxyConfig& config, std::shared_ptr<HMDisplayInfo> hmd) : StereoView(config),
 	hmdInfo(hmd)
 {
-	LOG_INFO(log, __FUNCTION__);
+	LOG_INFO(logs, __FUNCTION__);
 
 	shaderFileName = "HMDBarrel.fx";
 }

@@ -23,9 +23,9 @@ DWORD g_color;
 
 
 StereoView::StereoView(ProxyHelper::ProxyConfig& config) :
-		log(LogName::D3D9Log)
+		logs(LogName::D3D9Log)
 {
-	LOG_INFO(log, __FUNCTION__);
+	LOG_INFO(logs, __FUNCTION__);
 
 	shaderFileName = "SideBySide.fx";
 
@@ -64,10 +64,10 @@ StereoView::~StereoView()
 
 
 
-void releaseCheck(char* object, int newRefCount)
+void releaseCheck(Log::Logger logger, char* object, int newRefCount)
 {
 	if (newRefCount > 0) {
-		LOG_INFO(log, "Release count for " << object << " = " newRefCount);
+		LOG_INFO(logger, "Release count for " << object << " = " << newRefCount);
 	}
 }
 
@@ -99,7 +99,7 @@ void StereoView::InitShaderEffects()
 	strcat_s(viewPath, 512, shaderFileName.c_str());
 
 	if (FAILED(D3DXCreateEffectFromFile(m_pActualDevice, viewPath, NULL, NULL, D3DXFX_DONOTSAVESTATE, NULL, &viewEffect, NULL))) {
-		LOG_ERROR(log, "Effect creation failed. Effect '" << viewPath << "' could not be created.");
+		LOG_ERROR(logs, "Effect creation failed. Effect '" << viewPath << "' could not be created.");
 	}
 }
 
@@ -397,18 +397,18 @@ void StereoView::Draw(D3D9ProxySurface* stereoCapableSurface)
 
 
 	if (FAILED(m_pActualDevice->SetRenderTarget(0, backBuffer))) {
-		LOG_DEBUG(log, __FUNCTION__ << "SetRenderTarget backbuffer failed.");
+		LOG_DEBUG(logs, __FUNCTION__ << "SetRenderTarget backbuffer failed.");
 	}
 
 	if (FAILED(m_pActualDevice->SetStreamSource(0, screenVertexBuffer, 0, sizeof(TEXVERTEX)))) {
-		LOG_DEBUG(log, __FUNCTION__ << "SetStreamSource failed.");
+		LOG_DEBUG(logs, __FUNCTION__ << "SetStreamSource failed.");
 	}
 
 	UINT iPass, cPasses;
 
 
 	if (FAILED(viewEffect->SetTechnique("ViewShader"))) {
-		LOG_DEBUG(log, __FUNCTION__ << "SetTechnique failed.");
+		LOG_DEBUG(logs, __FUNCTION__ << "SetTechnique failed.");
 	}
 
 
@@ -416,26 +416,26 @@ void StereoView::Draw(D3D9ProxySurface* stereoCapableSurface)
 
 
 	if (FAILED(viewEffect->Begin(&cPasses, 0))) {
-		LOG_DEBUG(log, __FUNCTION__ << "Begin failed.");
+		LOG_DEBUG(logs, __FUNCTION__ << "Begin failed.");
 	}
 
 	for(iPass = 0; iPass < cPasses; iPass++)
 	{
 		if (FAILED(viewEffect->BeginPass(iPass))) {
-			LOG_DEBUG(log, __FUNCTION__ << "Beginpass failed.");
+			LOG_DEBUG(logs, __FUNCTION__ << "Beginpass failed.");
 		}
 
 		if (FAILED(m_pActualDevice->DrawPrimitive(D3DPT_TRIANGLEFAN, 0, 2))) {
-			LOG_DEBUG(log, __FUNCTION__ << "Draw failed.");
+			LOG_DEBUG(logs, __FUNCTION__ << "Draw failed.");
 		}
 
 		if (FAILED(viewEffect->EndPass())) {
-			LOG_DEBUG(log, __FUNCTION__ << "Beginpass failed.");
+			LOG_DEBUG(logs, __FUNCTION__ << "Beginpass failed.");
 		}
 	}
 
 	if (FAILED(viewEffect->End())) {
-		LOG_DEBUG(log, __FUNCTION__ << "End failed.");
+		LOG_DEBUG(logs, __FUNCTION__ << "End failed.");
 	}
 	
 	// TODO figure out HL2 problem. This is a workaround for now
@@ -481,33 +481,33 @@ void StereoView::SaveScreen()
 
 void StereoView::ReleaseEverything()
 {
-	LOG_DEBUG(log, __FUNCTION__);
+	LOG_DEBUG(logs, __FUNCTION__);
 
 	if(!initialized)
-		LOG_DEBUG(log, "SteroView is already reset.");
+		LOG_DEBUG(logs, "SteroView is already reset.");
 
 	if(backBuffer)
-		releaseCheck("backBuffer", backBuffer->Release());	
+		releaseCheck(logs, "backBuffer", backBuffer->Release());	
 	backBuffer = NULL;
 
 	
 
 	if(leftTexture)
-		releaseCheck("leftTexture", leftTexture->Release());
+		releaseCheck(logs, "leftTexture", leftTexture->Release());
 	leftTexture = NULL;
 
 	if(rightTexture)
-		releaseCheck("rightTexture", rightTexture->Release());
+		releaseCheck(logs, "rightTexture", rightTexture->Release());
 	rightTexture = NULL;
 
 
 
 	if(leftSurface)
-		releaseCheck("leftSurface", leftSurface->Release());
+		releaseCheck(logs, "leftSurface", leftSurface->Release());
 	leftSurface = NULL;
 
 	if(rightSurface)
-		releaseCheck("rightSurface", rightSurface->Release());
+		releaseCheck(logs, "rightSurface", rightSurface->Release());
 	rightSurface = NULL;
 
 
@@ -515,31 +515,31 @@ void StereoView::ReleaseEverything()
 	
 
 	if(lastVertexShader)
-		releaseCheck("lastVertexShader", lastVertexShader->Release());
+		releaseCheck(logs, "lastVertexShader", lastVertexShader->Release());
 	lastVertexShader = NULL;
 
 	if(lastPixelShader)
-		releaseCheck("lastPixelShader", lastPixelShader->Release());
+		releaseCheck(logs, "lastPixelShader", lastPixelShader->Release());
 	lastPixelShader = NULL;
 
 	if(lastTexture)
-		releaseCheck("lastTexture", lastTexture->Release());
+		releaseCheck(logs, "lastTexture", lastTexture->Release());
 	lastTexture = NULL;
 
 	if(lastTexture1)
-		releaseCheck("lastTexture1", lastTexture1->Release());
+		releaseCheck(logs, "lastTexture1", lastTexture1->Release());
 	lastTexture1 = NULL;
 
 	if(lastVertexDeclaration)
-		releaseCheck("lastVertexDeclaration", lastVertexDeclaration->Release());
+		releaseCheck(logs, "lastVertexDeclaration", lastVertexDeclaration->Release());
 	lastVertexDeclaration = NULL;
 
 	if(lastRenderTarget0)
-		releaseCheck("lastRenderTarget0", lastRenderTarget0->Release());
+		releaseCheck(logs, "lastRenderTarget0", lastRenderTarget0->Release());
 	lastRenderTarget0 = NULL;
 
 	if(lastRenderTarget1)
-		releaseCheck("lastRenderTarget1", lastRenderTarget1->Release());
+		releaseCheck(logs, "lastRenderTarget1", lastRenderTarget1->Release());
 	lastRenderTarget1 = NULL;
 
 	viewEffect->OnLostDevice();

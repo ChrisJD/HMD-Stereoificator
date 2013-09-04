@@ -49,7 +49,7 @@ private:
 
 	std::vector<D3D9ProxySurface*> m_backBuffers;
 
-	Log::Logger log;
+	Log::Logger logs;
 
 
 };

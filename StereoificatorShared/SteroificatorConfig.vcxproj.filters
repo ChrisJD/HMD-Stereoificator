@@ -12,6 +12,12 @@
       <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
       <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
     </Filter>
+    <Filter Include="cfg">
+      <UniqueIdentifier>{93bbefce-fb75-4fea-abaf-c6f993bcc515}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="cfg\shader_rules">
+      <UniqueIdentifier>{80e3ebd1-98cd-41aa-9f5a-c6d2ab0bf602}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ProxyHelper.h">
@@ -20,21 +26,18 @@
     <ClInclude Include="..\DxProxy\DxProxy\stereoificator.h">
       <Filter>Source</Filter>
     </ClInclude>
-    <ClInclude Include="..\DxProxy\DxProxy\global.h">
-      <Filter>Source</Filter>
-    </ClInclude>
     <ClInclude Include="PugiXML\pugixml.hpp">
       <Filter>PugiXML</Filter>
     </ClInclude>
     <ClInclude Include="PugiXML\pugiconfig.hpp">
       <Filter>PugiXML</Filter>
     </ClInclude>
+    <ClInclude Include="global.h">
+      <Filter>Source</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ProxyHelper.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\DxProxy\DxProxy\global.cpp">
       <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="..\DxProxy\DxProxy\Stereoificator.cpp">
@@ -43,5 +46,52 @@
     <ClCompile Include="PugiXML\pugixml.cpp">
       <Filter>PugiXML</Filter>
     </ClCompile>
+    <ClCompile Include="global.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\Release\Stereoificator\cfg\config.xml">
+      <Filter>cfg</Filter>
+    </None>
+    <None Include="..\Release\Stereoificator\cfg\profiles.xml">
+      <Filter>cfg</Filter>
+    </None>
+    <None Include="..\Release\Stereoificator\cfg\defaults.users.xml">
+      <Filter>cfg</Filter>
+    </None>
+    <None Include="..\Release\Stereoificator\cfg\shader_rules\borderlands.xml">
+      <Filter>cfg\shader_rules</Filter>
+    </None>
+    <None Include="..\Release\Stereoificator\cfg\shader_rules\borderlands2.xml">
+      <Filter>cfg\shader_rules</Filter>
+    </None>
+    <None Include="..\Release\Stereoificator\cfg\shader_rules\ego.xml">
+      <Filter>cfg\shader_rules</Filter>
+    </None>
+    <None Include="..\Release\Stereoificator\cfg\shader_rules\example.xml">
+      <Filter>cfg\shader_rules</Filter>
+    </None>
+    <None Include="..\Release\Stereoificator\cfg\shader_rules\mirrorsedge.xml">
+      <Filter>cfg\shader_rules</Filter>
+    </None>
+    <None Include="..\Release\Stereoificator\cfg\shader_rules\omd2.xml">
+      <Filter>cfg\shader_rules</Filter>
+    </None>
+    <None Include="..\Release\Stereoificator\cfg\shader_rules\rfactor.xml">
+      <Filter>cfg\shader_rules</Filter>
+    </None>
+    <None Include="..\Release\Stereoificator\cfg\shader_rules\serious3.xml">
+      <Filter>cfg\shader_rules</Filter>
+    </None>
+    <None Include="..\Release\Stereoificator\cfg\shader_rules\source.xml">
+      <Filter>cfg\shader_rules</Filter>
+    </None>
+    <None Include="..\Release\Stereoificator\cfg\shader_rules\theball.xml">
+      <Filter>cfg\shader_rules</Filter>
+    </None>
+    <None Include="..\Release\Stereoificator\cfg\shader_rules\unreal.xml">
+      <Filter>cfg\shader_rules</Filter>
+    </None>
   </ItemGroup>
 </Project>

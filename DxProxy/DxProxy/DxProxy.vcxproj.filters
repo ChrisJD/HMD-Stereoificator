@@ -7,9 +7,6 @@
     <Filter Include="Tracking">
       <UniqueIdentifier>{84220cb3-c67d-49ec-98f3-a45cd7454f58}</UniqueIdentifier>
     </Filter>
-    <Filter Include="cfg">
-      <UniqueIdentifier>{35b7e701-018e-4b6a-816b-bb90e55959c8}</UniqueIdentifier>
-    </Filter>
     <Filter Include="fx">
       <UniqueIdentifier>{6f7e6df9-0c4f-45c2-a4de-a22f8771da08}</UniqueIdentifier>
     </Filter>
@@ -18,9 +15,6 @@
     </Filter>
     <Filter Include="MurmurHash3">
       <UniqueIdentifier>{ce4cba8f-29ab-44a7-9545-c1859fe4213e}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="cfg\shader_rules">
-      <UniqueIdentifier>{001cd5d3-206b-4679-9b96-8e7a1aacf08f}</UniqueIdentifier>
     </Filter>
     <Filter Include="Direct3D9Stereoificator">
       <UniqueIdentifier>{28b4cc66-4af3-4ac4-99aa-5a29de9ba8b2}</UniqueIdentifier>
@@ -183,49 +177,13 @@
     <ClCompile Include="Main.cpp">
       <Filter>General</Filter>
     </ClCompile>
-    <ClCompile Include="global.cpp">
-      <Filter>General</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\Release\Stereoificator\cfg\shader_rules\borderlands2.xml">
-      <Filter>cfg\shader_rules</Filter>
-    </None>
-    <None Include="..\..\Release\Stereoificator\cfg\shader_rules\ego.xml">
-      <Filter>cfg\shader_rules</Filter>
-    </None>
-    <None Include="..\..\Release\Stereoificator\cfg\shader_rules\example.xml">
-      <Filter>cfg\shader_rules</Filter>
-    </None>
-    <None Include="..\..\Release\Stereoificator\cfg\shader_rules\omd2.xml">
-      <Filter>cfg\shader_rules</Filter>
-    </None>
-    <None Include="..\..\Release\Stereoificator\cfg\shader_rules\rfactor.xml">
-      <Filter>cfg\shader_rules</Filter>
-    </None>
-    <None Include="..\..\Release\Stereoificator\cfg\shader_rules\serious3.xml">
-      <Filter>cfg\shader_rules</Filter>
-    </None>
-    <None Include="..\..\Release\Stereoificator\cfg\shader_rules\source.xml">
-      <Filter>cfg\shader_rules</Filter>
-    </None>
     <None Include="..\..\Release\Stereoificator\fx\HMDBarrel.fx">
       <Filter>fx</Filter>
     </None>
     <None Include="..\..\Release\Stereoificator\fx\SideBySide.fx">
       <Filter>fx</Filter>
-    </None>
-    <None Include="..\..\Release\Stereoificator\cfg\shader_rules\theball.xml">
-      <Filter>cfg\shader_rules</Filter>
-    </None>
-    <None Include="..\..\Release\Stereoificator\cfg\shader_rules\unreal.xml">
-      <Filter>cfg\shader_rules</Filter>
-    </None>
-    <None Include="..\..\Release\Stereoificator\cfg\shader_rules\borderlands.xml">
-      <Filter>cfg\shader_rules</Filter>
-    </None>
-    <None Include="..\..\Release\Stereoificator\cfg\shader_rules\mirrorsedge.xml">
-      <Filter>cfg\shader_rules</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
@@ -412,20 +370,8 @@
     <ClInclude Include="Main.h">
       <Filter>General</Filter>
     </ClInclude>
-    <ClInclude Include="global.h">
-      <Filter>General</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <CustomBuild Include="..\..\Release\Stereoificator\cfg\config.xml">
-      <Filter>cfg</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\..\Release\Stereoificator\cfg\profiles.xml">
-      <Filter>cfg</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\..\Release\Stereoificator\cfg\defaults.users.xml">
-      <Filter>cfg</Filter>
-    </CustomBuild>
     <CustomBuild Include="hlsl\MakeItRed.hlsl">
       <Filter>hlsl</Filter>
     </CustomBuild>

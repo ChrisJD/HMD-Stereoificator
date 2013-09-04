@@ -60,6 +60,12 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;DXPROXY_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>$(DXSDK_DIR)\Include;$(DX)\Include;$(FREESPACE)\include;$(SolutionDir)\LoggerCPP;$(SolutionDir)\StereoificatorShared</AdditionalIncludeDirectories>
+      <IntrinsicFunctions>false</IntrinsicFunctions>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <FunctionLevelLinking>
+      </FunctionLevelLinking>
+      <MinimalRebuild>true</MinimalRebuild>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -70,7 +76,8 @@
       <OutputFile>$(SolutionDir)$(Configuration)\Stereoificator\bin\$(TargetName)$(TargetExt)</OutputFile>
     </Link>
     <PostBuildEvent>
-      <Command>copy /Y "$(OutDir)$(TargetName)$(TargetExt)" "C:\Program Files (x86)\Stereoificator\Stereoificator\bin\$(TargetName)$(TargetExt)"</Command>
+      <Command>
+      </Command>
     </PostBuildEvent>
     <PreBuildEvent>
       <Command>xcopy "$(FREESPACE)\lib\*.dll" "$(SolutionDir)$(Configuration)\Stereoificator\bin\" /Y</Command>
@@ -78,6 +85,9 @@
     <PreBuildEvent>
       <Message>Copy libfreespace.dll from the libfreespace SDK</Message>
     </PreBuildEvent>
+    <Lib>
+      <LinkTimeCodeGeneration>true</LinkTimeCodeGeneration>
+    </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -103,7 +113,8 @@
       </ImportLibrary>
     </Link>
     <PostBuildEvent>
-      <Command>copy /Y "$(OutDir)$(TargetName)$(TargetExt)" "C:\Program Files (x86)\Stereoificator\Stereoificator\bin\$(TargetName)$(TargetExt)"</Command>
+      <Command>
+      </Command>
     </PostBuildEvent>
     <PreBuildEvent>
       <Command>xcopy "$(FREESPACE)\lib\*.dll" "$(SolutionDir)$(Configuration)\Stereoificator\bin\" /Y</Command>
@@ -142,7 +153,6 @@
     <ClCompile Include="FreeTrackTracker.cpp" />
     <ClCompile Include="DuplicationConditions.cpp" />
     <ClCompile Include="DuplicationConditionsFactory.cpp" />
-    <ClCompile Include="global.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="MotionTracker.cpp" />
     <ClCompile Include="MotionTrackerFactory.cpp" />
@@ -183,7 +193,6 @@
     <ClInclude Include="MatrixTransformHUD.h" />
     <ClInclude Include="ShaderMatrixModification.h" />
     <ClInclude Include="MatrixIgnoreOrtho.h" />
-    <ClInclude Include="global.h" />
     <ClInclude Include="ViewAdjustment.h" />
     <ClInclude Include="stereoificator.h" />
     <ClInclude Include="MurmurHash3.h" />
@@ -224,54 +233,14 @@
     <ClInclude Include="Vector4SimpleTranslate.h" />
   </ItemGroup>
   <ItemGroup>
-    <CustomBuild Include="..\..\Release\Stereoificator\cfg\config.xml">
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">xcopy "%(fullpath)" "$(SolutionDir)$(Configuration)\Stereoificator\cfg\" /Y</Command>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">copying xml config from Release to $(Configuration)</Message>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(SolutionDir)$(Configuration)\Stereoificator\cfg\%(filename).xml</Outputs>
-      <SubType>Designer</SubType>
-    </CustomBuild>
-    <CustomBuild Include="..\..\Release\Stereoificator\cfg\profiles.xml">
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">xcopy "%(fullpath)" "$(SolutionDir)$(Configuration)\Stereoificator\cfg\" /Y</Command>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">copying xml config from Release to $(Configuration)</Message>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(SolutionDir)$(Configuration)\Stereoificator\cfg\%(filename).xml</Outputs>
-      <SubType>Designer</SubType>
-    </CustomBuild>
-    <CustomBuild Include="..\..\Release\Stereoificator\cfg\defaults.users.xml">
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">xcopy "%(fullpath)" "$(SolutionDir)$(Configuration)\Stereoificator\cfg\" /Y</Command>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">copying xml config from Release to $(Configuration)</Message>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(SolutionDir)$(Configuration)\Stereoificator\cfg\%(filename).xml;%(Outputs)</Outputs>
-      <SubType>Designer</SubType>
-    </CustomBuild>
-    <None Include="..\..\Release\Stereoificator\cfg\shader_rules\borderlands.xml" />
-    <None Include="..\..\Release\Stereoificator\cfg\shader_rules\borderlands2.xml">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="..\..\Release\Stereoificator\cfg\shader_rules\ego.xml">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="..\..\Release\Stereoificator\cfg\shader_rules\example.xml" />
-    <None Include="..\..\Release\Stereoificator\cfg\shader_rules\mirrorsedge.xml" />
-    <None Include="..\..\Release\Stereoificator\cfg\shader_rules\omd2.xml">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="..\..\Release\Stereoificator\cfg\shader_rules\rfactor.xml">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="..\..\Release\Stereoificator\cfg\shader_rules\serious3.xml" />
-    <None Include="..\..\Release\Stereoificator\cfg\shader_rules\source.xml">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="..\..\Release\Stereoificator\cfg\shader_rules\theball.xml" />
-    <None Include="..\..\Release\Stereoificator\cfg\shader_rules\unreal.xml">
-      <SubType>Designer</SubType>
-    </None>
     <None Include="..\..\Release\Stereoificator\fx\HMDBarrel.fx" />
     <None Include="..\..\Release\Stereoificator\fx\SideBySide.fx" />
     <CustomBuild Include="hlsl\MakeItRed.hlsl">
       <FileType>Document</FileType>
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">"$(DXSDK_DIR)Utilities\bin\x86\"fxc.exe  /T ps_2_0 /Fo "$(SolutionDir)$(Configuration)\Stereoificator\hlsl\%(Filename).cso" "%(FullPath)"</Command>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(filename).fxo</Outputs>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">"$(DXSDK_DIR)Utilities\bin\x86\"fxc.exe  /T ps_2_0 /Fo "$(SolutionDir)$(Configuration)\Stereoificator\hlsl\%(Filename).cso" "%(FullPath)"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">mkdir "$(SolutionDir)$(Configuration)\Stereoificator\hlsl\"
+"$(DXSDK_DIR)Utilities\bin\x86\"fxc.exe  /T ps_2_0 /Fo "$(SolutionDir)$(Configuration)\Stereoificator\hlsl\%(Filename).cso" "%(FullPath)"</Command>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(filename).fxo</Outputs>
     </CustomBuild>
   </ItemGroup>

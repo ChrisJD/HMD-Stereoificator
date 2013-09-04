@@ -143,8 +143,7 @@ protected:
 
 	IDirect3DStateBlock9* sb;
 
-	Log::Logger log;
-
+	Log::Logger logs;
 
 };
 
