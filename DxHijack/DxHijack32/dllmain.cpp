@@ -99,10 +99,13 @@ HMODULE WINAPI MyLoadLibraryExW(LPCWSTR lpFileName, HANDLE hFile, DWORD dwFlags)
 
 	if(lstrcmpiW(lpFileName, realDllW) == 0)
 	{
+		// if hooked this way the stereoificator d3d9.dll is being injected so it will handle init of logging
+
 		OutputDebugString("Inject Proxy DLL ");    
 		lpFileName = proxyDllW;
 		OutputDebugStringW(lpFileName); 
 		OutputDebugString("\n");
+
 	} 
    
     // Time to call the original function    
@@ -119,8 +122,16 @@ IDirect3D9* WINAPI MyDirect3DCreate9(UINT sdk_version)
 
 	Direct3DCreate9_t old_func = (Direct3DCreate9_t) D3DHook.Functions[D3DFN_Direct3DCreate9].OrigFn;
 	IDirect3D9* d3d = old_func(sdk_version);
+
+	if (d3d) {
+		stereoificator::InitStereoificatorD3D9(); // if hooked this way the d3d9.lib that we linked agaisnt will be used so we need to init logging.
+		return new BaseDirect3D9(d3d);
+	}
+	else {
+		return 0;
+	}
 	
-	return d3d ? new BaseDirect3D9(d3d) : 0;
+	//return d3d ? new BaseDirect3D9(d3d) : 0;
 }
 
 // CBT Hook-style injection.
@@ -128,8 +139,6 @@ BOOL APIENTRY DllMain( HINSTANCE hModule, DWORD fdwReason, LPVOID lpReserved )
 {
     if (fdwReason == DLL_PROCESS_ATTACH)  // When initializing....
     {
-		stereoificator::InitStereoificatorD3D9();
-
         hDLL = hModule;
 
         // We don't need thread notifications for what we're doing.  Thus, get
