@@ -1,6 +1,6 @@
 /********************************************************************
-HMD-Stereoificator
-Copyright (C) 2013 Chris Drain
+Vireio Perception: Open-Source Stereoscopic 3D Driver
+Copyright (C) 2012 Andres Hernandez
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
@@ -16,17 +16,15 @@ You should have received a copy of the GNU Lesser General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ********************************************************************/
 
-#pragma once
+#ifndef DLLMAIN_H_INCLUDED
+#define DLLMAIN_H_INCLUDED
 
-#include "src/Manager.h"
+#include "Main.h"
 #include "global.h"
 
-#include <iostream>
+#include "Direct3D9.h"
+#include <windows.h>
+#include <d3d9.h>
 #include <stdio.h>
 
-namespace stereoificator {
-// Should be called before any other methods in the library
-	void InitStereoificatorD3D9();
-	static bool gIsInitialized = false;
-	static int gInitCallCount = 0;
-}
+#endif

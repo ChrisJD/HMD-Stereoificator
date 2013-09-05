@@ -185,6 +185,7 @@
     <ClInclude Include="DuplicationConditionsFactory.h" />
     <ClInclude Include="HMDisplayInfo.h" />
     <ClInclude Include="LimitedRangeValue.h" />
+    <ClInclude Include="Main.h" />
     <ClInclude Include="MatrixDoNothing.h" />
     <ClInclude Include="MatrixHudSquash.h" />
     <ClInclude Include="MatrixShiftProjection.h" />
@@ -220,7 +221,6 @@
     <ClInclude Include="Direct3DVolumeTexture9.h" />
     <ClInclude Include="FreeSpaceTracker.h" />
     <ClInclude Include="FreeTrackTracker.h" />
-    <ClInclude Include="Main.h" />
     <ClInclude Include="MotionTrackerFactory.h" />
     <ClInclude Include="OculusRiftView.h" />
     <ClInclude Include="OculusTracker.h" />

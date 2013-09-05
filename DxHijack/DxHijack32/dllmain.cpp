@@ -26,6 +26,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "Direct3D9.h"
 #include <string>
 #include "src/LoggerCpp.h"
+#include "Main.h"
 
 // Text buffer for sprintf
 char targetExe[256];
@@ -127,6 +128,8 @@ BOOL APIENTRY DllMain( HINSTANCE hModule, DWORD fdwReason, LPVOID lpReserved )
 {
     if (fdwReason == DLL_PROCESS_ATTACH)  // When initializing....
     {
+		stereoificator::InitStereoificatorD3D9();
+
         hDLL = hModule;
 
         // We don't need thread notifications for what we're doing.  Thus, get
