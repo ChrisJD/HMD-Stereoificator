@@ -1,3 +1,7 @@
+Please note that this project is no longer in active development. Please check out Vireio, TriDef or VorpX as alternatives.
+
+
+
 Get current binary downloads from: http://stereoificator.com/
 
 ---------------------------------
